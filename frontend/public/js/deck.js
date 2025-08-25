@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const deckId = params.get('id');
 
     if (!deckId) {
-        alert('ID do baralho não encontrado.');
+        showToast('ID do baralho não encontrado.');
         window.location.href = 'dashboard.html';
         return;
     }
@@ -122,7 +122,7 @@ function handleGenerateForm(deckId) {
                 // --- Lógica para submissão de TEXTO ---
                 const textContent = textarea.value.trim();
                 if (!textContent) {
-                    alert('Por favor, cole algum texto.');
+                    showToast('Por favor, cole algum texto.');
                     return;
                 }
                 const params = {
@@ -136,7 +136,7 @@ function handleGenerateForm(deckId) {
                 // --- Lógica para submissão de FICHEIRO ---
                 const file = fileInput.files[0];
                 if (!file) {
-                    alert('Por favor, selecione um ficheiro.');
+                    showToast('Por favor, selecione um ficheiro.');
                     return;
                 }
                 const formData = new FormData();
@@ -150,7 +150,7 @@ function handleGenerateForm(deckId) {
             if (result) {
                 textarea.value = '';
                 fileInput.value = ''; // Limpa o seletor de ficheiro
-                alert('Pedido recebido! Os flashcards estão a ser gerados e a lista será atualizada em breve.');
+                showToast('Pedido recebido! Os flashcards estão a ser gerados e a lista será atualizada em breve.');
 
                 form.style.display = 'none';
                 const processingMessage = document.createElement('p');
@@ -278,7 +278,7 @@ async function handleEditFormSubmit(event, deckId) {
     const submitButton = form.querySelector('button[type="submit"]');
 
     if (!question || !answer) {
-        alert('A pergunta e a resposta não podem estar vazias.');
+        showToast('A pergunta e a resposta não podem estar vazias.');
         return;
     }
 

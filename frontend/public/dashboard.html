@@ -6,6 +6,7 @@
     <title>Dashboard - Recall</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
     <header class="app-header">
@@ -31,14 +32,15 @@
         <section class="dashboard-actions" aria-labelledby="create-deck-heading">
             <div class="card create-deck-card">
                 <h2 id="create-deck-heading">Criar Novo Baralho</h2>
-                <form id="create-deck-form">
+                <form id="create-deck-form" novalidate>
                     <div class="form-group">
                         <label for="deck-title" class="sr-only">Título do baralho</label>
-                        <input type="text" id="deck-title" placeholder="Título do baralho" required>
+                        <input type="text" id="deck-title" placeholder="Título do baralho" required minlength="3" maxlength="50">
+                        <span class="error-message" id="title-error"></span>
                     </div>
                     <div class="form-group">
                         <label for="deck-description" class="sr-only">Descrição do baralho</label>
-                        <textarea id="deck-description" placeholder="Adicione uma breve descrição (opcional)" rows="3"></textarea>
+                        <textarea id="deck-description" placeholder="Adicione uma breve descrição (opcional)" rows="3" maxlength="200"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Criar Baralho</button>
                 </form>
@@ -52,8 +54,37 @@
             </ul>
         </section>
     </main>
+
+    <div id="edit-deck-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Editar Baralho</h2>
+            <button id="close-edit-deck-modal-btn" class="close-btn" aria-label="Fechar modal">&times;</button>
+        </div>
+        <form id="edit-deck-form" novalidate>
+            <div class="modal-body">
+                <input type="hidden" id="edit-deck-id">
+                <div class="form-group">
+                    <label for="edit-deck-title">Título</label>
+                    <input type="text" id="edit-deck-title" required minlength="3" maxlength="50">
+                    <span class="error-message" id="edit-title-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="edit-deck-description">Descrição</label>
+                    <textarea id="edit-deck-description" rows="4" maxlength="200"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancel-edit-deck-btn" class="btn">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="js/notifications.js"></script>
     <script src="js/main.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>

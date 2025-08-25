@@ -32,19 +32,16 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
         if (!response.ok) {
-            // Tenta extrair a mensagem de erro padronizada do corpo da resposta
-            const errorData = await response.json().catch(() => ({ 
-                message: `O servidor respondeu com um erro (Status: ${response.status})` 
+            const errorData = await response.json().catch(() => ({
+                message: `O servidor respondeu com um erro (Status: ${response.status})`
             }));
-            // Lança um erro com a mensagem específica da API
             throw new Error(errorData.message || `Falha na requisição para ${endpoint}`);
         }
-        // Retorna a resposta JSON se houver corpo, senão retorna um objeto de sucesso.
         return response.status !== 204 ? await response.json() : { success: true };
     } catch (error) {
         console.error(`Erro na chamada à API para ${endpoint}:`, error.message);
-        // Exibe um alerta mais específico para o utilizador.
-        alert(error.message || 'Ocorreu um erro desconhecido. Por favor, tente novamente.');
+        // AQUI ESTÁ A MUDANÇA: substituindo alert() por showToast()
+        showToast(error.message || 'Ocorreu um erro desconhecido. Por favor, tente novamente.', 'error');
         return null;
     }
 }
@@ -121,4 +118,8 @@ async function fetchLast7DaysReviews() {
 
 async function shareDeck(deckId) {
     return apiCall(`/decks/${deckId}/share`, 'POST');
+}
+
+async function updateDeck(deckId, title, description) {
+    return apiCall(`/decks/${deckId}`, 'PUT', { title, description });
 }

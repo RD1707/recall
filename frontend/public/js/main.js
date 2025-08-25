@@ -7,21 +7,25 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 function renderDeck(deck) {
     const listItem = document.createElement('li');
     listItem.classList.add('deck-list-item');
-
-    const link = document.createElement('a');
-    link.href = `deck.html?id=${deck.id}`;
-    link.classList.add('deck-card-link');
+    // Adicionamos um data attribute para facilitar a busca dos dados do baralho
+    listItem.dataset.deck = JSON.stringify(deck);
 
     const deckCard = document.createElement('div');
     deckCard.classList.add('deck-card');
+
     deckCard.innerHTML = `
-        <h4>${deck.title}</h4>
-        <p>${deck.description || 'Sem descrição'}</p>
+        <a href="deck.html?id=${deck.id}" class="deck-card-link">
+            <h4>${deck.title}</h4>
+            <p>${deck.description || 'Sem descrição'}</p>
+        </a>
+        <div class="deck-card-actions">
+            <button class="action-btn edit-deck-btn" title="Editar baralho">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+            </button>
+        </div>
     `;
 
-    link.appendChild(deckCard);
-    listItem.appendChild(link);
-
+    listItem.appendChild(deckCard);
     return listItem;
 }
 
@@ -45,10 +49,10 @@ async function loadDecks() {
     }
 
     // 2. Buscar os dados da API
-    const decks = await fetchDecks(); 
+    const decks = await fetchDecks();
 
     // 3. Renderizar o conteúdo real
-    decksContainer.innerHTML = ''; 
+    decksContainer.innerHTML = '';
 
     if (!decks || decks.length === 0) {
         decksContainer.innerHTML = '<li><p>Você ainda não tem baralhos. Crie um novo acima!</p></li>';
@@ -60,40 +64,62 @@ async function loadDecks() {
     }
 }
 
-/* recall/frontend/public/js/main.js */
 function handleCreateDeckForm() {
     const createDeckForm = document.getElementById('create-deck-form');
     if (!createDeckForm) return;
 
+    const titleInput = document.getElementById('deck-title');
+    const descriptionInput = document.getElementById('deck-description');
+    const submitButton = createDeckForm.querySelector('button[type="submit"]');
+    const titleError = document.getElementById('title-error');
+
+    // Função para validar o título
+    const validateTitle = () => {
+        const title = titleInput.value.trim();
+        if (title.length < 3) {
+            titleInput.classList.add('is-invalid');
+            titleError.textContent = 'O título deve ter pelo menos 3 caracteres.';
+            titleError.style.display = 'block';
+            return false;
+        } else if (title.length > 50) {
+            titleInput.classList.add('is-invalid');
+            titleError.textContent = 'O título deve ter no máximo 50 caracteres.';
+            titleError.style.display = 'block';
+            return false;
+        } else {
+            titleInput.classList.remove('is-invalid');
+            titleError.style.display = 'none';
+            return true;
+        }
+    };
+
+    // Valida em tempo real enquanto o usuário digita
+    titleInput.addEventListener('input', validateTitle);
+
     createDeckForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const titleInput = document.getElementById('deck-title');
-        const descriptionInput = document.getElementById('deck-description');
-        const submitButton = createDeckForm.querySelector('button[type="submit"]');
+
+        // Garante que a validação final ocorra antes do envio
+        if (!validateTitle()) {
+            return;
+        }
 
         const title = titleInput.value.trim();
         const description = descriptionInput.value.trim();
 
-        if (!title) {
-            alert('O título é obrigatório.');
-            return;
-        }
-
-        // Desabilitar botão antes da chamada
         submitButton.disabled = true;
         submitButton.textContent = 'A Criar...';
 
         try {
             const newDeckData = await createDeck(title, description);
             if (newDeckData) {
+                showToast('Baralho criado com sucesso!', 'success'); // MUDANÇA
                 titleInput.value = '';
                 descriptionInput.value = '';
                 loadDecks();
-            } else {
-                alert('Ocorreu um erro ao criar o baralho. Tente novamente.');
             }
+            // O bloco 'else' pode ser removido, pois o apiCall já trata o erro.
         } finally {
-            // Reabilitar botão após a chamada
             submitButton.disabled = false;
             submitButton.textContent = 'Criar Baralho';
         }
@@ -133,6 +159,105 @@ async function routeGuard() {
     }
 }
 
+function handleEditDeckModal() {
+    const decksContainer = document.getElementById('decks-container');
+    const modal = document.getElementById('edit-deck-modal');
+    if (!modal || !decksContainer) return;
+
+    const form = document.getElementById('edit-deck-form');
+    const titleInput = document.getElementById('edit-deck-title');
+    const descriptionInput = document.getElementById('edit-deck-description');
+    const deckIdInput = document.getElementById('edit-deck-id');
+    const titleError = document.getElementById('edit-title-error');
+    const closeModalBtn = document.getElementById('close-edit-deck-modal-btn');
+    const cancelBtn = document.getElementById('cancel-edit-deck-btn');
+
+    const openModal = (deck) => {
+        deckIdInput.value = deck.id;
+        titleInput.value = deck.title;
+        descriptionInput.value = deck.description || '';
+        modal.classList.add('visible');
+    };
+
+    const closeModal = () => {
+        modal.classList.remove('visible');
+        form.reset();
+        titleInput.classList.remove('is-invalid');
+        titleError.style.display = 'none';
+    };
+
+    // Event listener para abrir o modal
+    decksContainer.addEventListener('click', (e) => {
+        const editButton = e.target.closest('.edit-deck-btn');
+        if (editButton) {
+            const listItem = editButton.closest('.deck-list-item');
+            const deckData = JSON.parse(listItem.dataset.deck);
+            openModal(deckData);
+        }
+    });
+
+    // Event listeners para fechar o modal
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Lógica de validação e submissão do formulário
+    const validateEditTitle = () => {
+        const title = titleInput.value.trim();
+        if (title.length < 3) {
+            titleInput.classList.add('is-invalid');
+            titleError.textContent = 'O título deve ter pelo menos 3 caracteres.';
+            titleError.style.display = 'block';
+            return false;
+        } else if (title.length > 50) {
+            titleInput.classList.add('is-invalid');
+            titleError.textContent = 'O título deve ter no máximo 50 caracteres.';
+            titleError.style.display = 'block';
+            return false;
+        } else {
+            titleInput.classList.remove('is-invalid');
+            titleError.style.display = 'none';
+            return true;
+        }
+    };
+    
+    titleInput.addEventListener('input', validateEditTitle);
+    
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!validateEditTitle()) return;
+
+        const deckId = deckIdInput.value;
+        const title = titleInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'A Salvar...';
+
+        try {
+            const result = await updateDeck(deckId, title, description);
+            if (result) {
+                showToast('Baralho atualizado com sucesso!', 'success');
+                closeModal();
+                loadDecks(); // Recarrega a lista de baralhos
+            }
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Salvar Alterações';
+        }
+    });
+}
+
+// Chame a nova função no final do evento DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     routeGuard();
+    // Adicionamos a chamada aqui para garantir que os elementos existem
+    if (window.location.pathname.endsWith('dashboard.html')) {
+       handleEditDeckModal();
+    }
 });

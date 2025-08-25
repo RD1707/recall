@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorMessage.textContent = response.error.message;
             } else {
                 if (!isLogin) {
-                    alert('Registro realizado! Verifique seu e-mail para confirmar a conta.');
+                    showToast('Registro realizado! Verifique seu e-mail para confirmar a conta.');
                     authForm.reset();
                 } else {
                     window.location.href = 'dashboard.html';

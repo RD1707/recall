@@ -121,6 +121,44 @@
     height: 1.2rem; /* Altura do título */
 }
 
+/* Ajustes no Deck Card para ações */
+.deck-card {
+    position: relative;
+    padding-bottom: 4rem; /* Espaço para o botão de ações */
+}
+
+.deck-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.deck-card-actions {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+.deck-card-actions .action-btn {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.deck-card-actions .action-btn:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
 @media (max-width: 768px) {
     .app-nav {
         gap: 1rem;

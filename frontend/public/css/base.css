@@ -291,3 +291,29 @@ body {
 .app-nav .nav-link.active {
     color: var(--primary-color);
 }
+
+/* --- Estilos de Validação --- */
+.form-group {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.form-group .error-message {
+    color: #dc2626; /* Cor de erro, ex: vermelho */
+    font-size: 0.8rem;
+    position: absolute;
+    bottom: -1.2rem;
+    left: 0;
+    display: none; /* Escondido por padrão */
+}
+
+input.is-invalid,
+textarea.is-invalid {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+}
+
+input.is-invalid:focus,
+textarea.is-invalid:focus {
+     border-color: #dc2626 !important;
+}
