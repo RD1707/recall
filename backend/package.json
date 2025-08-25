@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "API para a plataforma de estudos com IA Recall, responsável por gerenciar usuários, baralhos, flashcards e integração com serviços externos.",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+"scripts": {
+  "start": "node server.js",
+  "worker": "node src/worker.js",
+  "test": "echo \"Error: no test specified\" && exit 1"
+},
   "author": "simple",
   "license": "MIT",
   "dependencies": {

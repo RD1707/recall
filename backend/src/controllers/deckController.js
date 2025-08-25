@@ -1,6 +1,8 @@
 const supabase = require('../config/supabaseClient');
 const { generateFlashcardsFromText } = require('../services/cohereService');
-const { z } = require('zod'); // Biblioteca de validação
+const { z } = require('zod');
+const logger = require('../config/logger'); // Importe o logger
+const { flashcardGenerationQueue } = require('../config/queue');
 
 // --- Schemas de Validação ---
 
@@ -14,7 +16,6 @@ const generateSchema = z.object({
     count: z.number().int().min(1).max(15),
     type: z.enum(['Pergunta e Resposta', 'Múltipla Escolha'])
 });
-
 
 // --- Funções do Controller ---
 
@@ -30,14 +31,15 @@ const getDecks = async (req, res) => {
     if (error) throw error;
     res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    logger.error(`Error fetching decks for user ${userId}: ${error.message}`);
+    res.status(500).json({ message: 'Erro ao buscar os baralhos.', code: 'INTERNAL_SERVER_ERROR' });
   }
 };
 
 const createDeck = async (req, res) => {
+  const userId = req.user.id;
   try {
     const { title, description } = deckSchema.parse(req.body);
-    const userId = req.user.id;
 
     const { data, error } = await supabase
       .from('decks')
@@ -49,17 +51,18 @@ const createDeck = async (req, res) => {
     res.status(201).json({ message: 'Baralho criado com sucesso!', deck: data });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: error.errors[0].message });
+      return res.status(400).json({ message: error.errors[0].message, code: 'VALIDATION_ERROR' });
     }
-    res.status(500).json({ error: error.message });
+    logger.error(`Error creating deck for user ${userId}: ${error.message}`);
+    res.status(500).json({ message: 'Erro interno do servidor ao criar o baralho.', code: 'INTERNAL_SERVER_ERROR' });
   }
 };
 
 const updateDeck = async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
     try {
-        const { id } = req.params;
         const { title, description } = deckSchema.parse(req.body);
-        const userId = req.user.id;
 
         const { data, error } = await supabase
             .from('decks')
@@ -70,14 +73,15 @@ const updateDeck = async (req, res) => {
             .single();
 
         if (error) throw error;
-        if (!data) return res.status(404).json({ error: 'Baralho não encontrado ou você não tem permissão para editá-lo.' });
+        if (!data) return res.status(404).json({ message: 'Baralho não encontrado ou você não tem permissão para editá-lo.', code: 'NOT_FOUND' });
 
         res.status(200).json({ message: 'Baralho atualizado com sucesso!', deck: data });
     } catch (error) {
         if (error instanceof z.ZodError) {
-            return res.status(400).json({ error: error.errors[0].message });
+            return res.status(400).json({ message: error.errors[0].message, code: 'VALIDATION_ERROR' });
         }
-        res.status(500).json({ error: error.message });
+        logger.error(`Error updating deck ${id} for user ${userId}: ${error.message}`);
+        res.status(500).json({ message: 'Erro interno do servidor ao atualizar o baralho.', code: 'INTERNAL_SERVER_ERROR' });
     }
 };
 
@@ -94,50 +98,44 @@ const deleteDeck = async (req, res) => {
     if (error) throw error;
     res.status(200).json({ message: 'Baralho deletado com sucesso!' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    logger.error(`Error deleting deck ${id} for user ${userId}: ${error.message}`);
+    res.status(500).json({ message: 'Erro interno do servidor ao deletar o baralho.', code: 'INTERNAL_SERVER_ERROR' });
   }
 };
 
 const generateCardsForDeck = async (req, res) => {
+    const { id: deckId } = req.params;
+    const userId = req.user.id;
     try {
-        const { id: deckId } = req.params;
-        const userId = req.user.id;
         const { textContent, count, type } = generateSchema.parse(req.body);
 
+        // Verifica se o baralho pertence ao utilizador
         const { data: deck, error: deckError } = await supabase
             .from('decks').select('id').eq('id', deckId).eq('user_id', userId).single();
 
         if (deckError || !deck) {
-            return res.status(404).json({ error: 'Baralho não encontrado ou acesso negado.' });
+            return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
         }
 
-        const generatedFlashcards = await generateFlashcardsFromText(textContent, count, type);
-        if (!generatedFlashcards) {
-            return res.status(500).json({ error: 'Falha ao gerar flashcards com a IA.' });
-        }
+        // Adiciona a tarefa à fila
+        await flashcardGenerationQueue.add('generate', {
+            deckId,
+            userId,
+            textContent,
+            count,
+            type
+        });
 
-        const flashcardsToSave = generatedFlashcards.map(card => ({
-            deck_id: deckId,
-            question: card.question,
-            answer: card.answer,
-            options: card.options, // Inclui as opções, se existirem
-            card_type: type,
-        }));
-
-        const { data: savedFlashcards, error: saveError } = await supabase
-            .from('flashcards')
-            .insert(flashcardsToSave)
-            .select();
-
-        if (saveError) throw saveError;
-
-        res.status(201).json({ message: 'Flashcards gerados e salvos com sucesso!', flashcards: savedFlashcards });
+        // Responde imediatamente ao utilizador
+        res.status(202).json({ message: 'Pedido de geração recebido! Os flashcards estão a ser criados em segundo plano.' });
 
     } catch (error) {
         if (error instanceof z.ZodError) {
-            return res.status(400).json({ error: error.errors[0].message });
+            return res.status(400).json({ message: error.errors[0].message, code: 'VALIDATION_ERROR' });
         }
-        res.status(500).json({ error: error.message });
+        // Substitua console.error por logger.error se tiver implementado a Fase 1
+        console.error(`Erro ao adicionar tarefa à fila para o baralho ${deckId}: ${error.message}`);
+        res.status(500).json({ message: 'Erro ao iniciar a geração dos flashcards.', code: 'QUEUE_ERROR' });
     }
 };
 
@@ -150,7 +148,7 @@ const getReviewCardsForDeck = async (req, res) => {
             .from('decks').select('id').eq('id', deckId).eq('user_id', userId).single();
 
         if (deckError || !deck) {
-            return res.status(404).json({ error: 'Baralho não encontrado ou acesso negado.' });
+            return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
         }
 
         const { data, error } = await supabase
@@ -162,7 +160,8 @@ const getReviewCardsForDeck = async (req, res) => {
         if (error) throw error;
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        logger.error(`Error fetching review cards for deck ${deckId}: ${error.message}`);
+        res.status(500).json({ message: 'Erro ao buscar os flashcards para revisão.', code: 'INTERNAL_SERVER_ERROR' });
     }
 };
 

@@ -24,17 +24,34 @@ function renderDeck(deck) {
 
     return listItem;
 }
+
 async function loadDecks() {
     const decksContainer = document.getElementById('decks-container');
     if (!decksContainer) return;
 
-    decksContainer.innerHTML = '<p>Carregando baralhos...</p>';
+    // 1. Exibir os skeleton loaders
+    decksContainer.innerHTML = ''; // Limpa a área
+    for (let i = 0; i < 3; i++) { // Mostra 3 skeletons como placeholder
+        const skeletonItem = document.createElement('li');
+        skeletonItem.classList.add('deck-list-item');
+        skeletonItem.innerHTML = `
+            <div class="deck-card-skeleton">
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text"></div>
+            </div>
+        `;
+        decksContainer.appendChild(skeletonItem);
+    }
+
+    // 2. Buscar os dados da API
     const decks = await fetchDecks(); 
 
+    // 3. Renderizar o conteúdo real
     decksContainer.innerHTML = ''; 
 
-    if (decks.length === 0) {
-        decksContainer.innerHTML = '<p>Você ainda não tem baralhos. Crie um novo acima!</p>';
+    if (!decks || decks.length === 0) {
+        decksContainer.innerHTML = '<li><p>Você ainda não tem baralhos. Crie um novo acima!</p></li>';
     } else {
         decks.forEach(deck => {
             const deckElement = renderDeck(deck);

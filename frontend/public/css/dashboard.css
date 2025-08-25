@@ -107,6 +107,20 @@
     margin-bottom: 0;
 }
 
+/* Estilos para o skeleton do deck card */
+.deck-card-skeleton {
+    background-color: var(--white-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.deck-card-skeleton .skeleton-text:first-child {
+    width: 60%;
+    height: 1.2rem; /* Altura do título */
+}
+
 @media (max-width: 768px) {
     .app-nav {
         gap: 1rem;

@@ -1,4 +1,5 @@
 const supabase = require('../config/supabaseClient');
+const logger = require('../config/logger'); // Importe o logger
 
 const getProfile = async (req, res) => {
     try {
@@ -11,7 +12,8 @@ const getProfile = async (req, res) => {
         if (error) throw error;
         res.status(200).json(data);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        logger.error(`Error fetching profile for user ${req.user.id}: ${error.message}`);
+        res.status(500).json({ message: 'Erro ao buscar o perfil do usuário.', code: 'INTERNAL_SERVER_ERROR' });
     }
 };
 

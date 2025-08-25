@@ -146,3 +146,131 @@ body {
     transform: none;
     box-shadow: none;
 }
+
+/* --- Estilos do Modal --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background-color: var(--white-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    width: 90%;
+    max-width: 500px;
+    transform: translateY(-20px);
+    transition: transform 0.3s;
+}
+
+.modal-overlay.visible .modal {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    cursor: pointer;
+    color: var(--text-light);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-body .form-group {
+    margin-bottom: 1rem;
+}
+
+.modal-body label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.modal-body textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-family: var(--font-family);
+    resize: vertical;
+    min-height: 80px;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+/* --- Estilos do Skeleton Loader --- */
+.skeleton {
+    background-color: #e5e7eb; /* var(--border-color) */
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.skeleton-text {
+    height: 1em;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-text:last-child {
+    margin-bottom: 0;
+    width: 80%;
+}
