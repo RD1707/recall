@@ -1,4 +1,3 @@
-// Variável para armazenar os flashcards carregados na página
 let currentFlashcards = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,35 +29,37 @@ async function loadPageData(deckId) {
     await loadAndRenderFlashcards(deckId);
 }
 
-async function loadAndRenderFlashcards(deckId) {
+async function loadAndRenderFlashcards(deckId, previousCardCount = -1) {
     const container = document.getElementById('flashcards-container');
 
-    // 1. Exibir os skeleton loaders
-    container.innerHTML = '';
-    for (let i = 0; i < 4; i++) { // Mostra 4 skeletons como placeholder
-        const skeletonItem = document.createElement('li');
-        skeletonItem.innerHTML = `
-            <div class="flashcard-skeleton">
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-text"></div>
-            </div>
-        `;
-        container.appendChild(skeletonItem);
+    if (previousCardCount === -1) {
+        container.innerHTML = '';
+        for (let i = 0; i < 4; i++) {
+            const skeletonItem = document.createElement('li');
+            skeletonItem.innerHTML = `
+                <div class="flashcard-skeleton">
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+            `;
+            container.appendChild(skeletonItem);
+        }
     }
 
-    // 2. Buscar os dados da API
     currentFlashcards = await fetchFlashcards(deckId);
-
-    // 3. Renderizar o conteúdo real
-    container.innerHTML = ''; 
+    container.innerHTML = '';
 
     if (!currentFlashcards || currentFlashcards.length === 0) {
         container.innerHTML = '<li><p>Este baralho ainda não tem flashcards. Gere novos com a IA!</p></li>';
     } else {
-        currentFlashcards.forEach(card => {
+        currentFlashcards.forEach((card, index) => {
             const listItem = document.createElement('li');
             listItem.classList.add('flashcard-list-item');
             listItem.setAttribute('data-card-id', card.id);
+
+            if (previousCardCount !== -1 && index >= previousCardCount) {
+                listItem.classList.add('new-card');
+            }
 
             listItem.innerHTML = `
                 <div class="flashcard">
@@ -72,6 +73,13 @@ async function loadAndRenderFlashcards(deckId) {
             `;
             container.appendChild(listItem);
         });
+
+        if (previousCardCount !== -1 && currentFlashcards.length > previousCardCount) {
+            const firstNewCard = container.querySelector('.new-card');
+            if (firstNewCard) {
+                firstNewCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
     }
 }
 
@@ -80,123 +88,123 @@ function handleGenerateForm(deckId) {
     const button = document.getElementById('generate-button');
     const cardCountInput = document.getElementById('card-count');
     const cardTypeSelect = document.getElementById('card-type');
+    const processingFeedback = document.getElementById('processing-feedback');
 
-    // Elementos do seletor de modo
     const modeSelector = form.querySelector('.input-mode-selector');
     const textInputArea = document.getElementById('text-input-area');
     const fileInputArea = document.getElementById('file-input-area');
+    const youtubeInputArea = document.getElementById('youtube-input-area');
+
     const textarea = document.getElementById('text-content');
     const fileInput = document.getElementById('file-content');
+    const youtubeUrlInput = document.getElementById('youtube-url');
 
-    let currentMode = 'text'; // 'text' ou 'file'
+    let currentMode = 'text';
 
-    // Lógica para alternar entre os modos
     modeSelector.addEventListener('click', (e) => {
-        if (e.target.tagName !== 'BUTTON') return;
+        const button = e.target.closest('.input-mode-btn');
+        if (!button) return;
 
-        currentMode = e.target.dataset.mode;
+        currentMode = button.dataset.mode;
 
-        // Atualiza a aparência dos botões
         form.querySelectorAll('.input-mode-btn').forEach(btn => btn.classList.remove('active'));
-        e.target.classList.add('active');
+        button.classList.add('active');
 
-        // Mostra/esconde as áreas de input
-        if (currentMode === 'text') {
-            textInputArea.classList.remove('hidden');
-            fileInputArea.classList.add('hidden');
-        } else {
-            textInputArea.classList.add('hidden');
-            fileInputArea.classList.remove('hidden');
-        }
+        textInputArea.classList.toggle('hidden', currentMode !== 'text');
+        fileInputArea.classList.toggle('hidden', currentMode !== 'file');
+        youtubeInputArea.classList.toggle('hidden', currentMode !== 'youtube');
     });
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         button.disabled = true;
         button.textContent = 'A Enviar...';
 
         let result;
-        try {
-            if (currentMode === 'text') {
-                // --- Lógica para submissão de TEXTO ---
-                const textContent = textarea.value.trim();
-                if (!textContent) {
-                    showToast('Por favor, cole algum texto.');
-                    return;
-                }
-                const params = {
-                    textContent,
-                    count: parseInt(cardCountInput.value, 10),
-                    type: cardTypeSelect.value,
-                };
-                result = await generateFlashcards(deckId, params);
+        const commonParams = {
+            count: parseInt(cardCountInput.value, 10),
+            type: cardTypeSelect.value,
+        };
 
-            } else {
-                // --- Lógica para submissão de FICHEIRO ---
-                const file = fileInput.files[0];
-                if (!file) {
-                    showToast('Por favor, selecione um ficheiro.');
-                    return;
-                }
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('count', cardCountInput.value);
-                formData.append('type', cardTypeSelect.value);
-                result = await generateFlashcardsFromFile(deckId, formData);
+        try {
+            switch (currentMode) {
+                case 'text':
+                    const textContent = textarea.value.trim();
+                    if (!textContent) {
+                        showToast('Por favor, cole algum texto.', 'error');
+                        return; 
+                    }
+                    result = await generateFlashcards(deckId, { ...commonParams, textContent });
+                    break;
+
+                case 'file':
+                    const file = fileInput.files[0];
+                    if (!file) {
+                        showToast('Por favor, selecione um ficheiro.', 'error');
+                        return;
+                    }
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('count', commonParams.count);
+                    formData.append('type', commonParams.type);
+                    result = await generateFlashcardsFromFile(deckId, formData);
+                    break;
+
+                case 'youtube':
+                    const youtubeUrl = youtubeUrlInput.value.trim();
+                    if (!youtubeUrl.includes('youtube.com') && !youtubeUrl.includes('youtu.be')) {
+                        showToast('Por favor, insira um link válido do YouTube.', 'error');
+                        return;
+                    }
+                    result = await generateFlashcardsFromYouTube(deckId, { ...commonParams, youtubeUrl });
+                    break;
             }
 
-            // --- Lógica de feedback e polling (comum a ambos) ---
             if (result) {
+                showToast(result.message, 'info');
                 textarea.value = '';
-                fileInput.value = ''; // Limpa o seletor de ficheiro
-                showToast('Pedido recebido! Os flashcards estão a ser gerados e a lista será atualizada em breve.');
+                fileInput.value = '';
+                youtubeUrlInput.value = '';
 
-                form.style.display = 'none';
-                const processingMessage = document.createElement('p');
-                processingMessage.id = 'processing-msg';
-                processingMessage.textContent = 'A IA está a trabalhar... por favor, aguarde.';
-                form.parentElement.appendChild(processingMessage);
+                form.classList.add('hidden');
+                processingFeedback.classList.remove('hidden');
 
                 const initialCardCount = currentFlashcards.length;
                 const pollInterval = setInterval(async () => {
-                    const newCards = await fetchFlashcards(deckId); // Busca os dados atualizados
-                    if (newCards && newCards.length > initialCardCount) {
+                    const newCardsList = await fetchFlashcards(deckId);
+                    if (newCardsList && newCardsList.length > initialCardCount) {
                         clearInterval(pollInterval);
-                        await loadAndRenderFlashcards(deckId); // Renderiza a lista completa
-                        form.style.display = 'block';
-                        document.getElementById('processing-msg').remove();
+                        await loadAndRenderFlashcards(deckId, initialCardCount);
+                        
+                        form.classList.remove('hidden');
+                        processingFeedback.classList.add('hidden');
+                        button.disabled = false;
+                        button.textContent = 'Gerar Flashcards';
                     }
-                }, 5000); // 5 segundos
-            }
-        } catch (error) {
-            // O erro já é mostrado pelo apiCall
-        } finally {
-            if (!result) { // Apenas reativa se o pedido inicial falhar
+                }, 5000); 
+            } else {
                 button.disabled = false;
                 button.textContent = 'Gerar Flashcards';
             }
+        } catch (error) {
+            button.disabled = false;
+            button.textContent = 'Gerar Flashcards';
         }
     });
 }
 
-// --- Lógica do Modal e Ações CRUD ---
-
 function setupEventListeners(deckId) {
-    // --- Modal de Edição ---
     const flashcardsContainer = document.getElementById('flashcards-container');
     const editModal = document.getElementById('edit-flashcard-modal');
     const closeEditModalBtn = editModal.querySelector('.close-btn');
     const cancelEditBtn = document.getElementById('cancel-edit-btn');
     const editForm = document.getElementById('edit-flashcard-form');
 
-    // --- Modal de Compartilhamento ---
     const shareButton = document.getElementById('share-deck-button');
     const shareModal = document.getElementById('share-deck-modal');
     const closeShareModalBtn = shareModal.querySelector('.close-btn');
     const copyLinkButton = document.getElementById('copy-link-button');
 
-    // Delegação de eventos para editar/excluir flashcards
     flashcardsContainer.addEventListener('click', (e) => {
         const target = e.target;
         if (target.classList.contains('edit-btn')) {
@@ -209,13 +217,11 @@ function setupEventListeners(deckId) {
         }
     });
 
-    // Eventos para fechar o modal de edição
     editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
     closeEditModalBtn.addEventListener('click', closeEditModal);
     cancelEditBtn.addEventListener('click', closeEditModal);
     editForm.addEventListener('submit', (e) => handleEditFormSubmit(e, deckId));
 
-    // --- Novos Eventos para Compartilhamento ---
     shareButton.addEventListener('click', () => handleShareDeck(deckId));
     shareModal.addEventListener('click', (e) => { if (e.target === shareModal) closeShareModal(); });
     closeShareModalBtn.addEventListener('click', closeShareModal);
@@ -229,7 +235,6 @@ function setupEventListeners(deckId) {
     });
 }
 
-// Adicione estas novas funções ao seu arquivo `deck.js`
 async function handleShareDeck(deckId) {
     const result = await shareDeck(deckId);
     if (result && result.shareableId) {
@@ -264,7 +269,7 @@ async function handleDeleteFlashcard(cardId, deckId) {
     if (confirm('Tem a certeza de que deseja excluir este flashcard? Esta ação não pode ser desfeita.')) {
         const result = await deleteFlashcard(cardId);
         if (result) {
-            await loadAndRenderFlashcards(deckId); // Recarrega a lista
+            await loadAndRenderFlashcards(deckId); 
         }
     }
 }

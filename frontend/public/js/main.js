@@ -7,7 +7,6 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 function renderDeck(deck) {
     const listItem = document.createElement('li');
     listItem.classList.add('deck-list-item');
-    // Adicionamos um data attribute para facilitar a busca dos dados do baralho
     listItem.dataset.deck = JSON.stringify(deck);
 
     const deckCard = document.createElement('div');
@@ -33,9 +32,8 @@ async function loadDecks() {
     const decksContainer = document.getElementById('decks-container');
     if (!decksContainer) return;
 
-    // 1. Exibir os skeleton loaders
-    decksContainer.innerHTML = ''; // Limpa a área
-    for (let i = 0; i < 3; i++) { // Mostra 3 skeletons como placeholder
+    decksContainer.innerHTML = '';
+    for (let i = 0; i < 3; i++) { 
         const skeletonItem = document.createElement('li');
         skeletonItem.classList.add('deck-list-item');
         skeletonItem.innerHTML = `
@@ -48,10 +46,8 @@ async function loadDecks() {
         decksContainer.appendChild(skeletonItem);
     }
 
-    // 2. Buscar os dados da API
     const decks = await fetchDecks();
 
-    // 3. Renderizar o conteúdo real
     decksContainer.innerHTML = '';
 
     if (!decks || decks.length === 0) {
@@ -73,7 +69,6 @@ function handleCreateDeckForm() {
     const submitButton = createDeckForm.querySelector('button[type="submit"]');
     const titleError = document.getElementById('title-error');
 
-    // Função para validar o título
     const validateTitle = () => {
         const title = titleInput.value.trim();
         if (title.length < 3) {
@@ -93,13 +88,11 @@ function handleCreateDeckForm() {
         }
     };
 
-    // Valida em tempo real enquanto o usuário digita
     titleInput.addEventListener('input', validateTitle);
 
     createDeckForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Garante que a validação final ocorra antes do envio
         if (!validateTitle()) {
             return;
         }
@@ -118,7 +111,6 @@ function handleCreateDeckForm() {
                 descriptionInput.value = '';
                 loadDecks();
             }
-            // O bloco 'else' pode ser removido, pois o apiCall já trata o erro.
         } finally {
             submitButton.disabled = false;
             submitButton.textContent = 'Criar Baralho';
@@ -186,7 +178,6 @@ function handleEditDeckModal() {
         titleError.style.display = 'none';
     };
 
-    // Event listener para abrir o modal
     decksContainer.addEventListener('click', (e) => {
         const editButton = e.target.closest('.edit-deck-btn');
         if (editButton) {
@@ -196,7 +187,6 @@ function handleEditDeckModal() {
         }
     });
 
-    // Event listeners para fechar o modal
     closeModalBtn.addEventListener('click', closeModal);
     cancelBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', (e) => {
@@ -205,7 +195,6 @@ function handleEditDeckModal() {
         }
     });
 
-    // Lógica de validação e submissão do formulário
     const validateEditTitle = () => {
         const title = titleInput.value.trim();
         if (title.length < 3) {
@@ -244,7 +233,7 @@ function handleEditDeckModal() {
             if (result) {
                 showToast('Baralho atualizado com sucesso!', 'success');
                 closeModal();
-                loadDecks(); // Recarrega a lista de baralhos
+                loadDecks(); 
             }
         } finally {
             submitButton.disabled = false;
@@ -253,10 +242,8 @@ function handleEditDeckModal() {
     });
 }
 
-// Chame a nova função no final do evento DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     routeGuard();
-    // Adicionamos a chamada aqui para garantir que os elementos existem
     if (window.location.pathname.endsWith('dashboard.html')) {
        handleEditDeckModal();
     }

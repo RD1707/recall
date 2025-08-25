@@ -48,6 +48,7 @@
                         <div class="input-mode-selector">
                             <button type="button" class="input-mode-btn active" data-mode="text">Colar Texto</button>
                             <button type="button" class="input-mode-btn" data-mode="file">Carregar Ficheiro</button>
+                            <button type="button" class="input-mode-btn" data-mode="youtube">Link do YouTube</button>
                         </div>
 
                         <div id="text-input-area" class="form-group">
@@ -58,6 +59,11 @@
                         <div id="file-input-area" class="form-group hidden">
                             <label for="file-content">Selecione um ficheiro (.txt, .md, .pdf)</label>
                             <input type="file" id="file-content" accept=".txt,.md,.pdf">
+                        </div>
+
+                        <div id="youtube-input-area" class="form-group hidden">
+                            <label for="youtube-url" class="sr-only">Cole o link do vídeo do YouTube</label>
+                            <input type="url" id="youtube-url" placeholder="https://www.youtube.com/watch?v=...">
                         </div>
 
                         <div class="form-group">
@@ -73,6 +79,14 @@
                         </div>
                         <button type="submit" id="generate-button" class="btn btn-primary">Gerar Flashcards</button>
                     </form>
+                    <div class="card generate-card">
+                        <h2>Gerar com IA</h2>
+                        <form id="generate-cards-form">
+                            </form>
+                        <div id="processing-feedback" class="processing-feedback hidden">
+                            <div class="spinner"></div>
+                            <p>A IA está a trabalhar... Os seus novos cards aparecerão em breve.</p>
+                    </div>
                 </div>
             </aside>
 

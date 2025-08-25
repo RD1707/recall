@@ -10,35 +10,51 @@
 </head>
 <body>
     <main class="login-main">
-        <div class="login-container">
-            <div class="login-logo">
-                <a href="index.html">Recall</a>
-            </div>
+    <div class="login-container">
+        <div class="login-logo">
+            <a href="index.html">Recall</a>
+        </div>
 
-            <div class="card login-card">
-                <h1 id="form-title">Acesse sua conta</h1>
-                <form id="auth-form" novalidate>
+        <div class="card login-card">
+            <div id="auth-panel">
+                </div>
+
+            <div id="reset-password-panel" class="hidden">
+                </div>
+
+            <div id="update-password-panel" class="hidden">
+                <h1 id="update-form-title">Defina sua Nova Senha</h1>
+                <form id="update-password-form" novalidate>
                     <div class="form-group">
-                        <label for="email" class="sr-only">Seu e-mail</label>
-                        <input type="email" id="email" placeholder="Seu e-mail" required>
+                        <label for="new-password" class="sr-only">Nova senha</label>
+                        <input type="password" id="new-password" placeholder="Digite a nova senha" required minlength="6">
                     </div>
-                    <div class="form-group">
-                        <label for="password" class="sr-only">Sua senha</label>
-                        <input type="password" id="password" placeholder="Sua senha" required minlength="6">
-                    </div>
-                    <p id="error-message" class="error-message"></p>
-                    <button type="submit" id="auth-button" class="btn btn-primary">Entrar</button>
+                    <button type="submit" id="update-button" class="btn btn-primary">Salvar Nova Senha</button>
                 </form>
             </div>
+        </div>
 
-            <div class="toggle-panel">
-                <p>
-                    <span id="toggle-text">Não tem uma conta?</span>
-                    <a href="#" id="toggle-form-link">Registre-se agora</a>
-                </p>
+            <div id="reset-password-panel" class="hidden">
+                <h1 id="reset-form-title">Recuperar Senha</h1>
+                <form id="reset-password-form" novalidate>
+                    <p class="reset-info">Insira o seu e-mail e enviaremos um link para redefinir a sua senha.</p>
+                    <div class="form-group">
+                        <label for="reset-email" class="sr-only">Seu e-mail</label>
+                        <input type="email" id="reset-email" placeholder="Seu e-mail" required>
+                    </div>
+                    <button type="submit" id="reset-button" class="btn btn-primary">Enviar Link</button>
+                </form>
             </div>
         </div>
-    </main>
+
+        <div class="toggle-panel">
+            <p>
+                <span id="toggle-text">Não tem uma conta?</span>
+                <a href="#" id="toggle-form-link">Registre-se agora</a>
+            </p>
+        </div>
+    </div>
+</main>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

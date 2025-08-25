@@ -14,5 +14,6 @@ router.route('/flashcards/:cardId')
     .delete(flashcardController.deleteFlashcard);
 
 router.post('/flashcards/:cardId/review', flashcardController.reviewFlashcard);
+router.post('/flashcards/:cardId/explain', flashcardController.getExplanation);
 
 module.exports = router;

@@ -28,3 +28,22 @@
     height: 300px;
     width: 100%;
 }
+
+.insights-card {
+    margin-top: 2.5rem;
+}
+
+.insights-card h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+#insights-content {
+    line-height: 1.8;
+    color: var(--text-color);
+}
+
+#insights-content strong {
+    color: var(--primary-color);
+}

@@ -1,20 +1,18 @@
 const supabase = require('../config/supabaseClient');
 const logger = require('../config/logger');
+const { generateStudyInsight } = require('../services/cohereService');
 
-// Retorna o número de revisões feitas nos últimos 7 dias
 const getReviewsLast7Days = async (req, res) => {
     const userId = req.user.id;
     try {
-        // Esta função RPC precisa ser criada no Supabase
         const { data, error } = await supabase.rpc('get_daily_review_counts', { user_id_param: userId });
 
         if (error) throw error;
 
-        // Formata os dados para o gráfico
         const labels = [];
         const counts = [];
         const date = new Date();
-        date.setDate(date.getDate() - 6); // Começa há 6 dias
+        date.setDate(date.getDate() - 6);
 
         for (let i = 0; i < 7; i++) {
             const dayString = date.toISOString().split('T')[0];
@@ -31,4 +29,20 @@ const getReviewsLast7Days = async (req, res) => {
     }
 };
 
-module.exports = { getReviewsLast7Days };
+const getPerformanceInsights = async (req, res) => {
+    const userId = req.user.id;
+    try {
+        const { data, error } = await supabase.rpc('get_performance_insights', { user_id_param: userId });
+
+        if (error) throw error;
+
+        const insight = await generateStudyInsight(data);
+
+        res.status(200).json({ insight });
+    } catch (error) {
+        logger.error(`Error fetching performance insights for user ${userId}: ${error.message}`);
+        res.status(500).json({ message: 'Erro ao gerar o insight de desempenho.', code: 'INTERNAL_SERVER_ERROR' });
+    }
+};
+
+module.exports = { getReviewsLast7Days, getPerformanceInsights };

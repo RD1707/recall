@@ -147,7 +147,6 @@ body {
     box-shadow: none;
 }
 
-/* --- Estilos do Modal --- */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -237,9 +236,8 @@ body {
     gap: 0.75rem;
 }
 
-/* --- Estilos do Skeleton Loader --- */
 .skeleton {
-    background-color: #e5e7eb; /* var(--border-color) */
+    background-color: #e5e7eb;
     position: relative;
     overflow: hidden;
     border-radius: var(--border-radius);
@@ -292,19 +290,18 @@ body {
     color: var(--primary-color);
 }
 
-/* --- Estilos de Validação --- */
 .form-group {
     position: relative;
     margin-bottom: 1.25rem;
 }
 
 .form-group .error-message {
-    color: #dc2626; /* Cor de erro, ex: vermelho */
+    color: #dc2626; 
     font-size: 0.8rem;
     position: absolute;
     bottom: -1.2rem;
     left: 0;
-    display: none; /* Escondido por padrão */
+    display: none;
 }
 
 input.is-invalid,

@@ -20,5 +20,6 @@ router.get('/:id/review', deckController.getReviewCardsForDeck);
 
 router.post('/:id/generate-from-file', upload.single('file'), deckController.generateCardsFromFile);
 router.post('/:id/share', deckController.shareDeck);
+router.post('/:id/generate-from-youtube', deckController.generateCardsFromYouTube);
 
 module.exports = router;

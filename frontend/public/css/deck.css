@@ -125,7 +125,7 @@
 }
 
 .flashcard {
-    flex-grow: 1; /* Faz o card ocupar o espaço disponível */
+    flex-grow: 1; 
 }
 
 .flashcard-actions {
@@ -151,7 +151,6 @@
     color: var(--primary-color);
 }
 
-/* Estilos para o skeleton do flashcard */
 .flashcard-skeleton {
     background-color: var(--white-color);
     border: 1px solid var(--border-color);
@@ -161,7 +160,7 @@
 
 .flashcard-skeleton .skeleton-text:first-child {
     width: 70%;
-    font-weight: 600; /* Para manter a altura correta */
+    font-weight: 600; 
 }
 
 .input-mode-selector {
@@ -219,6 +218,54 @@
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
+}
+
+.generate-card .processing-feedback {
+    text-align: center;
+    padding: 2rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+}
+
+.generate-card .processing-feedback .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--secondary-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem auto;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.generate-card .processing-feedback p {
+    color: var(--text-light);
+    font-weight: 500;
+    margin: 0;
+}
+
+@keyframes highlight-new {
+    0% {
+        background-color: var(--secondary-color);
+        transform: scale(1);
+    }
+    50% {
+        background-color: #d1fae5; 
+        transform: scale(1.02);
+    }
+    100% {
+        background-color: var(--white-color);
+        transform: scale(1);
+    }
+}
+
+.flashcard-list-item.new-card {
+    animation: highlight-new 2s ease-out;
 }
 
 @media (max-width: 992px) {

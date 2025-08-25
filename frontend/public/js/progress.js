@@ -1,22 +1,34 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadAnalyticsData();
+    loadInsightsData(); 
 });
 
 async function loadAnalyticsData() {
     const reviewsData = await fetchLast7DaysReviews();
-
+    const chartContainer = document.querySelector('.chart-container');
+    
     if (reviewsData && reviewsData.labels && reviewsData.counts) {
         renderReviewsChart(reviewsData.labels, reviewsData.counts);
     } else {
-        // Mostra uma mensagem de erro ou estado vazio se não houver dados
-        const chartContainer = document.querySelector('.chart-container');
-        chartContainer.innerHTML = '<p>Não foi possível carregar os dados ou ainda não há revisões registadas.</p>';
+        chartContainer.innerHTML = '<p>Não foi possível carregar os dados de revisões.</p>';
     }
 }
 
+async function loadInsightsData() {
+    const insightsContent = document.getElementById('insights-content');
+    const insightsData = await fetchPerformanceInsights();
+
+    if (insightsData && insightsData.insight) {
+        const formattedInsight = insightsData.insight.replace(/\n/g, '<br><br>');
+        insightsContent.innerHTML = `<p>${formattedInsight}</p>`;
+    } else {
+        insightsContent.innerHTML = '<p>Continue a estudar para receber insights personalizados do seu tutor IA!</p>';
+    }
+}
+
+
 function renderReviewsChart(labels, data) {
     const ctx = document.getElementById('reviewsChart').getContext('2d');
-
     new Chart(ctx, {
         type: 'bar',
         data: {
@@ -24,8 +36,8 @@ function renderReviewsChart(labels, data) {
             datasets: [{
                 label: 'Flashcards Revisados',
                 data: data,
-                backgroundColor: 'rgba(79, 70, 229, 0.5)', // Cor primária com transparência
-                borderColor: 'rgba(79, 70, 229, 1)', // Cor primária
+                backgroundColor: 'rgba(79, 70, 229, 0.5)',
+                borderColor: 'rgba(79, 70, 229, 1)',
                 borderWidth: 2,
                 borderRadius: 4,
             }]
@@ -37,13 +49,13 @@ function renderReviewsChart(labels, data) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        stepSize: 1 // Força o eixo Y a usar apenas números inteiros
+                        stepSize: 1
                     }
                 }
             },
             plugins: {
                 legend: {
-                    display: false // Esconde a legenda para um visual mais limpo
+                    display: false
                 }
             }
         }

@@ -1,5 +1,5 @@
 const supabase = require('../config/supabaseClient');
-const logger = require('../config/logger'); // Importe o logger
+const logger = require('../config/logger'); 
 
 const getProfile = async (req, res) => {
     try {

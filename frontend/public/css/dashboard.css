@@ -107,7 +107,6 @@
     margin-bottom: 0;
 }
 
-/* Estilos para o skeleton do deck card */
 .deck-card-skeleton {
     background-color: var(--white-color);
     border-radius: var(--border-radius);
@@ -118,13 +117,12 @@
 
 .deck-card-skeleton .skeleton-text:first-child {
     width: 60%;
-    height: 1.2rem; /* Altura do título */
+    height: 1.2rem; 
 }
 
-/* Ajustes no Deck Card para ações */
 .deck-card {
     position: relative;
-    padding-bottom: 4rem; /* Espaço para o botão de ações */
+    padding-bottom: 4rem; 
 }
 
 .deck-card-link {

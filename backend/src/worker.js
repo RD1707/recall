@@ -2,7 +2,7 @@ require('dotenv').config();
 const { Worker } = require('bullmq');
 const supabase = require('./config/supabaseClient');
 const { generateFlashcardsFromText } = require('./services/cohereService');
-const logger = require('./config/logger'); // Importar o logger
+const logger = require('./config/logger'); 
 const { connection } = require('./config/queue');
 
 const queueName = 'flashcardGeneration';
@@ -40,7 +40,7 @@ const worker = new Worker(queueName, async (job) => {
 
     } catch (error) {
         logger.error(`Tarefa ${job.id} falhou para o baralho ${deckId}: ${error.message}`);
-        throw error; // Lança o erro para que o BullMQ marque a tarefa como 'failed'
+        throw error; 
     }
 }, { connection });
 

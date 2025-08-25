@@ -56,6 +56,7 @@
                     <button class="btn quality-btn" data-quality="4" title="Lembrei com facilidade">Bom</button>
                     <button class="btn quality-btn" data-quality="5" title="Lembrei perfeitamente">Fácil</button>
                 </div>
+                <button id="explain-button" class="btn btn-secondary hidden">Me explique melhor</button>
             </div>
         </div>
 
@@ -67,6 +68,19 @@
                 <a href="dashboard.html" class="btn btn-primary">Ir para o Dashboard</a>
             </div>
         </section>
+        <div id="explanation-modal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2>Explicação</h2>
+                    <button id="close-explanation-modal-btn" class="close-btn" aria-label="Fechar modal">&times;</button>
+                </div>
+                <div class="modal-body" id="explanation-content">
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+            </div>
+        </div>
     </main>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

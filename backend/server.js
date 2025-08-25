@@ -19,7 +19,6 @@ app.get('/api', (req, res) => {
   res.json({ message: 'API do Recall está funcionando!' });
 });
 
-// Rotas da API
 app.use('/api/auth', authRoutes);
 app.use('/api/decks', deckRoutes);
 app.use('/api', flashcardRoutes); 

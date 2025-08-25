@@ -1,13 +1,5 @@
 const API_BASE_URL = '/api';
 
-/**
- * Função "Wrapper" Central para todas as chamadas à API.
- * Lida com a obtenção de tokens, configuração de cabeçalhos e tratamento de erros aprimorado.
- * @param {string} endpoint - O endpoint da API a ser chamado (ex: '/decks').
- * @param {string} [method='GET'] - O método HTTP a ser usado (GET, POST, PUT, DELETE).
- * @param {object|null} [body=null] - O corpo da requisição para métodos como POST ou PUT.
- * @returns {Promise<object|null>} - Os dados da resposta em JSON ou nulo em caso de erro.
- */
 async function apiCall(endpoint, method = 'GET', body = null) {
     const { data: { session } } = await _supabase.auth.getSession();
     if (!session) {
@@ -40,13 +32,10 @@ async function apiCall(endpoint, method = 'GET', body = null) {
         return response.status !== 204 ? await response.json() : { success: true };
     } catch (error) {
         console.error(`Erro na chamada à API para ${endpoint}:`, error.message);
-        // AQUI ESTÁ A MUDANÇA: substituindo alert() por showToast()
         showToast(error.message || 'Ocorreu um erro desconhecido. Por favor, tente novamente.', 'error');
         return null;
     }
 }
-
-// --- Funções da API Simplificadas ---
 
 async function fetchDecks() {
     return apiCall('/decks');
@@ -122,4 +111,16 @@ async function shareDeck(deckId) {
 
 async function updateDeck(deckId, title, description) {
     return apiCall(`/decks/${deckId}`, 'PUT', { title, description });
+}
+
+async function fetchExplanation(cardId) {
+    return apiCall(`/flashcards/${cardId}/explain`, 'POST');
+}
+
+async function generateFlashcardsFromYouTube(deckId, params) {
+    return apiCall(`/decks/${deckId}/generate-from-youtube`, 'POST', params);
+}
+
+async function fetchPerformanceInsights() {
+    return apiCall('/analytics/insights');
 }

@@ -137,7 +137,23 @@
     filter: brightness(0.95);
 }
 
-/* --- 6. Classes Utilitárias --- */
 .hidden {
     display: none;
+}
+
+#explain-button {
+    margin-top: 1.5rem;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+#explain-button:hover {
+    filter: brightness(0.95);
+}
+
+#explanation-content {
+    line-height: 1.7;
+    font-size: 1rem;
+    color: var(--text-color);
 }

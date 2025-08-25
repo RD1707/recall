@@ -6,5 +6,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.use(authMiddleware);
 
 router.get('/reviews-last-7-days', getReviewsLast7Days);
+router.get('/insights', getPerformanceInsights);
 
 module.exports = router;

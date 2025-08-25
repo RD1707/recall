@@ -1,11 +1,11 @@
 const supabase = require('../config/supabaseClient');
 const { generateFlashcardsFromText } = require('../services/cohereService');
 const { z } = require('zod');
-const logger = require('../config/logger'); // Importe o logger
+const logger = require('../config/logger'); 
 const { flashcardGenerationQueue } = require('../config/queue');
 const pdf = require('pdf-parse');
+const { YoutubeTranscript } = require('youtube-transcript');
 
-// --- Schemas de Validação ---
 
 const deckSchema = z.object({
   title: z.string({ required_error: 'O título é obrigatório.' }).min(1, 'O título não pode estar vazio.'),
@@ -18,7 +18,6 @@ const generateSchema = z.object({
     type: z.enum(['Pergunta e Resposta', 'Múltipla Escolha'])
 });
 
-// --- Funções do Controller ---
 
 const getDecks = async (req, res) => {
   const userId = req.user.id;
@@ -110,7 +109,6 @@ const generateCardsForDeck = async (req, res) => {
     try {
         const { textContent, count, type } = generateSchema.parse(req.body);
 
-        // Verifica se o baralho pertence ao utilizador
         const { data: deck, error: deckError } = await supabase
             .from('decks').select('id').eq('id', deckId).eq('user_id', userId).single();
 
@@ -118,7 +116,6 @@ const generateCardsForDeck = async (req, res) => {
             return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
         }
 
-        // Adiciona a tarefa à fila
         await flashcardGenerationQueue.add('generate', {
             deckId,
             userId,
@@ -127,14 +124,12 @@ const generateCardsForDeck = async (req, res) => {
             type
         });
 
-        // Responde imediatamente ao utilizador
         res.status(202).json({ message: 'Pedido de geração recebido! Os flashcards estão a ser criados em segundo plano.' });
 
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: error.errors[0].message, code: 'VALIDATION_ERROR' });
         }
-        // Substitua console.error por logger.error se tiver implementado a Fase 1
         console.error(`Erro ao adicionar tarefa à fila para o baralho ${deckId}: ${error.message}`);
         res.status(500).json({ message: 'Erro ao iniciar a geração dos flashcards.', code: 'QUEUE_ERROR' });
     }
@@ -177,13 +172,10 @@ const generateCardsFromFile = async (req, res) => {
 
         let textContent;
 
-        // Verifica o tipo de ficheiro (mimetype)
         if (req.file.mimetype === 'application/pdf') {
-            // Se for um PDF, usa o pdf-parse para extrair o texto
             const data = await pdf(req.file.buffer);
             textContent = data.text;
         } else {
-            // Para outros ficheiros (txt, md), converte o buffer diretamente
             textContent = req.file.buffer.toString('utf-8');
         }
 
@@ -219,13 +211,11 @@ const generateCardsFromFile = async (req, res) => {
     }
 };
 
-// Ativa o compartilhamento de um baralho
 const shareDeck = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
     try {
-        // Atualiza o baralho para is_shared = true e retorna o seu shareable_id
         const { data, error } = await supabase
             .from('decks')
             .update({ is_shared: true })
@@ -245,6 +235,49 @@ const shareDeck = async (req, res) => {
     }
 };
 
+const generateCardsFromYouTube = async (req, res) => {
+    const { id: deckId } = req.params;
+    const userId = req.user.id;
+    const { youtubeUrl } = req.body;
+
+    try {
+        if (!youtubeUrl) {
+            return res.status(400).json({ message: 'O URL do YouTube é obrigatório.', code: 'VALIDATION_ERROR' });
+        }
+
+        const { data: deck, error: deckError } = await supabase
+            .from('decks').select('id').eq('id', deckId).eq('user_id', userId).single();
+
+        if (deckError || !deck) {
+            return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
+        }
+
+        const transcript = await YoutubeTranscript.fetchTranscript(youtubeUrl);
+        if (!transcript || transcript.length === 0) {
+            return res.status(400).json({ message: 'Não foi possível encontrar uma transcrição para este vídeo. Tente um vídeo com legendas ativadas.', code: 'TRANSCRIPT_NOT_FOUND' });
+        }
+
+        const textContent = transcript.map(item => item.text).join(' ');
+
+        await flashcardGenerationQueue.add('generate-from-youtube', {
+            deckId,
+            userId,
+            textContent,
+            count: parseInt(req.body.count, 10) || 10, 
+            type: req.body.type || 'Pergunta e Resposta',
+        });
+
+        res.status(202).json({ message: 'Vídeo recebido! Os flashcards estão a ser extraídos da transcrição.' });
+
+    } catch (error) {
+        logger.error(`Erro ao processar URL do YouTube para o baralho ${deckId}: ${error.message}`);
+        if (error.message.includes('subtitles not available')) {
+             return res.status(400).json({ message: 'Não há legendas disponíveis para este vídeo.', code: 'TRANSCRIPT_NOT_FOUND' });
+        }
+        res.status(500).json({ message: 'Erro ao processar o vídeo do YouTube.', code: 'YOUTUBE_PROCESSING_ERROR' });
+    }
+};
+
 module.exports = {
   getDecks,
   createDeck,
@@ -253,5 +286,6 @@ module.exports = {
   generateCardsForDeck,
   getReviewCardsForDeck,
   generateCardsFromFile,
-  shareDeck  // <-- Adicione a nova função aqui
+  generateCardsFromYouTube,
+  shareDeck  
 };
