@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baralho - Recall</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/deck.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="dashboard.html">Recall</a>
+            </div>
+            <nav class="app-nav">
+                <div class="user-stats">
+                    <span class="user-stat"> <span id="user-points">0</span> Pontos</span>
+                    <span class="user-stat"> <span id="user-streak">0</span> Dias</span>
+                </div>
+                <div class="user-actions">
+                    <span id="user-email"></span>
+                    <button id="logout-button">Sair</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="deck-main">
+        <section class="deck-header" aria-labelledby="deck-title-heading">
+            <div class="deck-header-content">
+                <h1 id="deck-title-heading">Carregando baralho...</h1>
+                <p id="deck-description-paragraph"></p>
+                <div class="deck-actions">
+                    <a href="#" id="study-deck-button" class="btn btn-primary">Estudar este Baralho</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="deck-layout">
+            <aside class="deck-sidebar">
+                <div class="card generate-card">
+                    <h2>Gerar com IA</h2>
+                    <form id="generate-cards-form">
+                        <div class="form-group">
+                            <label for="text-content" class="sr-only">Cole seu texto aqui</label>
+                            <textarea id="text-content" placeholder="Cole seu texto, resumo ou transcrição aqui para a IA criar os flashcards..." rows="8" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="card-count">Número de Flashcards</label>
+                            <input type="number" id="card-count" value="5" min="1" max="15" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="card-type">Tipo de Flashcard</label>
+                            <select id="card-type" required>
+                                <option value="Pergunta e Resposta">Pergunta e Resposta</option>
+                                <option value="Múltipla Escolha">Múltipla Escolha</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="generate-button" class="btn btn-primary">Gerar Flashcards</button>
+                    </form>
+                </div>
+            </aside>
+
+            <section class="deck-content" aria-labelledby="flashcards-heading">
+                <h2 id="flashcards-heading">Flashcards no Baralho</h2>
+                <ul id="flashcards-container" class="flashcards-list">
+                    <li id="loading-flashcards"><p>Carregando flashcards...</p></li>
+                </ul>
+            </section>
+        </div>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/main.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/deck.js"></script> 
+</body>
+</html>
