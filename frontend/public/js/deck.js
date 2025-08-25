@@ -183,13 +183,20 @@ function handleGenerateForm(deckId) {
 // --- Lógica do Modal e Ações CRUD ---
 
 function setupEventListeners(deckId) {
+    // --- Modal de Edição ---
     const flashcardsContainer = document.getElementById('flashcards-container');
-    const modal = document.getElementById('edit-flashcard-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const cancelBtn = document.getElementById('cancel-edit-btn');
+    const editModal = document.getElementById('edit-flashcard-modal');
+    const closeEditModalBtn = editModal.querySelector('.close-btn');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
     const editForm = document.getElementById('edit-flashcard-form');
 
-    // Delegação de eventos para os botões de editar e excluir
+    // --- Modal de Compartilhamento ---
+    const shareButton = document.getElementById('share-deck-button');
+    const shareModal = document.getElementById('share-deck-modal');
+    const closeShareModalBtn = shareModal.querySelector('.close-btn');
+    const copyLinkButton = document.getElementById('copy-link-button');
+
+    // Delegação de eventos para editar/excluir flashcards
     flashcardsContainer.addEventListener('click', (e) => {
         const target = e.target;
         if (target.classList.contains('edit-btn')) {
@@ -202,15 +209,39 @@ function setupEventListeners(deckId) {
         }
     });
 
-    // Eventos para fechar o modal
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeEditModal(); // Fecha se clicar fora do conteúdo
-    });
-    closeModalBtn.addEventListener('click', closeEditModal);
-    cancelBtn.addEventListener('click', closeEditModal);
-    
-    // Evento para submeter o formulário de edição
+    // Eventos para fechar o modal de edição
+    editModal.addEventListener('click', (e) => { if (e.target === editModal) closeEditModal(); });
+    closeEditModalBtn.addEventListener('click', closeEditModal);
+    cancelEditBtn.addEventListener('click', closeEditModal);
     editForm.addEventListener('submit', (e) => handleEditFormSubmit(e, deckId));
+
+    // --- Novos Eventos para Compartilhamento ---
+    shareButton.addEventListener('click', () => handleShareDeck(deckId));
+    shareModal.addEventListener('click', (e) => { if (e.target === shareModal) closeShareModal(); });
+    closeShareModalBtn.addEventListener('click', closeShareModal);
+
+    copyLinkButton.addEventListener('click', () => {
+        const linkInput = document.getElementById('shareable-link-input');
+        navigator.clipboard.writeText(linkInput.value).then(() => {
+            copyLinkButton.textContent = 'Copiado!';
+            setTimeout(() => { copyLinkButton.textContent = 'Copiar'; }, 2000);
+        });
+    });
+}
+
+// Adicione estas novas funções ao seu arquivo `deck.js`
+async function handleShareDeck(deckId) {
+    const result = await shareDeck(deckId);
+    if (result && result.shareableId) {
+        const shareLink = `${window.location.origin}/shared-deck.html?id=${result.shareableId}`;
+        const linkInput = document.getElementById('shareable-link-input');
+        linkInput.value = shareLink;
+        document.getElementById('share-deck-modal').classList.add('visible');
+    }
+}
+
+function closeShareModal() {
+    document.getElementById('share-deck-modal').classList.remove('visible');
 }
 
 function openEditModal(cardId) {

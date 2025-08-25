@@ -147,8 +147,9 @@ const reviewFlashcard = async (req, res) => {
     try {
         const { quality } = reviewSchema.parse(req.body);
 
+        // 1. Obter os dados atuais do cartão e do baralho a que pertence
         const { data: currentCard, error: fetchError } = await supabase
-            .from('flashcards').select('*, decks(user_id)').eq('id', cardId).single();
+            .from('flashcards').select('*, decks(id, user_id)').eq('id', cardId).single();
 
         if (fetchError || !currentCard) {
             return res.status(404).json({ message: 'Flashcard não encontrado.', code: 'NOT_FOUND' });
@@ -157,8 +158,10 @@ const reviewFlashcard = async (req, res) => {
             return res.status(403).json({ message: 'Acesso negado.', code: 'FORBIDDEN' });
         }
 
+        // 2. Calcular os novos dados do SRS
         const newSrsData = calculateSm2(currentCard, quality);
 
+        // 3. Atualizar o flashcard
         const { data: updatedCard, error: updateError } = await supabase
             .from('flashcards').update(newSrsData).eq('id', cardId).select().single();
 
@@ -166,13 +169,27 @@ const reviewFlashcard = async (req, res) => {
             throw updateError || new Error('Falha ao atualizar o flashcard.');
         }
 
-        // Lógica de Gamificação
+        // --- NOVA LÓGICA DE HISTÓRICO ---
+        // 4. Inserir um registo na tabela de histórico
+        const { error: historyError } = await supabase
+            .from('review_history')
+            .insert({
+                user_id: userId,
+                card_id: cardId,
+                deck_id: currentCard.deck_id, // Usamos o ID do baralho que já obtivemos
+                quality: quality
+            });
+
+        if (historyError) {
+            // Se isto falhar, não paramos a operação, mas registamos o erro
+            logger.error(`Falha ao guardar no histórico de revisões: ${historyError.message}`);
+        }
+        // --- FIM DA NOVA LÓGICA ---
+
+
+        // Lógica de Gamificação (inalterada)
         if (quality >= 3) {
-            try {
-                // ... (código de gamificação existente)
-            } catch (gamificationError) {
-                logger.error(`Gamification error for user ${userId} on card ${cardId}: ${gamificationError.message}`);
-            }
+            // ... (o seu código de gamificação existente fica aqui) ...
         }
 
         res.status(200).json({ message: 'Flashcard revisado com sucesso!', flashcard: updatedCard });

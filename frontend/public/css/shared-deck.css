@@ -1,0 +1,9 @@
+/* Ajusta o layout para um único-coluna, já que não há barra lateral */
+.deck-layout {
+    grid-template-columns: 1fr;
+}
+
+/* Estilos para o cabeçalho público */
+.app-header .header-actions .btn {
+    font-size: 0.9rem;
+}

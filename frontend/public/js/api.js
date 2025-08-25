@@ -114,3 +114,11 @@ async function generateFlashcardsFromFile(deckId, formData) {
         return null;
     }
 }
+
+async function fetchLast7DaysReviews() {
+    return apiCall('/analytics/reviews-last-7-days');
+}
+
+async function shareDeck(deckId) {
+    return apiCall(`/decks/${deckId}/share`, 'POST');
+}

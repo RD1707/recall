@@ -209,6 +209,32 @@ const generateCardsFromFile = async (req, res) => {
     }
 };
 
+// Ativa o compartilhamento de um baralho
+const shareDeck = async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    try {
+        // Atualiza o baralho para is_shared = true e retorna o seu shareable_id
+        const { data, error } = await supabase
+            .from('decks')
+            .update({ is_shared: true })
+            .eq('id', id)
+            .eq('user_id', userId)
+            .select('shareable_id')
+            .single();
+
+        if (error) throw error;
+        if (!data) return res.status(404).json({ message: 'Baralho não encontrado.', code: 'NOT_FOUND' });
+
+        res.status(200).json({ shareableId: data.shareable_id });
+
+    } catch (error) {
+        logger.error(`Erro ao compartilhar o baralho ${id} para o utilizador ${userId}: ${error.message}`);
+        res.status(500).json({ message: 'Erro ao compartilhar o baralho.', code: 'INTERNAL_SERVER_ERROR' });
+    }
+};
+
 module.exports = {
   getDecks,
   createDeck,
@@ -216,5 +242,6 @@ module.exports = {
   deleteDeck,
   generateCardsForDeck,
   getReviewCardsForDeck,
-  generateCardsFromFile // <-- Adicione a nova função aqui
+  generateCardsFromFile,
+  shareDeck  // <-- Adicione a nova função aqui
 };

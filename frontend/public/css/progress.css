@@ -1,0 +1,30 @@
+.progress-main {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+}
+
+.progress-main h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.chart-card {
+    background-color: var(--white-color);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.chart-card h2 {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}

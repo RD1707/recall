@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baralho Compartilhado - Recall</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/deck.css">
+    <link rel="stylesheet" href="css/shared-deck.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">Recall</a>
+            </div>
+            <div class="header-actions">
+                <a href="login.html" class="btn btn-primary">Crie o seu Grátis</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="deck-main">
+        <section class="deck-header">
+            <div class="deck-header-content">
+                <h1 id="deck-title-heading">A carregar baralho...</h1>
+                <p id="deck-description-paragraph"></p>
+            </div>
+        </section>
+
+        <section class="deck-content" aria-labelledby="flashcards-heading">
+            <h2 id="flashcards-heading">Flashcards no Baralho</h2>
+            <ul id="flashcards-container" class="flashcards-list">
+                </ul>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/shared-deck.js"></script>
+</body>
+</html>

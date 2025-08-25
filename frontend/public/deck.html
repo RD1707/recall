@@ -22,6 +22,7 @@
                     <span id="user-email"></span>
                     <button id="logout-button">Sair</button>
                 </div>
+                <a href="progress.html" class="nav-link">Meu Progresso</a>
             </nav>
         </div>
     </header>
@@ -33,6 +34,7 @@
                 <p id="deck-description-paragraph"></p>
                 <div class="deck-actions">
                     <a href="#" id="study-deck-button" class="btn btn-primary">Estudar este Baralho</a>
+                    <button id="share-deck-button" class="btn">Compartilhar</button> </div>
                 </div>
             </div>
         </section>
@@ -119,5 +121,21 @@
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/deck.js"></script> 
+
+    <div id="share-deck-modal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Compartilhar Baralho</h2>
+            <button class="close-btn" data-close-modal="share-deck-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Qualquer pessoa com este link poderá ver o seu baralho.</p>
+            <div class="share-link-container">
+                <input type="text" id="shareable-link-input" readonly>
+                <button id="copy-link-button">Copiar</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
