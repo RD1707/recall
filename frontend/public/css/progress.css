@@ -1,3 +1,9 @@
+/*
+ * Arquivo: progress.css
+ * Descrição: Estilos para a página de progresso, reformulados para um design mais limpo e moderno.
+ * Baseado nas variáveis e no sistema de design de base.css.
+*/
+
 .progress-main {
     max-width: var(--container-width);
     margin: 0 auto;
@@ -7,41 +13,53 @@
 .progress-main h1 {
     font-size: 1.75rem;
     margin-bottom: 1.5rem;
+    color: var(--dark-color);
 }
 
 .chart-card {
     background-color: var(--white-color);
-    border-radius: var(--border-radius);
-    padding: 2rem;
+    border-radius: var(--border-radius-md);
+    padding: 2.5rem;
     border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
 }
 
 .chart-card h2 {
     font-size: 1.25rem;
     margin-bottom: 2rem;
     text-align: center;
+    color: var(--dark-color);
 }
 
 .chart-container {
     position: relative;
-    height: 300px;
+    height: 350px;
     width: 100%;
 }
 
 .insights-card {
     margin-top: 2.5rem;
+    background-color: var(--white-color);
+    border-radius: var(--border-radius-md);
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
 }
 
 .insights-card h2 {
     font-size: 1.25rem;
     margin-bottom: 1.5rem;
     text-align: center;
+    color: var(--dark-color);
 }
 
 #insights-content {
     line-height: 1.8;
     color: var(--text-color);
+}
+
+#insights-content p {
+    margin-bottom: 0;
 }
 
 #insights-content strong {

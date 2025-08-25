@@ -22,54 +22,71 @@
 }
 
 #deck-title-heading {
-    font-size: 2rem;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
     color: var(--dark-color);
     margin-bottom: 0.5rem;
+    font-weight: 700;
 }
 
 #deck-description-paragraph {
-    font-size: 1rem;
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
     color: var(--text-light);
     max-width: 700px; 
     margin-bottom: 1.5rem;
 }
 
+.deck-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
 .deck-layout {
     display: grid;
-    grid-template-columns: 300px 1fr; 
+    grid-template-columns: 320px 1fr; 
     gap: 2.5rem;
     align-items: start;
 }
 
 .deck-sidebar .generate-card {
     background-color: var(--white-color);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
+    border-radius: var(--border-radius-md);
+    padding: 2rem;
     border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-md);
     position: sticky;
-    top: 100px; 
+    top: 90px;
 }
 
 .generate-card h2 {
     font-size: 1.25rem;
     margin-bottom: 1rem;
+    text-align: center;
 }
 
-#generate-cards-form textarea {
+#generate-cards-form textarea,
+#generate-cards-form input[type="url"],
+#generate-cards-form input[type="file"],
+#generate-cards-form input[type="number"],
+#generate-cards-form select {
     width: 100%;
     padding: 0.8rem 1rem;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-sm);
     font-size: 0.9rem;
-    font-family: var(--font-family);
-    transition: border-color 0.2s, box-shadow 0.2s;
-    resize: vertical;
-    min-height: 150px;
+    font-family: var(--font-family-primary);
+    transition: all 0.2s ease;
     margin-bottom: 1rem;
 }
 
-#generate-cards-form textarea:focus {
+#generate-cards-form textarea {
+    resize: vertical;
+    min-height: 150px;
+}
+
+#generate-cards-form input:focus,
+#generate-cards-form textarea:focus,
+#generate-cards-form select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px var(--secondary-color);
@@ -77,32 +94,28 @@
 
 #generate-button {
     width: 100%; 
-}
-
-#generate-button:disabled {
-    background-color: #9ca3af;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    border-radius: var(--border-radius-sm);
 }
 
 .deck-content h2 {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
+    font-weight: 700;
 }
 
 .flashcards-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
+    padding: 0;
 }
 
 .flashcard {
     background-color: var(--white-color);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 1.25rem 1.5rem;
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
     box-shadow: var(--shadow-sm);
 }
 
@@ -110,18 +123,26 @@
     font-weight: 600;
     color: var(--dark-color);
     margin-bottom: 0.75rem;
+    line-height: 1.5;
 }
 
 .flashcard .answer {
     color: var(--text-light);
     font-size: 0.95rem;
     margin: 0;
+    line-height: 1.6;
 }
 
 .flashcard-list-item {
     display: flex;
     align-items: center;
     gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.flashcard-list-item:hover .flashcard {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
 }
 
 .flashcard {
@@ -138,29 +159,34 @@
     background-color: transparent;
     border: 1px solid var(--border-color);
     color: var(--text-light);
-    padding: 0.4rem 0.8rem;
-    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    border-radius: 50%;
     cursor: pointer;
     font-size: 0.8rem;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .action-btn:hover {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     border-color: var(--primary-color);
-    color: var(--primary-color);
+    color: var(--white-color);
 }
 
 .flashcard-skeleton {
     background-color: var(--white-color);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    padding: 1.25rem 1.5rem;
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
 }
 
 .flashcard-skeleton .skeleton-text:first-child {
     width: 70%;
-    font-weight: 600; 
+    height: 1.25em;
+    margin-bottom: 1rem;
 }
 
 .input-mode-selector {
@@ -171,12 +197,14 @@
 
 .input-mode-btn {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0.6rem;
     background-color: var(--secondary-color);
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
     transition: all 0.2s ease;
+    font-weight: 500;
+    color: var(--text-color);
 }
 
 .input-mode-btn.active {
@@ -186,14 +214,16 @@
 }
 
 #file-input-area {
-    padding: 1rem;
+    padding: 2rem;
     border: 2px dashed var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-sm);
     text-align: center;
+    color: var(--text-light);
+    transition: border-color 0.2s ease;
 }
 
-.hidden {
-    display: none;
+#file-input-area:hover {
+    border-color: var(--primary-color);
 }
 
 .share-link-container {
@@ -204,19 +234,20 @@
 
 #shareable-link-input {
     width: 100%;
-    padding: 0.5rem 0.8rem;
+    padding: 0.75rem 1rem;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-sm);
     background-color: var(--background-color);
     font-size: 0.9rem;
+    color: var(--text-color);
 }
 
 #copy-link-button {
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
     background-color: var(--primary-color);
     color: var(--white-color);
     border: none;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
 }
 
@@ -224,7 +255,8 @@
     text-align: center;
     padding: 2rem 1rem;
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
 }
 
 .generate-card .processing-feedback .spinner {
@@ -234,7 +266,7 @@
     border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin: 0 auto 1rem auto;
+    margin: 0 auto 1.5rem auto;
 }
 
 @keyframes spin {
@@ -251,21 +283,25 @@
 
 @keyframes highlight-new {
     0% {
-        background-color: var(--secondary-color);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
         transform: scale(1);
     }
     50% {
-        background-color: #d1fae5; 
+        box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
         transform: scale(1.02);
     }
     100% {
-        background-color: var(--white-color);
+        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
         transform: scale(1);
     }
 }
 
-.flashcard-list-item.new-card {
+.flashcard-list-item.new-card .flashcard {
     animation: highlight-new 2s ease-out;
+}
+
+.hidden {
+    display: none;
 }
 
 @media (max-width: 992px) {

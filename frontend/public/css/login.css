@@ -1,3 +1,9 @@
+/*
+ * Arquivo: login.css
+ * Descrição: Estilos para a página de login/registro, reformulados para um design mais limpo e moderno.
+ * Baseado nas variáveis e no sistema de design de base.css.
+*/
+
 .login-main {
     display: flex;
     flex-direction: column;
@@ -6,12 +12,12 @@
     min-height: 100vh;
     width: 100%;
     padding: 1.5rem;
-    background-color: var(--background-color); 
+    background-color: var(--background-color);
 }
 
 .login-container {
     width: 100%;
-    max-width: 400px; 
+    max-width: 450px;
 }
 
 .login-logo {
@@ -24,58 +30,63 @@
     font-weight: 700;
     color: var(--dark-color);
     text-decoration: none;
+    font-family: var(--font-family-secondary);
 }
 
 .login-card {
     background-color: var(--white-color);
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-md);
     padding: 2.5rem;
     border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s ease;
+}
+
+.login-card:hover {
+    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .login-card h1 {
     font-size: 1.75rem;
     text-align: center;
     margin-bottom: 2rem;
+    color: var(--dark-color);
 }
 
-#auth-form {
+#auth-form,
+#reset-password-form,
+#update-password-form {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
 }
 
-#auth-form input {
-    width: 100%;
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
+#auth-form .form-group input,
+#reset-password-form .form-group input,
+#update-password-form .form-group input {
+    padding: 0.9rem 1.25rem;
+    border-radius: var(--border-radius-sm);
     font-size: 1rem;
-    font-family: var(--font-family);
-    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: var(--font-family-primary);
 }
 
-#auth-form input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--secondary-color);
-}
-
-#auth-form button {
+#auth-form button,
+#reset-password-form button,
+#update-password-form button {
     width: 100%;
-    margin-top: 0.5rem; 
+    margin-top: 0.5rem;
 }
 
 .error-message {
     color: #dc2626; 
     background-color: #fee2e2;
     border: 1px solid #fca5a5;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-sm);
     padding: 0.75rem 1rem;
     font-size: 0.875rem;
     text-align: center;
-    display: none; 
+    display: none;
+    margin-bottom: 1.25rem; 
 }
 
 .error-message:not(:empty) {
@@ -92,6 +103,7 @@
     font-weight: 600;
     text-decoration: none;
     transition: color 0.2s;
+    color: var(--primary-color);
 }
 
 .toggle-panel a:hover {
@@ -104,6 +116,12 @@
     font-size: 0.875rem;
     margin-bottom: 1rem;
     margin-top: -0.75rem; 
+    color: var(--text-light);
+    transition: color 0.2s;
+}
+
+.forgot-password:hover {
+    color: var(--primary-color);
 }
 
 #reset-password-panel .reset-info {
