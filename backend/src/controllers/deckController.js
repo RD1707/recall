@@ -3,6 +3,7 @@ const { generateFlashcardsFromText } = require('../services/cohereService');
 const { z } = require('zod');
 const logger = require('../config/logger'); // Importe o logger
 const { flashcardGenerationQueue } = require('../config/queue');
+const pdf = require('pdf-parse');
 
 // --- Schemas de Validação ---
 
@@ -170,18 +171,28 @@ const generateCardsFromFile = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        // O multer adiciona o objeto `file` ao `req`
         if (!req.file) {
             return res.status(400).json({ message: 'Nenhum ficheiro foi enviado.', code: 'VALIDATION_ERROR' });
         }
 
-        // O conteúdo do ficheiro está em `req.file.buffer`
-        const textContent = req.file.buffer.toString('utf-8');
+        let textContent;
 
-        // Os outros parâmetros vêm do corpo do formulário
+        // Verifica o tipo de ficheiro (mimetype)
+        if (req.file.mimetype === 'application/pdf') {
+            // Se for um PDF, usa o pdf-parse para extrair o texto
+            const data = await pdf(req.file.buffer);
+            textContent = data.text;
+        } else {
+            // Para outros ficheiros (txt, md), converte o buffer diretamente
+            textContent = req.file.buffer.toString('utf-8');
+        }
+
+        if (!textContent) {
+             return res.status(400).json({ message: 'Não foi possível extrair texto do ficheiro.', code: 'TEXT_EXTRACTION_FAILED' });
+        }
+
         const { count, type } = generateSchema.partial().parse(req.body);
 
-        // Verifica a posse do baralho
         const { data: deck, error: deckError } = await supabase
             .from('decks').select('id').eq('id', deckId).eq('user_id', userId).single();
 
@@ -189,13 +200,12 @@ const generateCardsFromFile = async (req, res) => {
             return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
         }
 
-        // Adiciona a tarefa à mesma fila de antes
         await flashcardGenerationQueue.add('generate-from-file', {
             deckId,
             userId,
             textContent,
-            count: parseInt(count, 10) || 5, // Valor padrão caso não seja enviado
-            type: type || 'Pergunta e Resposta', // Valor padrão
+            count: parseInt(count, 10) || 5,
+            type: type || 'Pergunta e Resposta',
         });
 
         res.status(202).json({ message: 'Ficheiro recebido! Os flashcards estão a ser criados em segundo plano.' });
