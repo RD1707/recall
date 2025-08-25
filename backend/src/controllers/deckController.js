@@ -165,11 +165,56 @@ const getReviewCardsForDeck = async (req, res) => {
     }
 };
 
+const generateCardsFromFile = async (req, res) => {
+    const { id: deckId } = req.params;
+    const userId = req.user.id;
+
+    try {
+        // O multer adiciona o objeto `file` ao `req`
+        if (!req.file) {
+            return res.status(400).json({ message: 'Nenhum ficheiro foi enviado.', code: 'VALIDATION_ERROR' });
+        }
+
+        // O conteúdo do ficheiro está em `req.file.buffer`
+        const textContent = req.file.buffer.toString('utf-8');
+
+        // Os outros parâmetros vêm do corpo do formulário
+        const { count, type } = generateSchema.partial().parse(req.body);
+
+        // Verifica a posse do baralho
+        const { data: deck, error: deckError } = await supabase
+            .from('decks').select('id').eq('id', deckId).eq('user_id', userId).single();
+
+        if (deckError || !deck) {
+            return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
+        }
+
+        // Adiciona a tarefa à mesma fila de antes
+        await flashcardGenerationQueue.add('generate-from-file', {
+            deckId,
+            userId,
+            textContent,
+            count: parseInt(count, 10) || 5, // Valor padrão caso não seja enviado
+            type: type || 'Pergunta e Resposta', // Valor padrão
+        });
+
+        res.status(202).json({ message: 'Ficheiro recebido! Os flashcards estão a ser criados em segundo plano.' });
+
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({ message: error.errors[0].message, code: 'VALIDATION_ERROR' });
+        }
+        logger.error(`Erro ao processar ficheiro para o baralho ${deckId}: ${error.message}`);
+        res.status(500).json({ message: 'Erro ao processar o ficheiro.', code: 'FILE_PROCESSING_ERROR' });
+    }
+};
+
 module.exports = {
   getDecks,
   createDeck,
   updateDeck,
   deleteDeck,
   generateCardsForDeck,
-  getReviewCardsForDeck
+  getReviewCardsForDeck,
+  generateCardsFromFile // <-- Adicione a nova função aqui
 };

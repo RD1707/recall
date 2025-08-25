@@ -78,60 +78,104 @@ async function loadAndRenderFlashcards(deckId) {
 function handleGenerateForm(deckId) {
     const form = document.getElementById('generate-cards-form');
     const button = document.getElementById('generate-button');
-    const textarea = document.getElementById('text-content');
     const cardCountInput = document.getElementById('card-count');
     const cardTypeSelect = document.getElementById('card-type');
 
+    // Elementos do seletor de modo
+    const modeSelector = form.querySelector('.input-mode-selector');
+    const textInputArea = document.getElementById('text-input-area');
+    const fileInputArea = document.getElementById('file-input-area');
+    const textarea = document.getElementById('text-content');
+    const fileInput = document.getElementById('file-content');
+
+    let currentMode = 'text'; // 'text' ou 'file'
+
+    // Lógica para alternar entre os modos
+    modeSelector.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+
+        currentMode = e.target.dataset.mode;
+
+        // Atualiza a aparência dos botões
+        form.querySelectorAll('.input-mode-btn').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+
+        // Mostra/esconde as áreas de input
+        if (currentMode === 'text') {
+            textInputArea.classList.remove('hidden');
+            fileInputArea.classList.add('hidden');
+        } else {
+            textInputArea.classList.add('hidden');
+            fileInputArea.classList.remove('hidden');
+        }
+    });
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const textContent = textarea.value.trim();
-        if (!textContent) return;
-        
-        const generationParams = {
-            textContent,
-            count: parseInt(cardCountInput.value, 10),
-            type: cardTypeSelect.value,
-        };
 
         button.disabled = true;
         button.textContent = 'A Enviar...';
 
+        let result;
         try {
-            const result = await generateFlashcards(deckId, generationParams);
+            if (currentMode === 'text') {
+                // --- Lógica para submissão de TEXTO ---
+                const textContent = textarea.value.trim();
+                if (!textContent) {
+                    alert('Por favor, cole algum texto.');
+                    return;
+                }
+                const params = {
+                    textContent,
+                    count: parseInt(cardCountInput.value, 10),
+                    type: cardTypeSelect.value,
+                };
+                result = await generateFlashcards(deckId, params);
 
+            } else {
+                // --- Lógica para submissão de FICHEIRO ---
+                const file = fileInput.files[0];
+                if (!file) {
+                    alert('Por favor, selecione um ficheiro.');
+                    return;
+                }
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('count', cardCountInput.value);
+                formData.append('type', cardTypeSelect.value);
+                result = await generateFlashcardsFromFile(deckId, formData);
+            }
+
+            // --- Lógica de feedback e polling (comum a ambos) ---
             if (result) {
-                // A API respondeu 202 (Accepted)
                 textarea.value = '';
-                alert('Os flashcards estão a ser gerados! A lista será atualizada em breve.');
-                
-                // Esconde o formulário e mostra uma mensagem de processamento
+                fileInput.value = ''; // Limpa o seletor de ficheiro
+                alert('Pedido recebido! Os flashcards estão a ser gerados e a lista será atualizada em breve.');
+
                 form.style.display = 'none';
                 const processingMessage = document.createElement('p');
                 processingMessage.id = 'processing-msg';
-                processingMessage.textContent = 'A processar... por favor, aguarde.';
+                processingMessage.textContent = 'A IA está a trabalhar... por favor, aguarde.';
                 form.parentElement.appendChild(processingMessage);
 
-                // Inicia o "polling": verifica a cada 5 segundos se os flashcards chegaram
                 const initialCardCount = currentFlashcards.length;
                 const pollInterval = setInterval(async () => {
-                    await loadAndRenderFlashcards(deckId);
-                    if (currentFlashcards.length > initialCardCount) {
-                        clearInterval(pollInterval); // Para de verificar
-                        // Restaura o formulário
+                    const newCards = await fetchFlashcards(deckId); // Busca os dados atualizados
+                    if (newCards && newCards.length > initialCardCount) {
+                        clearInterval(pollInterval);
+                        await loadAndRenderFlashcards(deckId); // Renderiza a lista completa
                         form.style.display = 'block';
                         document.getElementById('processing-msg').remove();
-                        button.disabled = false;
-                        button.textContent = 'Gerar Flashcards';
                     }
                 }, 5000); // 5 segundos
-            } else {
-                 // Se a API falhou ao adicionar à fila
+            }
+        } catch (error) {
+            // O erro já é mostrado pelo apiCall
+        } finally {
+            if (!result) { // Apenas reativa se o pedido inicial falhar
                 button.disabled = false;
                 button.textContent = 'Gerar Flashcards';
             }
-        } catch (error) {
-            button.disabled = false;
-            button.textContent = 'Gerar Flashcards';
         }
     });
 }

@@ -83,3 +83,34 @@ async function fetchProfile() {
 async function deleteFlashcard(cardId) {
     return apiCall(`/flashcards/${cardId}`, 'DELETE');
 }
+
+async function generateFlashcardsFromFile(deckId, formData) {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) {
+        window.location.href = 'index.html';
+        return null;
+    }
+
+    const headers = {
+        'Authorization': `Bearer ${session.access_token}`
+    };
+
+    const config = {
+        method: 'POST',
+        headers,
+        body: formData
+    };
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/decks/${deckId}/generate-from-file`, config);
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: `Erro no servidor (Status: ${response.status})` }));
+            throw new Error(errorData.message || `Falha ao carregar o ficheiro.`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error(`Erro na chamada à API de upload:`, error.message);
+        alert(error.message || 'Ocorreu um erro desconhecido. Por favor, tente novamente.');
+        return null;
+    }
+}

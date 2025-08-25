@@ -42,10 +42,21 @@
                 <div class="card generate-card">
                     <h2>Gerar com IA</h2>
                     <form id="generate-cards-form">
-                        <div class="form-group">
-                            <label for="text-content" class="sr-only">Cole seu texto aqui</label>
-                            <textarea id="text-content" placeholder="Cole seu texto, resumo ou transcrição aqui para a IA criar os flashcards..." rows="8" required></textarea>
+                        <div class="input-mode-selector">
+                            <button type="button" class="input-mode-btn active" data-mode="text">Colar Texto</button>
+                            <button type="button" class="input-mode-btn" data-mode="file">Carregar Ficheiro</button>
                         </div>
+
+                        <div id="text-input-area" class="form-group">
+                            <label for="text-content" class="sr-only">Cole o seu texto aqui</label>
+                            <textarea id="text-content" placeholder="Cole o seu texto, resumo ou transcrição aqui para a IA criar os flashcards..." rows="8"></textarea>
+                        </div>
+
+                        <div id="file-input-area" class="form-group hidden">
+                            <label for="file-content">Selecione um ficheiro (.txt, .md)</label>
+                            <input type="file" id="file-content" accept=".txt,.md">
+                        </div>
+
                         <div class="form-group">
                             <label for="card-count">Número de Flashcards</label>
                             <input type="number" id="card-count" value="5" min="1" max="15" required>
