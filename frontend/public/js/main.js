@@ -127,7 +127,7 @@ async function updateProfileHeader() {
 }
 async function routeGuard() {
     const { data: { session } } = await _supabase.auth.getSession();
-    const isAuthPage = window.location.pathname.endsWith('index.html') || window.location.pathname === '/';
+    const isAuthPage = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('login.html') || window.location.pathname === '/';
 
     if (session) {
 

@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 
@@ -13,6 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
+app.use(express.static(path.join(__dirname, '../frontend/public')));
 app.use(express.json());
 
 app.get('/api', (req, res) => {
@@ -24,7 +26,11 @@ app.use('/api/decks', deckRoutes);
 app.use('/api', flashcardRoutes); 
 app.use('/api/profile', profileRoutes);
 app.use('/api/analytics', analyticsRoutes);
-app.use('/api', shareRoutes); 
+app.use('/api', shareRoutes);
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/public/index.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);

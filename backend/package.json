@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "worker": "node src/worker.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npm start\" \"npm run worker\""
   },
   "author": "simple",
   "license": "MIT",
@@ -23,5 +23,8 @@
     "winston": "^3.13.0",
     "youtube-transcript": "^1.0.6",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

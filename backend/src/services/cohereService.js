@@ -4,6 +4,7 @@ const cohere = new CohereClient({
     token: process.env.COHERE_API_KEY,
 });
 
+// FUNÇÃO ATUALIZADA
 const generateFlashcardsFromText = async (textContent, count = 5, type = 'Pergunta e Resposta') => {
     
     let promptInstruction = '';
@@ -13,7 +14,7 @@ const generateFlashcardsFromText = async (textContent, count = 5, type = 'Pergun
         promptInstruction = `Cada flashcard deve ser um objeto com as chaves "question" e "answer".`;
     }
     
-    const prompt = `
+    const message = `
         Baseado no texto a seguir, gere ${count} flashcards no formato de um array JSON.
         ${promptInstruction}
         A pergunta deve ser clara e direta, e a resposta deve ser concisa.
@@ -25,16 +26,19 @@ const generateFlashcardsFromText = async (textContent, count = 5, type = 'Pergun
     `;
 
     try {
-        const response = await cohere.generate({
+        const response = await cohere.chat({
             model: 'command-r', 
-            prompt: prompt,
-            max_tokens: 1500, 
-            temperature: 0.4, 
+            message: message,
+            temperature: 0.3, 
         });
 
-        const jsonResponseText = response.generations[0].text.trim();
+        // MUDANÇA: Limpar a resposta da IA antes de fazer o parse
+        const cleanedResponse = response.text
+            .trim()
+            .replace(/^```json\s*/, '') // Remove o ```json do início
+            .replace(/```$/, '');       // Remove o ``` do final
 
-        const flashcards = JSON.parse(jsonResponseText);
+        const flashcards = JSON.parse(cleanedResponse);
 
         if (!Array.isArray(flashcards)) {
             throw new Error("A resposta da IA não é um array JSON válido.");
@@ -43,13 +47,15 @@ const generateFlashcardsFromText = async (textContent, count = 5, type = 'Pergun
         return flashcards;
 
     } catch (error) {
-        console.error("Erro ao gerar ou processar flashcards da Cohere:", error);
+        console.error("Erro detalhado da API Cohere ao gerar flashcards:", error);
         return null;
     }
 };
 
+// As outras funções permanecem iguais, pois não fazem parse de JSON
+
 const getExplanationForFlashcard = async (question, answer) => {
-    const prompt = `
+    const message = `
         Com base na seguinte pergunta e resposta de um flashcard, explique o conceito principal de forma clara, concisa e didática, como se fosse para um estudante.
         A explicação deve ter no máximo 3 ou 4 frases. Não comece com "A resposta está correta porque..." ou algo semelhante. Vá direto ao ponto.
 
@@ -60,14 +66,13 @@ const getExplanationForFlashcard = async (question, answer) => {
     `;
 
     try {
-        const response = await cohere.generate({
+        const response = await cohere.chat({
             model: 'command-r',
-            prompt: prompt,
-            max_tokens: 250,
+            message: message,
             temperature: 0.5,
         });
 
-        return response.generations[0].text.trim();
+        return response.text.trim();
 
     } catch (error) {
         console.error("Erro ao gerar explicação da Cohere:", error);
@@ -82,7 +87,7 @@ const generateStudyInsight = async (performanceData) => {
 
     const topics = performanceData.map(d => `- **${d.deck_title}** (com aproximadamente ${Math.round(d.error_rate)}% de erro)`).join('\n');
 
-    const prompt = `
+    const message = `
         Aja como um tutor de estudos amigável e motivador. Com base nos seguintes dados de desempenho de um utilizador, onde ele está a ter mais dificuldade, gere um insight construtivo e uma sugestão de estudo.
         O texto deve ser curto (2-3 parágrafos), encorajador e prático. Não use jargões.
 
@@ -94,13 +99,12 @@ const generateStudyInsight = async (performanceData) => {
     `;
 
     try {
-        const response = await cohere.generate({
+        const response = await cohere.chat({
             model: 'command-r',
-            prompt: prompt,
-            max_tokens: 400,
+            message: message,
             temperature: 0.6,
         });
-        return response.generations[0].text.trim();
+        return response.text.trim();
     } catch (error) {
         console.error("Erro ao gerar insight da Cohere:", error);
         return "Não foi possível gerar um insight neste momento. Continue com o bom trabalho!";

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getReviewsLast7Days } = require('../controllers/analyticsController');
+const { getReviewsLast7Days, getPerformanceInsights } = require('../controllers/analyticsController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.use(authMiddleware);

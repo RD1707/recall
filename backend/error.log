@@ -1,0 +1,10 @@
+{"level":"error","message":"Error creating deck for user 6c43ec04-487a-438e-a847-39778f978f43: new row violates row-level security policy for table \"decks\"","service":"recall-api","timestamp":"2025-08-25 15:20:24"}
+{"level":"error","message":"Error creating deck for user 6c43ec04-487a-438e-a847-39778f978f43: new row violates row-level security policy for table \"decks\"","service":"recall-api","timestamp":"2025-08-25 15:21:34"}
+{"level":"error","message":"Error creating deck for user 6c43ec04-487a-438e-a847-39778f978f43: new row violates row-level security policy for table \"decks\"","service":"recall-api","timestamp":"2025-08-25 15:23:25"}
+{"level":"error","message":"Error creating deck for user 6c43ec04-487a-438e-a847-39778f978f43: new row violates row-level security policy for table \"decks\"","service":"recall-api","timestamp":"2025-08-25 15:23:52"}
+{"level":"error","message":"Tarefa 1 falhou para o baralho 9a21a36b-bde4-4d7b-b918-29eec3bc3530: Serviço de IA falhou ao gerar flashcards.","service":"recall-api","timestamp":"2025-08-25 15:27:58"}
+{"level":"error","message":"Tarefa 1 falhou com o erro: Serviço de IA falhou ao gerar flashcards.","service":"recall-api","timestamp":"2025-08-25 15:27:58"}
+{"level":"error","message":"Tarefa 2 falhou para o baralho 9a21a36b-bde4-4d7b-b918-29eec3bc3530: Serviço de IA falhou ao gerar flashcards.","service":"recall-api","timestamp":"2025-08-25 15:33:10"}
+{"level":"error","message":"Tarefa 2 falhou com o erro: Serviço de IA falhou ao gerar flashcards.","service":"recall-api","timestamp":"2025-08-25 15:33:10"}
+{"level":"error","message":"Tarefa 3 falhou para o baralho 9a21a36b-bde4-4d7b-b918-29eec3bc3530: Serviço de IA falhou ao gerar flashcards.","service":"recall-api","timestamp":"2025-08-25 15:35:31"}
+{"level":"error","message":"Tarefa 3 falhou com o erro: Serviço de IA falhou ao gerar flashcards.","service":"recall-api","timestamp":"2025-08-25 15:35:31"}
