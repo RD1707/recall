@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "API para a plataforma de estudos com IA Recall, responsável por gerenciar usuários, baralhos, flashcards e integração com serviços externos.",
   "main": "server.js",
-"scripts": {
-  "start": "node server.js",
-  "worker": "node src/worker.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
+  "scripts": {
+    "start": "node server.js",
+    "worker": "node src/worker.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "author": "simple",
   "license": "MIT",
-   "dependencies": {
+  "dependencies": {
     "@supabase/supabase-js": "^2.44.4",
     "bullmq": "^5.8.2",
     "cohere-ai": "^7.10.0",
@@ -19,6 +19,7 @@
     "express": "^4.19.2",
     "ioredis": "^5.4.1",
     "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^1.1.1",
     "winston": "^3.13.0",
     "zod": "^3.23.8"
   }
