@@ -88,7 +88,7 @@
     border-radius: var(--border-radius-md);
     box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
     border: 1px solid var(--border-color);
-    overflow: hidden;
+    overflow: hidden; /* Garante que os filhos respeitem o border-radius */
 }
 
 .flip-card-front {
@@ -117,7 +117,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow-y: auto;
+    overflow-y: auto; /* A SOLUÇÃO PARA TEXTOS LONGOS */
 }
 
 .card-text {
@@ -159,47 +159,11 @@
 .card-feedback-overlay.bom { color: #22c55e; }
 .card-feedback-overlay.facil { color: var(--primary-color); }
 
-/* --- Botão "Me Explique Melhor" (IA) --- */
-.btn-explain-ai {
-    position: absolute;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(5px);
-    border: 1px solid var(--border-color);
-    border-radius: 999px;
-    padding: 0.5rem 1rem;
-    color: var(--primary-color);
-    font-weight: 600;
-    font-size: 0.875rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-    z-index: 5;
-}
-
-.btn-explain-ai:hover {
-    background-color: var(--white-color);
-    transform: scale(1.05);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-explain-ai svg {
-    transition: transform 0.3s ease;
-}
-
-.btn-explain-ai:hover svg {
-    transform: rotate(20deg);
-}
-
-
 /* --- Controles --- */
 .study-controls {
     text-align: center;
     margin-top: 2rem;
-    min-height: 100px;
+    min-height: 100px; /* Evita pulos no layout */
 }
 
 .controls-label {
@@ -241,10 +205,6 @@
 
 /* --- Tela de Conclusão --- */
 .completion-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
     animation: fadeIn 0.5s ease;
 }
 
@@ -254,29 +214,14 @@
 }
 
 .completion-card {
-    width: 100%;
-    max-width: 550px;
-    padding: 2.5rem;
-    text-align: center;
-}
-
-.completion-card h2 {
-    font-size: 2rem;
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-}
-
-.completion-card p {
-    color: var(--text-light);
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
+    padding: 3rem;
 }
 
 .session-summary {
     background-color: var(--light-gray);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-sm);
-    padding: 1rem 1.5rem;
+    padding: 1rem;
     margin: 2rem 0;
     text-align: left;
 }
@@ -284,30 +229,14 @@
 .session-summary ul {
     list-style-type: none;
     padding: 0;
-    margin: 0;
 }
 
 .session-summary li {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
     border-bottom: 1px solid var(--border-color);
-    font-size: 0.95rem;
 }
 .session-summary li:last-child {
     border-bottom: none;
-}
-
-.session-summary li strong {
-    font-size: 1rem;
-    color: var(--dark-color);
-}
-
-.completion-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
 }

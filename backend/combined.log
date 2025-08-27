@@ -22,3 +22,9 @@
 {"level":"info","message":"Tarefa 4 concluída com sucesso. 5 flashcards guardados.","service":"recall-api","timestamp":"2025-08-25 15:37:20"}
 {"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-26 21:09:53"}
 {"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-26 21:11:27"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-26 21:48:13"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-26 21:50:32"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-26 21:51:15"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-26 21:52:10"}
+{"level":"info","message":"A processar tarefa 9 para o baralho 318822fe-c6d3-4552-b7a9-749b2431dd5a","service":"recall-api","timestamp":"2025-08-26 21:52:23"}
+{"level":"info","message":"Tarefa 9 concluída com sucesso. 5 flashcards guardados.","service":"recall-api","timestamp":"2025-08-26 21:52:26"}
