@@ -1,192 +1,256 @@
-.deck-main {
+/*
+ * Arquivo: deck-revamped.css
+ * Descrição: Estilos aprimorados para a página de gerenciamento de baralho.
+ * Foco em UI/UX, clareza, funcionalidade e um design moderno e limpo.
+*/
+
+/* --- LAYOUT PRINCIPAL --- */
+.deck-main-revamped {
     max-width: var(--container-width);
     margin: 0 auto;
-    padding: 0 1.5rem 2.5rem 1.5rem; 
+    padding: 2.5rem 1.5rem 4rem 1.5rem;
+    animation: fadeIn 0.5s ease-out;
 }
 
-.deck-header {
-    background-color: var(--white-color);
-    border-bottom: 1px solid var(--border-color);
-    padding: 2.5rem 0;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- CABEÇALHO DO BARALHO --- */
+.deck-header-revamped {
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--color-border);
     margin-bottom: 2.5rem;
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
+    box-shadow: var(--shadow-md);
+    overflow: hidden; /* Garante que os filhos respeitem o border-radius */
 }
 
 .deck-header-content {
-    max-width: var(--container-width);
-    margin: 0 auto;
-    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 2.5rem;
+    gap: 1.5rem;
+    flex-wrap: wrap; /* Para telas menores */
+}
+
+.deck-title-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.back-link {
+    background-color: var(--color-background);
+    color: var(--color-text-muted);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.back-link:hover {
+    background-color: var(--color-border);
+    color: var(--color-primary-500);
 }
 
 #deck-title-heading {
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
-    color: var(--dark-color);
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    font-size: clamp(1.8rem, 4vw, 2.25rem);
+    color: var(--color-dark-900);
+    margin: 0;
 }
 
 #deck-description-paragraph {
-    font-size: clamp(0.95rem, 2vw, 1.1rem);
-    color: var(--text-light);
-    max-width: 700px; 
-    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    margin: 0.25rem 0 0 0;
+    max-width: 600px;
 }
 
 .deck-actions {
     display: flex;
     gap: 1rem;
-    margin-top: 1.5rem;
+    align-items: center;
 }
 
-.deck-layout {
+.deck-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* --- BARRA DE ESTATÍSTICAS --- */
+.deck-stats-bar {
     display: grid;
-    grid-template-columns: 320px 1fr; 
+    grid-template-columns: repeat(3, 1fr);
+    background-color: var(--color-background);
+    border-top: 1px solid var(--color-border);
+    padding: 1rem 2.5rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 0.5rem 1rem;
+    border-right: 1px solid var(--color-border);
+}
+
+.stat-item:last-child {
+    border-right: none;
+}
+
+.stat-item i {
+    color: var(--color-primary-500);
+    margin-bottom: 0.5rem;
+}
+
+.stat-item span {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-dark-800);
+}
+
+.stat-item label {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* --- LAYOUT GRID (CONTEÚDO E SIDEBAR) --- */
+.deck-layout-revamped {
+    display: grid;
+    grid-template-columns: 1fr 340px;
     gap: 2.5rem;
     align-items: start;
 }
 
-.deck-sidebar .generate-card {
-    background-color: var(--white-color);
-    border-radius: var(--border-radius-md);
-    padding: 2rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-md);
-    position: sticky;
-    top: 90px;
-}
-
-.generate-card h2 {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    text-align: center;
-}
-
-#generate-cards-form textarea,
-#generate-cards-form input[type="url"],
-#generate-cards-form input[type="file"],
-#generate-cards-form input[type="number"],
-#generate-cards-form select {
-    width: 100%;
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    font-size: 0.9rem;
-    font-family: var(--font-family-primary);
-    transition: all 0.2s ease;
-    margin-bottom: 1rem;
-}
-
-#generate-cards-form textarea {
-    resize: vertical;
-    min-height: 150px;
-}
-
-#generate-cards-form input:focus,
-#generate-cards-form textarea:focus,
-#generate-cards-form select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--secondary-color);
-}
-
-#generate-button {
-    width: 100%; 
-    border-radius: var(--border-radius-sm);
-}
-
-.deck-content h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-}
-
-.flashcards-list {
-    list-style: none;
+/* --- CONTEÚDO: LISTA DE FLASHCARDS --- */
+.flashcards-toolbar {
     display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    padding: 0;
-}
-
-.flashcard {
-    background-color: var(--white-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.flashcard .question {
-    font-weight: 600;
-    color: var(--dark-color);
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
-}
-
-.flashcard .answer {
-    color: var(--text-light);
-    font-size: 0.95rem;
-    margin: 0;
-    line-height: 1.6;
-}
-
-.flashcard-list-item {
-    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1rem;
 }
 
-.flashcard-list-item:hover .flashcard {
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-md);
+.flashcards-toolbar h2 {
+    font-size: 1.5rem;
+    margin: 0;
 }
 
-.flashcard {
-    flex-grow: 1; 
-}
-
-.flashcard-actions {
-    display: flex;
-    flex-direction: column;
+.flashcards-toolbar .btn {
+    display: inline-flex;
+    align-items: center;
     gap: 0.5rem;
 }
 
-.action-btn {
-    background-color: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-light);
-    padding: 0.5rem;
+.flashcards-list-revamped {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.flashcard-revamped {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-fast);
+    position: relative;
+}
+
+.flashcard-revamped:hover {
+    border-color: var(--color-primary-500);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.flashcard-section {
+    padding: 1.5rem;
+}
+
+.flashcard-section:first-child {
+    border-right: 1px solid var(--color-border);
+}
+
+.flashcard-section .label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.flashcard-section .content {
+    color: var(--color-text-default);
+    line-height: 1.6;
+}
+
+.flashcard-actions-revamped {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: var(--transition-fast);
+}
+
+.flashcard-revamped:hover .flashcard-actions-revamped {
+    opacity: 1;
+}
+
+.flashcard-actions-revamped .action-btn {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
     border-radius: 50%;
-    cursor: pointer;
-    font-size: 0.8rem;
-    transition: all 0.2s ease;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.action-btn:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: var(--white-color);
+.flashcard-actions-revamped .action-btn:hover {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-600);
 }
 
-.flashcard-skeleton {
-    background-color: var(--white-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
+/* --- SIDEBAR: GERADOR IA --- */
+.deck-sidebar-revamped .ai-generator-card {
+    position: sticky;
+    top: 90px;
 }
 
-.flashcard-skeleton .skeleton-text:first-child {
-    width: 70%;
-    height: 1.25em;
-    margin-bottom: 1rem;
+.ai-generator-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1rem;
+}
+
+.ai-generator-header h2 {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.ai-generator-header i {
+    color: var(--color-primary-500);
 }
 
 .input-mode-selector {
@@ -198,120 +262,114 @@
 .input-mode-btn {
     flex: 1;
     padding: 0.6rem;
-    background-color: var(--secondary-color);
-    border: 1px solid var(--border-color);
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
     border-radius: var(--border-radius-sm);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--color-text-muted);
 }
 
-.input-mode-btn.active {
-    background-color: var(--primary-color);
-    color: var(--white-color);
-    border-color: var(--primary-color);
+.input-mode-btn.active, .input-mode-btn:hover {
+    background-color: var(--color-primary-100);
+    color: var(--color-primary-600);
+    border-color: var(--color-primary-500);
 }
 
-#file-input-area {
-    padding: 2rem;
-    border: 2px dashed var(--border-color);
-    border-radius: var(--border-radius-sm);
-    text-align: center;
-    color: var(--text-light);
-    transition: border-color 0.2s ease;
-}
-
-#file-input-area:hover {
-    border-color: var(--primary-color);
-}
-
-.share-link-container {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-#shareable-link-input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    background-color: var(--background-color);
-    font-size: 0.9rem;
-    color: var(--text-color);
-}
-
-#copy-link-button {
-    padding: 0.75rem 1.5rem;
-    background-color: var(--primary-color);
-    color: var(--white-color);
-    border: none;
-    border-radius: var(--border-radius-sm);
-    cursor: pointer;
-}
-
-.generate-card .processing-feedback {
-    text-align: center;
+.file-drop-zone {
     padding: 2rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-sm);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--border-radius-sm);
+    text-align: center;
+    color: var(--color-text-muted);
+    transition: border-color 0.2s ease;
+    cursor: pointer;
+    display: block;
 }
 
-.generate-card .processing-feedback .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--secondary-color);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 1.5rem auto;
+.file-drop-zone:hover {
+    border-color: var(--color-primary-500);
+    background-color: var(--color-background);
 }
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.generate-card .processing-feedback p {
-    color: var(--text-light);
-    font-weight: 500;
-    margin: 0;
-}
-
-@keyframes highlight-new {
-    0% {
-        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
-        transform: scale(1);
-    }
-    50% {
-        box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
-        transform: scale(1.02);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
-        transform: scale(1);
-    }
-}
-
-.flashcard-list-item.new-card .flashcard {
-    animation: highlight-new 2s ease-out;
-}
-
-.hidden {
+.file-drop-zone input[type="file"] {
     display: none;
 }
 
+.generation-options {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+.generation-options .form-group {
+    flex: 1;
+}
+
+/* --- SKELETONS E ESTADOS DE CARREGAMENTO --- */
+.flashcard-skeleton {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    height: 120px;
+    animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    50% { opacity: 0.6; }
+}
+
+.processing-feedback {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+.processing-feedback .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid var(--color-primary-100);
+    border-top-color: var(--color-primary-500);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem auto;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- RESPONSIVIDADE --- */
 @media (max-width: 992px) {
-    .deck-layout {
+    .deck-layout-revamped {
         grid-template-columns: 1fr;
     }
-
-    .deck-sidebar .generate-card {
-        position: static; 
-        width: 100%;
+    .deck-sidebar-revamped {
+        order: -1; /* Move a sidebar para cima em telas menores */
         margin-bottom: 2.5rem;
+    }
+    .deck-sidebar-revamped .ai-generator-card {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .deck-header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.5rem;
+    }
+    .deck-stats-bar {
+        grid-template-columns: 1fr;
+        padding: 1rem 1.5rem;
+        gap: 1rem;
+    }
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-right: none;
+        padding: 0;
+    }
+    .stat-item i { margin: 0; }
+    .flashcard-revamped {
+        grid-template-columns: 1fr;
+    }
+    .flashcard-section:first-child {
+        border-right: none;
+        border-bottom: 1px solid var(--color-border);
     }
 }
