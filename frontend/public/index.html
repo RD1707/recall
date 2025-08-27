@@ -1,27 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recall - Estude de forma mais inteligente com Flashcards de IA</title>
     <link rel="stylesheet" href="css/landing.css">
-    </head>
+</head>
+
 <body>
 
     <header class="landing-header">
-        <div class="header-container">
+        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+        </button>
+        <div class="header-container landing-container">
             <div class="logo">
                 <a href="#">Recall</a>
             </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="#features">Funcionalidades</a></li>
-                    <li><a href="#how-it-works">Como Funciona</a></li>
-                    <li><a href="#testimonials">Depoimentos</a></li>
-                </ul>
-            </nav>
             <div class="header-actions">
-                <a href="login.html" class="btn btn-secondary">Login</a>
                 <a href="login.html" class="btn btn-primary">Começar Agora</a>
             </div>
         </div>
@@ -30,95 +26,142 @@
     <main>
 
         <section class="hero">
-            <div class="hero-container">
+            <div class="hero-container landing-container">
                 <div class="hero-text">
                     <h1>Memorize qualquer coisa, para sempre.</h1>
-                    <p>Transforme suas anotações, PDFs e vídeos em flashcards inteligentes com o poder da Inteligência Artificial. Estude menos, aprenda mais.</p>
+                    <p class="hero-subtitle">Transforme suas anotações, PDFs e vídeos em flashcards inteligentes com o
+                        poder da Inteligência Artificial. Estude menos, aprenda mais.</p>
                     <a href="login.html" class="btn btn-primary btn-lg">Crie seus flashcards grátis</a>
-                    <p class="subtle-text">Não precisa de cartão de crédito.</p>
+                </div>
+                <div class="hero-image">
+                    <svg width="100%" viewBox="0 0 499 398" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_105_2)">
+                            <rect x="153.5" y="46.5" width="308" height="212" rx="15.5" fill="white" stroke="#E2E8F0"
+                                stroke-width="3" />
+                            <rect x="205" y="111" width="204" height="10" rx="5" fill="#E2E8F0" />
+                            <rect x="205" y="143" width="204" height="10" rx="5" fill="#E2E8F0" />
+                            <rect x="205" y="175" width="138" height="10" rx="5" fill="#E2E8F0" />
+                            <rect x="88.5" y="93.5" width="308" height="212" rx="15.5" fill="white" stroke="#E2E8F0"
+                                stroke-width="3" />
+                            <rect x="132" y="158" width="204" height="10" rx="5" fill="#E2E8F0" />
+                            <rect x="132" y="190" width="204" height="10" rx="5" fill="#E2E8F0" />
+                            <rect x="132" y="222" width="138" height="10" rx="5" fill="#E2E8F0" />
+
+                            <rect x="36.5" y="140.5" width="308" height="212" rx="15.5" fill="white" stroke="#4F46E5"
+                                stroke-width="3" />
+
+                            <rect x="73" y="180" width="150" height="12" rx="6" fill="#CBD5E0" />
+                            <rect x="73" y="212" width="240" height="8" rx="4" fill="#E2E8F0" />
+                            <rect x="73" y="230" width="240" height="8" rx="4" fill="#E2E8F0" />
+                            <rect x="73" y="248" width="240" height="8" rx="4" fill="#E2E8F0" />
+                            <rect x="73" y="266" width="180" height="8" rx="4" fill="#E2E8F0" />
+
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_105_2">
+                                <rect width="499" height="398" fill="white" />
+                            </clipPath>
+                        </defs>
+                    </svg>
                 </div>
             </div>
         </section>
 
         <section id="features" class="features">
-            <div class="features-container">
-                <h2>A plataforma de estudos que trabalha por você</h2>
+            <div class="landing-container">
+                <h2 class="section-title">A plataforma de estudos que trabalha por você</h2>
                 <p class="section-subtitle">Tudo o que você precisa para otimizar seu aprendizado em um só lugar.</p>
                 <div class="features-grid">
                     <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M12 3v2.355m0 16.29V23m8.66-16.29L19.205 8.2m-14.41 0L3.34 6.71M20.655 12H23m-22 0h2.345M19.205 15.8l1.455 1.49m-16.11-2.98L3.34 17.29m12.125-7.79a4.5 4.5 0 1 1-6.364 6.364 4.5 4.5 0 0 1 6.364-6.364z" />
+                            </svg>
+                        </div>
                         <h3>Geração Mágica com IA</h3>
-                        <p>Cole qualquer texto, envie um PDF ou uma transcrição e nossa IA cria flashcards precisos e relevantes em segundos.</p>
+                        <p>Cole qualquer texto, envie um PDF ou um vídeo do YouTube e nossa IA cria flashcards precisos
+                            e relevantes em segundos.</p>
                     </div>
                     <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M3 6h3M5 2v4M19 6h3M17 2v4M21 14V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8m-9-6h7m-1-4h.01M17 12h.01M16 19h6m-3-3v6" />
+                            </svg>
+                        </div>
                         <h3>Repetição Espaçada Inteligente</h3>
-                        <p>Nosso algoritmo (baseado em SM-2) mostra o card certo no momento exato, maximizando a retenção e evitando o esquecimento.</p>
+                        <p>Nosso algoritmo mostra o card certo no momento exato, maximizando a retenção e evitando o
+                            esquecimento.</p>
                     </div>
                     <div class="feature-card">
-                        <h3>Gamificação Motivadora</h3>
-                        <p>Ganhe pontos, mantenha sua sequência diária (streak) e acompanhe seu progresso para se manter sempre motivado a estudar.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>Personalização Total</h3>
-                        <p>Edite os cards gerados, crie os seus próprios, e ajuste o nível de dificuldade para uma experiência de estudo sob medida.</p>
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                        </div>
+                        <h3>Tutor com IA</h3>
+                        <p>Não entendeu uma resposta? Peça uma explicação detalhada e aprofunde seu conhecimento no
+                            assunto.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="how-it-works" class="how-it-works">
-            <div class="how-it-works-container">
-                <h2>Comece a aprender em 3 passos simples</h2>
+            <div class="landing-container">
+                <h2 class="section-title">Comece a aprender em 3 passos simples</h2>
                 <div class="steps-container">
                     <div class="step">
-                        <div class="step-number">1</div>
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                        </div>
                         <h3>Adicione seu Conteúdo</h3>
-                        <p>Insira textos, resumos ou documentos que você precisa estudar na plataforma.</p>
+                        <p>Insira textos, PDFs ou links de vídeos do YouTube que você precisa estudar na plataforma.</p>
                     </div>
                     <div class="step">
-                        <div class="step-number">2</div>
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="m3.5 18.5 4-4 2 2 4-4 2 2 4-4" />
+                                <path d="M3.5 12.5 8 8l4 4 4-4 4.5 4.5" />
+                            </svg>
+                        </div>
                         <h3>Gere com um Clique</h3>
                         <p>Deixe nossa IA analisar o material e criar um baralho de flashcards completo para você.</p>
                     </div>
                     <div class="step">
-                        <div class="step-number">3</div>
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                            </svg>
+                        </div>
                         <h3>Estude e Memorize</h3>
-                        <p>Use nosso sistema de repetição espaçada para revisar de forma inteligente e nunca mais esquecer.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="testimonials" class="testimonials">
-            <div class="testimonials-container">
-                <h2>O que nossos estudantes dizem</h2>
-                <div class="testimonials-grid">
-                    <div class="testimonial-card">
-                        <p class="quote">"O Recall mudou completamente a forma como estudo para concursos. A geração de cards por IA me economiza horas de trabalho manual."</p>
-                        <div class="author">
-                            <p><strong>Mariana Silva</strong></p>
-                            <p>Concurseira</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-card">
-                        <p class="quote">"Finalmente uma ferramenta que entende o que eu preciso. A repetição espaçada é perfeita para as matérias da faculdade de medicina."</p>
-                        <div class="author">
-                            <p><strong>João Pedro Costa</strong></p>
-                            <p>Estudante de Medicina</p>
-                        </div>
-                    </div>
-                     <div class="testimonial-card">
-                        <p class="quote">"Uso para aprender programação. Colo a documentação de uma API e a IA cria perguntas e respostas que me ajudam a fixar os conceitos."</p>
-                        <div class="author">
-                            <p><strong>Lucas Ferreira</strong></p>
-                            <p>Desenvolvedor de Software</p>
-                        </div>
+                        <p>Use nosso sistema de repetição espaçada para revisar de forma inteligente e nunca mais
+                            esquecer.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <section class="final-cta">
-            <div class="final-cta-container">
+            <div class="landing-container">
                 <h2>Pronto para turbinar seus estudos?</h2>
                 <p>Junte-se a milhares de estudantes que estão aprendendo de forma mais rápida e eficiente.</p>
                 <a href="login.html" class="btn btn-primary btn-lg">Começar a usar gratuitamente</a>
@@ -127,22 +170,7 @@
 
     </main>
 
-    <footer class="landing-footer">
-        <div class="footer-container">
-            <div class="footer-links">
-                <a href="#">Sobre</a>
-                <a href="#">Contato</a>
-                <a href="#">Política de Privacidade</a>
-            </div>
-            <div class="footer-social">
-                <a href="#">Twitter</a>
-                <a href="#">Instagram</a>
-            </div>
-            <div class="footer-copy">
-                <p>&copy; 2025 Recall. Todos os direitos reservados.</p>
-            </div>
-        </div>
-    </footer>
-
 </body>
+<script src="js/landing.js"></script>
+
 </html>

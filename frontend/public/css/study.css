@@ -203,9 +203,10 @@
 .quality-facil:hover { background-color: var(--primary-color); }
 
 
-/* --- Tela de Conclusão --- */
+/* --- Tela de Conclusão (MELHORADA) --- */
 .completion-container {
     animation: fadeIn 0.5s ease;
+    text-align: center; /* Centraliza todo o texto dentro do container */
 }
 
 @keyframes fadeIn {
@@ -214,29 +215,67 @@
 }
 
 .completion-card {
-    padding: 3rem;
+    padding: 2.5rem 3rem 3rem 3rem; /* Padding ajustado */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background-color: var(--white-color);
+    box-shadow: var(--shadow-lg);
+}
+
+.completion-card h2 {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.completion-card p {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+    max-width: 450px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .session-summary {
-    background-color: var(--light-gray);
+    background-color: var(--background-color); /* Cor de fundo mais suave */
     border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    padding: 1rem;
-    margin: 2rem 0;
+    border-radius: var(--border-radius-md); /* Bordas mais arredondadas */
+    padding: 1.5rem;
+    margin: 2.5rem 0;
     text-align: left;
 }
 
 .session-summary ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 .session-summary li {
     display: flex;
     justify-content: space-between;
-    padding: 0.5rem 0;
+    align-items: center;
+    padding: 0.75rem 0;
+    font-size: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
+
 .session-summary li:last-child {
     border-bottom: none;
+}
+
+.session-summary li strong {
+    font-size: 1.1rem;
+    color: var(--dark-color);
+    background-color: var(--secondary-color);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--border-radius-sm);
+}
+
+.completion-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    flex-wrap: wrap; /* Para telas menores */
 }

@@ -16,13 +16,16 @@ document.addEventListener('DOMContentLoaded', () => {
  * Classe que gerencia toda a lógica de uma sessão de estudo.
  */
 class StudySession {
+    /**
+     * @param {string} deckId - O ID do baralho a ser estudado.
+     */
     constructor(deckId) {
         this.deckId = deckId;
         this.reviewCards = [];
         this.currentCardIndex = 0;
         this.isCardFlipped = false;
         this.isSubmitting = false; // Previne cliques duplos
-        this.sessionStats = { 1: 0, 3: 0, 4: 0, 5: 0 };
+        this.sessionStats = { 1: 0, 3: 0, 4: 0, 5: 0 }; // Estatísticas para Errei, Difícil, Bom, Fácil
 
         this.getDOMElements();
         this.addEventListeners();
@@ -30,29 +33,23 @@ class StudySession {
     }
 
     /**
-     * Seleciona e armazena as referências para os elementos do DOM.
+     * Seleciona e armazena as referências para os elementos do DOM para fácil acesso.
      */
     getDOMElements() {
         this.studyContainer = document.getElementById('study-container');
         this.completionContainer = document.getElementById('completion-container');
-
         this.deckLink = document.getElementById('deck-link');
         this.progressBar = document.getElementById('progress-bar');
         this.progressIndicator = document.getElementById('progress-indicator');
-        
         this.flipCard = document.getElementById('flip-card');
         this.cardQuestion = document.getElementById('card-question');
         this.cardAnswer = document.getElementById('card-answer');
-        
         this.flipButton = document.getElementById('flip-button');
         this.qualityButtonsContainer = document.getElementById('quality-buttons');
-        
         this.feedbackOverlay = document.getElementById('card-feedback-overlay');
         this.feedbackText = document.getElementById('feedback-text');
-
         this.backToDeckLink2 = document.getElementById('back-to-deck-link-2');
         this.sessionSummary = document.getElementById('session-summary');
-        
         this.explainButton = document.getElementById('explain-button');
         this.explanationModal = document.getElementById('explanation-modal');
         this.explanationContent = document.getElementById('explanation-content');
@@ -60,7 +57,7 @@ class StudySession {
     }
 
     /**
-     * Adiciona todos os event listeners necessários.
+     * Adiciona todos os event listeners necessários para a interatividade da página.
      */
     addEventListeners() {
         this.flipButton.addEventListener('click', () => this.flip());
@@ -70,22 +67,19 @@ class StudySession {
                 this.submitReview(parseInt(qualityButton.dataset.quality, 10));
             }
         });
-
         this.explainButton.addEventListener('click', (e) => {
             e.stopPropagation();
             this.handleExplainClick();
         });
-        
         this.closeExplanationModalBtn.addEventListener('click', () => this.closeExplanationModal());
         this.explanationModal.addEventListener('click', (e) => {
             if (e.target === this.explanationModal) this.closeExplanationModal();
         });
-        
         document.addEventListener('keydown', (e) => this.handleKeyPress(e));
     }
 
     /**
-     * Inicia a sessão: busca os cards e exibe o primeiro.
+     * Inicia a sessão: busca os cards para revisão e exibe o primeiro.
      */
     async start() {
         this.reviewCards = await fetchReviewCards(this.deckId);
@@ -94,7 +88,7 @@ class StudySession {
         this.backToDeckLink2.href = `deck.html?id=${this.deckId}`;
 
         if (!this.reviewCards || this.reviewCards.length === 0) {
-            this.showCompletionScreen();
+            this.showCompletionScreen(true); // Indica que não havia cards desde o início
             return;
         }
         
@@ -103,10 +97,9 @@ class StudySession {
     }
 
     /**
-     * Exibe o card atual na tela e atualiza a UI.
+     * Exibe o card atual na tela, resetando o estado e atualizando a UI de progresso.
      */
     displayCard() {
-        // Verifica se a sessão terminou
         if (this.currentCardIndex >= this.reviewCards.length) {
             this.showCompletionScreen();
             return;
@@ -116,12 +109,13 @@ class StudySession {
         this.cardQuestion.textContent = card.question;
         this.cardAnswer.textContent = card.answer;
         
-        // Garante que a rolagem do texto comece do topo
+        // Garante que a rolagem do texto comece do topo para cards com muito conteúdo
         this.cardQuestion.parentElement.scrollTop = 0;
         this.cardAnswer.parentElement.scrollTop = 0;
 
         this.updateProgress();
 
+        // Reseta o estado para o novo card
         this.isCardFlipped = false;
         this.isSubmitting = false;
         this.flipCard.classList.remove('is-flipped');
@@ -130,7 +124,7 @@ class StudySession {
     }
 
     /**
-     * Vira o card para mostrar a resposta.
+     * Vira o card para mostrar a resposta e exibe os botões de avaliação.
      */
     flip() {
         if (this.isCardFlipped) return;
@@ -142,8 +136,8 @@ class StudySession {
     }
 
     /**
-     * Envia a avaliação, mostra o feedback e avança para o próximo card.
-     * @param {number} quality - A avaliação do usuário (1, 3, 4, ou 5).
+     * Envia a avaliação do usuário, mostra o feedback visual e avança para o próximo card.
+     * @param {number} quality - A avaliação da resposta (1, 3, 4, ou 5).
      */
     async submitReview(quality) {
         if (!this.isCardFlipped || this.isSubmitting) return;
@@ -152,10 +146,10 @@ class StudySession {
         const card = this.reviewCards[this.currentCardIndex];
         this.sessionStats[quality]++;
 
-        // Envia a avaliação para a API em segundo plano
+        // Envia a avaliação para a API em segundo plano (não bloqueia a UI)
         submitReview(card.id, quality);
 
-        // Mostra o feedback visual
+        // Mostra o feedback visual correspondente à avaliação
         this.showFeedback(quality);
 
         // Atraso para o usuário ver o feedback antes de avançar
@@ -163,12 +157,12 @@ class StudySession {
             this.hideFeedback();
             this.currentCardIndex++;
             this.displayCard();
-        }, 800); // 0.8 segundos de feedback
+        }, 800);
     }
 
     /**
-     * Mostra o overlay de feedback no card.
-     * @param {number} quality 
+     * Mostra o overlay de feedback no card (Ex: "Fácil", "Errei").
+     * @param {number} quality - A avaliação que determina o texto e a cor do feedback.
      */
     showFeedback(quality) {
         const feedbackMap = {
@@ -184,24 +178,27 @@ class StudySession {
     }
 
     /**
-     * Esconde o overlay de feedback.
+     * Esconde o overlay de feedback para preparar o próximo card.
      */
     hideFeedback() {
         this.feedbackOverlay.className = 'card-feedback-overlay';
     }
     
     /**
-     * Lida com os atalhos do teclado.
+     * Lida com os atalhos do teclado para uma experiência de estudo mais fluida.
      * @param {KeyboardEvent} e - O evento do teclado.
      */
     handleKeyPress(e) {
+        // Ignora atalhos se o modal de explicação estiver aberto
         if (this.explanationModal.classList.contains('visible')) return;
 
+        // Atalho para virar o card
         if (e.code === 'Space' && !this.isCardFlipped) {
             e.preventDefault();
             this.flip();
         }
 
+        // Atalhos para avaliação da resposta
         if (this.isCardFlipped) {
             switch (e.key) {
                 case '1': this.submitReview(1); break;
@@ -213,11 +210,10 @@ class StudySession {
     }
 
     /**
-     * Atualiza a barra de progresso.
+     * Atualiza a barra e o texto de progresso da sessão.
      */
     updateProgress() {
         const totalCards = this.reviewCards.length;
-        // Garante que o número atual não exceda o total na UI
         const currentCardNumber = Math.min(this.currentCardIndex + 1, totalCards);
         const progressPercentage = totalCards > 0 ? (currentCardNumber / totalCards) * 100 : 0;
 
@@ -226,21 +222,26 @@ class StudySession {
     }
 
     /**
-     * Exibe a tela de conclusão da sessão.
+     * Exibe a tela de conclusão da sessão de estudos.
+     * @param {boolean} noCardsAtStart - Se verdadeiro, a sessão não tinha cards para revisar.
      */
-    showCompletionScreen() {
+    showCompletionScreen(noCardsAtStart = false) {
         this.studyContainer.classList.add('hidden');
         this.completionContainer.classList.remove('hidden');
-        this.renderSessionSummary();
-        updateProfileHeader();
+        this.renderSessionSummary(noCardsAtStart);
+        updateProfileHeader(); // Atualiza os pontos e streak no cabeçalho
     }
 
     /**
-     * Renderiza o resumo da sessão.
+     * Renderiza o resumo da sessão com as estatísticas de acerto.
+     * @param {boolean} noCardsAtStart - Se verdadeiro, mostra uma mensagem específica.
      */
-    renderSessionSummary() {
-        const totalReviewed = this.reviewCards.length;
-        if (totalReviewed > 0) {
+    renderSessionSummary(noCardsAtStart) {
+        if (noCardsAtStart) {
+            document.getElementById('completion-heading').textContent = "Tudo em dia!";
+            this.sessionSummary.innerHTML = `<p>Você não tem cards para revisar hoje. Ótimo trabalho por manter tudo atualizado!</p>`;
+        } else {
+            document.getElementById('completion-heading').textContent = "Sessão Concluída!";
             this.sessionSummary.innerHTML = `
                 <ul>
                     <li><span>Fácil</span> <strong>${this.sessionStats[5]}</strong></li>
@@ -249,13 +250,11 @@ class StudySession {
                     <li><span>Errei</span> <strong>${this.sessionStats[1]}</strong></li>
                 </ul>
             `;
-        } else {
-             this.sessionSummary.innerHTML = `<p>Você não tinha cards para revisar hoje. Crie mais ou volte amanhã!</p>`
         }
     }
 
     /**
-     * Busca e exibe a explicação da IA.
+     * Busca e exibe a explicação da IA para o card atual.
      */
     async handleExplainClick() {
         const skeletonHTML = `
@@ -276,7 +275,7 @@ class StudySession {
     }
 
     /**
-     * Fecha o modal de explicação.
+     * Fecha o modal de explicação da IA.
      */
     closeExplanationModal() {
         this.explanationModal.classList.remove('visible');
