@@ -8,3 +8,6 @@
 {"level":"error","message":"Tarefa 2 falhou com o erro: Serviço de IA falhou ao gerar flashcards.","service":"recall-api","timestamp":"2025-08-25 15:33:10"}
 {"level":"error","message":"Tarefa 3 falhou para o baralho 9a21a36b-bde4-4d7b-b918-29eec3bc3530: Serviço de IA falhou ao gerar flashcards.","service":"recall-api","timestamp":"2025-08-25 15:35:31"}
 {"level":"error","message":"Tarefa 3 falhou com o erro: Serviço de IA falhou ao gerar flashcards.","service":"recall-api","timestamp":"2025-08-25 15:35:31"}
+{"level":"error","message":"Error fetching last 7 days analytics for user 6c43ec04-487a-438e-a847-39778f978f43: Could not find the function public.get_daily_review_counts(user_id_param) in the schema cache","service":"recall-api","timestamp":"2025-08-27 09:52:02"}
+{"level":"error","message":"Error fetching last 7 days analytics for user 6c43ec04-487a-438e-a847-39778f978f43: Could not find the function public.get_daily_review_counts(user_id_param) in the schema cache","service":"recall-api","timestamp":"2025-08-27 09:53:08"}
+{"level":"error","message":"Error fetching last 7 days analytics for user 6c43ec04-487a-438e-a847-39778f978f43: Could not find the function public.get_daily_review_counts(user_id_param) in the schema cache","service":"recall-api","timestamp":"2025-08-27 09:54:14"}
