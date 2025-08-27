@@ -1,78 +1,127 @@
+/*
+ * Arquivo: dashboard.css
+ * Descrição: Estilos aprimorados para o dashboard com foco em uma experiência
+ * de usuário premium, incluindo animações, gradientes e feedback visual aprimorado.
+*/
+
+/* --- Animação de Entrada --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* --- Layout Principal --- */
 .dashboard-main {
     max-width: var(--container-width);
     margin: 0 auto;
-    padding: 2.5rem 1.5rem;
+    padding: 3rem 1.5rem;
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Fundo sutil para a página */
+body {
+    background: radial-gradient(circle at 100% 0%, hsla(243, 80%, 98%, 1) 0%, var(--color-background) 40%);
+}
+
+/* --- Seção de Boas-Vindas --- */
+.dashboard-welcome {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-welcome h1 {
+    font-size: clamp(1.8rem, 4vw, 2.25rem); /* Tamanho de fonte responsivo */
+    color: var(--color-dark-900);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-welcome p {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-muted);
+    max-width: 650px;
+}
+
+/* --- Grid Principal do Dashboard --- */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 360px 1fr; /* Coluna um pouco maior para o formulário */
+    gap: 3rem;
+    align-items: start;
+}
+
+/* --- Barra Lateral (Formulário de Criação) --- */
+.dashboard-sidebar .create-deck-card {
+    position: sticky;
+    top: 90px; /* Leva em conta a altura do header */
+    animation: scaleIn 0.5s ease-out forwards;
 }
 
 .create-deck-card {
-    background-color: var(--white-color);
-    border-radius: var(--border-radius-md);
-    padding: 2.5rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-md);
-    margin-bottom: 3rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
 }
 
 .create-deck-card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
+    font-size: var(--font-size-xl);
+    margin-bottom: 0.5rem;
+    color: var(--color-dark-900);
     text-align: center;
-    color: var(--dark-color);
 }
 
-#create-deck-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+.create-deck-card .card-subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-muted);
+    margin-bottom: 2rem;
+    text-align: center;
 }
 
-#create-deck-form input,
-#create-deck-form textarea {
-    width: 100%;
-    padding: 0.9rem 1.25rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius-sm);
-    font-size: 1rem;
-    font-family: var(--font-family-primary);
-    transition: all 0.2s ease;
-}
-
-#create-deck-form input:focus,
-#create-deck-form textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px var(--secondary-color);
-}
-
-#create-deck-form textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-#create-deck-form button {
-    align-self: center;
-    width: 100%;
-    max-width: 250px;
-}
-
-.dashboard-content h1 {
-    font-size: 1.75rem;
+/* --- Conteúdo Principal (Lista de Baralhos) --- */
+.decks-header {
     margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--dark-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.decks-header h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-dark-900);
 }
 
 .decks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
     list-style: none;
     padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
 }
 
-.deck-list-item #loading-decks {
-    color: var(--text-light);
+/* --- Estilo Aprimorado do Card de Baralho --- */
+.deck-list-item {
+    /* Adiciona animação de entrada escalonada para cada card */
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out forwards;
 }
 
 .deck-card-link {
@@ -83,49 +132,58 @@
 }
 
 .deck-card {
-    background-color: var(--white-color);
+    background-color: var(--color-surface);
     border-radius: var(--border-radius-md);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--color-border);
     padding: 1.5rem;
     height: 100%;
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-sm);
     position: relative;
-    padding-bottom: 4rem; 
+    padding-bottom: 4.5rem;
 }
 
 .deck-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--primary-color);
-    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary-500);
+    box-shadow: var(--shadow-lg);
 }
 
 .deck-card h4 {
-    color: var(--dark-color);
+    color: var(--color-dark-900);
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
+    font-family: var(--font-family-heading);
 }
 
 .deck-card p {
-    color: var(--text-light);
-    font-size: 0.95rem;
-    flex-grow: 1; 
+    color: var(--color-text-muted);
+    font-size: var(--font-size-base);
+    flex-grow: 1;
     margin-bottom: 0;
+    line-height: 1.6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limita a descrição a 3 linhas */
+    -webkit-box-orient: vertical;
 }
 
 .deck-card-actions {
     position: absolute;
     bottom: 1rem;
     right: 1rem;
+    display: flex;
+    gap: 0.5rem;
 }
 
 .deck-card-actions .action-btn {
-    background-color: var(--secondary-color);
-    border: 1px solid var(--border-color);
-    color: var(--text-light);
-    padding: 0.5rem;
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     cursor: pointer;
     display: flex;
@@ -135,36 +193,52 @@
 }
 
 .deck-card-actions .action-btn:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: var(--white-color);
+    background-color: var(--color-primary-500);
+    border-color: var(--color-primary-500);
+    color: var(--color-surface);
 }
 
-.deck-card-skeleton {
-    background-color: var(--white-color);
-    border-radius: var(--border-radius-md);
-    border: 1px solid var(--border-color);
-    padding: 1.5rem;
-    height: 100%;
-    box-shadow: var(--shadow-sm);
+/* --- Estado de Vazio e Carregamento --- */
+.empty-state, #loading-decks {
+    grid-column: 1 / -1; /* Ocupa a largura total do grid */
+    text-align: center;
+    padding: 3rem 1rem;
 }
 
-.deck-card-skeleton .skeleton-text:first-child {
-    width: 60%;
-    height: 1.2rem;
+.empty-state-icon {
+    max-width: 150px;
+    margin: 0 auto 1.5rem auto;
+    opacity: 0.7;
 }
 
-@media (max-width: 768px) {
-    .dashboard-main {
-        padding: 1.5rem;
+.empty-state h3 {
+    font-size: 1.25rem;
+    color: var(--color-dark-800);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--color-text-muted);
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 992px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Colunas empilhadas */
+        gap: 2.5rem;
     }
 
-    .create-deck-card {
-        padding: 1.5rem;
+    .dashboard-sidebar .create-deck-card {
+        position: static;
+        width: 100%;
     }
 }
 
 @media (max-width: 576px) {
+    .dashboard-main {
+        padding: 1.5rem;
+    }
+
     .decks-grid {
         grid-template-columns: 1fr;
     }

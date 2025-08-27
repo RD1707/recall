@@ -10,23 +10,29 @@
 </head>
 <body>
     <header class="app-header">
-        <div class="header-container">
-            <div class="logo">
-                <a href="dashboard.html">Recall</a>
-            </div>
-            <nav class="app-nav">
-                <div class="user-stats">
-                    <span class="user-stat"> <span id="user-points">0</span> Pontos</span>
-                    <span class="user-stat"> <span id="user-streak">0</span> Dias</span>
-                </div>
-                <div class="user-actions">
-                    <span id="user-email"></span>
-                    <button id="logout-button">Sair</button>
-                </div>
-                <a href="progress.html" class="nav-link">Meu Progresso</a>
-            </nav>
+    <div class="header-container">
+        <div class="logo">
+            <a href="dashboard.html">Recall</a>
         </div>
-    </header>
+        <nav class="app-nav">
+            <div class="user-stats">
+                <span class="user-stat">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <span id="user-points">0</span> Pontos
+                </span>
+                <span class="user-stat">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l.34 3.39h-1.38L12 2.69z M12.34 6.08H11.66L12 2.69z M12 11.28c-2.88 0-5.22 2.34-5.22 5.22s2.34 5.22 5.22 5.22 5.22-2.34 5.22-5.22S14.88 11.28 12 11.28z M12 20.72c-2.31 0-4.18-1.87-4.18-4.18s1.87-4.18 4.18-4.18 4.18 1.87 4.18 4.18-1.87 4.18-4.18 4.18z"></path><path d="M12 2.69C8.16 2.69 5.22 5.63 5.22 9.47c0 2.22 1.02 4.22 2.62 5.51.3.24.64.4.98.5.42.12.86.18 1.3.18s.88-.06 1.3-.18c.34-.1.68-.26.98-.5 1.6-1.29 2.62-3.29 2.62-5.51C18.78 5.63 15.84 2.69 12 2.69z"></path></svg>
+                    <span id="user-streak">0</span> Dias
+                </span>
+            </div>
+            <a href="progress.html" class="nav-link">Meu Progresso</a>
+            <div class="user-actions">
+                <span id="user-email"></span>
+                <button id="logout-button">Sair</button>
+            </div>
+        </nav>
+    </div>
+</header>
 
     <main class="deck-main">
         <section class="deck-header" aria-labelledby="deck-title-heading">
