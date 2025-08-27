@@ -38,3 +38,6 @@
 {"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-27 10:01:04"}
 {"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-27 10:02:53"}
 {"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-27 11:59:26"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-27 19:18:55"}
+{"level":"info","message":"A processar tarefa 10 para o baralho ca100a8c-dfa5-41d0-8809-3ce9caf8cda2","service":"recall-api","timestamp":"2025-08-27 19:20:07"}
+{"level":"info","message":"Tarefa 10 concluída com sucesso. 5 flashcards guardados.","service":"recall-api","timestamp":"2025-08-27 19:20:11"}

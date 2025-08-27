@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,90 +8,206 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <header class="app-header">
-    <div class="header-container">
-        <div class="logo">
-            <a href="dashboard.html">Recall</a>
+        <div class="header-container">
+            <div class="logo">
+                <a href="dashboard.html">
+                    <i class="fas fa-brain"></i> Recall
+                </a>
+            </div>
+            <nav class="app-nav">
+                <div class="user-stats">
+                    <div class="user-stat tooltip">
+                        <span class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </span>
+                        <span id="user-points">0</span> Pontos
+                        <span class="tooltip-text">Pontuação acumulada</span>
+                    </div>
+                    <div class="user-stat tooltip">
+                        <span class="stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </span>
+                        <span id="user-streak">0</span> Dias
+                        <span class="tooltip-text">Sequência de estudos</span>
+                    </div>
+                </div>
+                <a href="progress.html" class="nav-link">
+                    <i class="fas fa-chart-line"></i> Meu Progresso
+                </a>
+                <div class="user-menu">
+                    <button id="user-menu-button" class="user-avatar">
+                        <span id="user-avatar-text"></span>
+                    </button>
+                    <div id="user-dropdown" class="dropdown-menu">
+                        <div class="dropdown-user-info">
+                            <div class="user-avatar small">
+                                <span id="dropdown-avatar-text"></span>
+                            </div>
+                            <div class="user-details">
+                                <span id="user-email"></span>
+                                <span class="user-plan">Plano Free</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i> Meu Perfil
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Configurações
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button id="logout-button" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
+                </div>
+            </nav>
         </div>
-        <nav class="app-nav">
-            <div class="user-stats">
-                <span class="user-stat">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    <span id="user-points">0</span> Pontos
-                </span>
-                <span class="user-stat">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l.34 3.39h-1.38L12 2.69z M12.34 6.08H11.66L12 2.69z M12 11.28c-2.88 0-5.22 2.34-5.22 5.22s2.34 5.22 5.22 5.22 5.22-2.34 5.22-5.22S14.88 11.28 12 11.28z M12 20.72c-2.31 0-4.18-1.87-4.18-4.18s1.87-4.18 4.18-4.18 4.18 1.87 4.18 4.18-1.87 4.18-4.18 4.18z"></path><path d="M12 2.69C8.16 2.69 5.22 5.63 5.22 9.47c0 2.22 1.02 4.22 2.62 5.51.3.24.64.4.98.5.42.12.86.18 1.3.18s.88-.06 1.3-.18c.34-.1.68-.26.98-.5 1.6-1.29 2.62-3.29 2.62-5.51C18.78 5.63 15.84 2.69 12 2.69z"></path></svg>
-                    <span id="user-streak">0</span> Dias
-                </span>
-            </div>
-            <a href="progress.html" class="nav-link">Meu Progresso</a>
-            <div class="user-actions">
-                <span id="user-email"></span>
-                <button id="logout-button">Sair</button>
-            </div>
-        </nav>
-    </div>
-</header>
+    </header>
 
     <main class="dashboard-main">
-        
-        <section class="dashboard-welcome" aria-labelledby="welcome-heading">
-            <h1 id="welcome-heading">Bem-vindo de volta!</h1>
-            <p>Continue de onde parou ou crie um novo baralho para começar a aprender.</p>
+        <section class="dashboard-hero">
+            <div class="hero-content">
+                <h1 id="welcome-heading">Bem-vindo de volta!</h1>
+                <p id="welcome-subtitle">Continue de onde parou ou crie um novo baralho para começar a aprender.</p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="stat-value" id="total-decks">0</span>
+                        <span class="stat-label">Baralhos</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-value" id="total-cards">0</span>
+                        <span class="stat-label">Cartões</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="stat-value" id="due-cards">0</span>
+                        <span class="stat-label">Para revisar</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-illustration">
+                <i class="fas fa-book-open"></i>
+            </div>
         </section>
 
-        <div class="dashboard-grid">
-            
-            <aside class="dashboard-sidebar">
-                <div class="card create-deck-card">
-                    <h2>Criar Novo Baralho</h2>
-                    <p class="card-subtitle">Dê um nome e uma descrição para organizar seus estudos.</p>
-                    <form id="create-deck-form" novalidate>
-                        <div class="form-group">
-                            <label for="deck-title">Título do baralho</label>
-                            <input type="text" id="deck-title" placeholder="Ex: Biologia Celular" required minlength="3" maxlength="50">
-                            <span class="error-message" id="title-error"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="deck-description">Descrição (opcional)</label>
-                            <textarea id="deck-description" placeholder="Ex: Conceitos do primeiro semestre" rows="3" maxlength="200"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-full">Criar Baralho</button>
-                    </form>
+        <div class="dashboard-content">
+            <div class="content-header">
+                <h2>Meus Baralhos</h2>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="deck-search" placeholder="Buscar baralhos...">
+                    </div>
+                    <div class="filter-dropdown">
+                        <button class="filter-btn">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                    </div>
+                    <button id="create-deck-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Novo Baralho
+                    </button>
                 </div>
-            </aside>
-            
-            <section class="dashboard-content" aria-labelledby="my-decks-heading">
-                <div class="decks-header">
-                    <h2 id="my-decks-heading">Meus Baralhos</h2>
-                </div>
-                <ul id="decks-container" class="decks-grid">
-                    <li id="loading-decks">
-                        <div class="deck-card-skeleton">
-                            <div class="skeleton skeleton-text-large"></div>
-                            <div class="skeleton skeleton-text-small"></div>
-                        </div>
-                        <div class="deck-card-skeleton">
-                            <div class="skeleton skeleton-text-large"></div>
-                            <div class="skeleton skeleton-text-small"></div>
-                        </div>
-                    </li>
-                </ul>
-            </section>
+            </div>
 
+            <div class="decks-container">
+                <div id="decks-grid" class="decks-grid">
+                    <div class="deck-card create-new">
+                        <div class="deck-card-inner">
+                            <div class="create-icon">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <h3>Criar Novo Baralho</h3>
+                            <p>Comece um novo conjunto de flashcards</p>
+                            <button class="btn btn-outline">Criar</button>
+                        </div>
+                    </div>
+
+                    <div class="skeleton-deck">
+                        <div class="skeleton skeleton-image"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-button"></div>
+                        </div>
+                    </div>
+
+                    <div class="skeleton-deck">
+                        <div class="skeleton skeleton-image"></div>
+                        <div class="skeleton-content">
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-text"></div>
+                            <div class="skeleton skeleton-button"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="empty-state" class="empty-state hidden">
+                    <div class="empty-icon">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3>Nenhum baralho encontrado</h3>
+                    <p>Comece criando seu primeiro baralho de flashcards</p>
+                    <button class="btn btn-primary">Criar Primeiro Baralho</button>
+                </div>
+            </div>
         </div>
     </main>
+
+    <div id="create-deck-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Criar Novo Baralho</h2>
+                <button class="close-modal-btn" aria-label="Fechar modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="create-deck-form" novalidate>
+                    <div class="form-group">
+                        <label for="deck-title">Título do baralho</label>
+                        <input type="text" id="deck-title" placeholder="Ex: Biologia Celular" required minlength="3"
+                            maxlength="50">
+                        <span class="error-message" id="title-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="deck-description">Descrição (opcional)</label>
+                        <textarea id="deck-description" placeholder="Ex: Conceitos do primeiro semestre" rows="3"
+                            maxlength="200"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="deck-color">Cor de identificação</label>
+                        <div class="color-picker">
+                            <div class="color-option" data-color="#4f46e5" style="background-color: #4f46e5;"></div>
+                            <div class="color-option" data-color="#10b981" style="background-color: #10b981;"></div>
+                            <div class="color-option" data-color="#f59e0b" style="background-color: #f59e0b;"></div>
+                            <div class="color-option" data-color="#ef4444" style="background-color: #ef4444;"></div>
+                            <div class="color-option" data-color="#8b5cf6" style="background-color: #8b5cf6;"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Criar Baralho</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <div id="edit-deck-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
                 <h2>Editar Baralho</h2>
-                <button id="close-edit-deck-modal-btn" class="close-btn" aria-label="Fechar modal">&times;</button>
+                <button class="close-modal-btn" aria-label="Fechar modal">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <form id="edit-deck-form" novalidate>
-                <div class="modal-body">
+            <div class="modal-body">
+                <form id="edit-deck-form" novalidate>
                     <input type="hidden" id="edit-deck-id">
                     <div class="form-group">
                         <label for="edit-deck-title">Título</label>
@@ -101,15 +218,34 @@
                         <label for="edit-deck-description">Descrição</label>
                         <textarea id="edit-deck-description" rows="4" maxlength="200"></textarea>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="cancel-edit-deck-btn" class="btn">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                </div>
-            </form>
+                    <div class="form-group">
+                        <label for="edit-deck-color">Cor de identificação</label>
+                        <div class="color-picker">
+                            <div class="color-option" data-color="#4f46e5" style="background-color: #4f46e5;"></div>
+                            <div class="color-option" data-color="#10b981" style="background-color: #10b981;"></div>
+                            <div class="color-option" data-color="#f59e0b" style="background-color: #f59e0b;"></div>
+                            <div class="color-option" data-color="#ef4444" style="background-color: #ef4444;"></div>
+                            <div class="color-option" data-color="#8b5cf6" style="background-color: #8b5cf6;"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        <button type="button" id="delete-deck-btn" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-    
+
+    <div class="quick-actions">
+        <button class="quick-action-btn" id="scroll-to-top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="js/notifications.js"></script>
@@ -117,4 +253,5 @@
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
 </body>
+
 </html>
