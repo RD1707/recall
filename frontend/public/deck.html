@@ -13,128 +13,191 @@
     <header class="app-header">
         <div class="header-container">
             <div class="logo">
-                <a href="dashboard.html">Recall</a>
+                <a href="dashboard.html" class="logo-link">
+                    <i data-feather="layers" class="logo-icon"></i>
+                    <span class="logo-text">Recall</span>
+                </a>
             </div>
             <nav class="app-nav">
                 <div class="user-stats">
                     <span class="user-stat">
-                        <i data-feather="star"></i>
+                        <i data-feather="star" class="stat-icon"></i>
                         <span id="user-points">0</span> Pontos
                     </span>
                     <span class="user-stat">
-                        <i data-feather="zap"></i>
+                        <i data-feather="zap" class="stat-icon"></i>
                         <span id="user-streak">0</span> Dias
                     </span>
                 </div>
-                <a href="progress.html" class="nav-link">Meu Progresso</a>
+                <a href="progress.html" class="nav-link">
+                    <i data-feather="trending-up" class="nav-icon"></i>
+                    <span class="nav-text">Meu Progresso</span>
+                </a>
                 <div class="user-actions">
-                    <span id="user-email"></span>
-                    <button id="logout-button">Sair</button>
+                    <span id="user-email" class="user-email"></span>
+                    <button id="logout-button" class="logout-btn">
+                        <i data-feather="log-out" class="logout-icon"></i>
+                        Sair
+                    </button>
                 </div>
             </nav>
         </div>
     </header>
 
-    <main class="deck-main-revamped">
-        <section class="deck-header-revamped" aria-labelledby="deck-title-heading">
-            <div class="deck-header-content">
-                <div class="deck-title-group">
-                    <a href="dashboard.html" class="back-link" title="Voltar ao Dashboard">
-                        <i data-feather="arrow-left"></i>
-                    </a>
-                    <div>
-                        <h1 id="deck-title-heading">Carregando baralho...</h1>
-                        <p id="deck-description-paragraph"></p>
-                    </div>
+    <main class="deck-main">
+        <section class="deck-hero">
+            <div class="hero-content">
+                <a href="dashboard.html" class="back-btn">
+                    <i data-feather="arrow-left"></i>
+                    Voltar
+                </a>
+                <div class="deck-info">
+                    <h1 id="deck-title-heading">Carregando baralho...</h1>
+                    <p id="deck-description-paragraph" class="deck-description"></p>
                 </div>
                 <div class="deck-actions">
-                    <button id="share-deck-button" class="btn btn-secondary">
-                        <i data-feather="share-2"></i> Compartilhar
+                    <button id="share-deck-button" class="btn btn-secondary btn-icon">
+                        <i data-feather="share-2"></i>
+                        Compartilhar
                     </button>
-                    <a href="#" id="study-deck-button" class="btn btn-primary">
-                        <i data-feather="play-circle"></i> Estudar Agora
+                    <a href="#" id="study-deck-button" class="btn btn-primary btn-icon">
+                        <i data-feather="play"></i>
+                        Estudar Agora
                     </a>
-                </div>
-            </div>
-
-            <div class="deck-stats-bar">
-                <div class="stat-item">
-                    <i data-feather="layers"></i>
-                    <span id="total-cards-stat">--</span>
-                    <label>Total de Cards</label>
-                </div>
-                <div class="stat-item">
-                    <i data-feather="clock"></i>
-                    <span id="review-cards-stat">--</span>
-                    <label>Para Revisar Hoje</label>
-                </div>
-                <div class="stat-item">
-                    <i data-feather="award"></i>
-                    <span id="mastered-cards-stat">--</span>
-                    <label>Dominados</label>
                 </div>
             </div>
         </section>
 
-        <div class="deck-layout-revamped">
-            <section class="deck-content-revamped" aria-labelledby="flashcards-heading">
-                <div class="flashcards-toolbar">
-                    <h2 id="flashcards-heading">Flashcards no Baralho</h2>
-                    <button id="add-card-manual-btn" class="btn btn-primary">
-                        <i data-feather="plus"></i> Adicionar Card
+        <div class="deck-stats-container">
+            <div class="stat-card">
+                <div class="stat-icon-container">
+                    <i data-feather="layers" class="stat-main-icon"></i>
+                </div>
+                <div class="stat-content">
+                    <span id="total-cards-stat" class="stat-number">--</span>
+                    <span class="stat-label">Total de Cards</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon-container">
+                    <i data-feather="clock" class="stat-main-icon"></i>
+                </div>
+                <div class="stat-content">
+                    <span id="review-cards-stat" class="stat-number">--</span>
+                    <span class="stat-label">Para Revisar Hoje</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon-container">
+                    <i data-feather="award" class="stat-main-icon"></i>
+                </div>
+                <div class="stat-content">
+                    <span id="mastered-cards-stat" class="stat-number">--</span>
+                    <span class="stat-label">Dominados</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="deck-content-grid">
+            <section class="flashcards-section">
+                <div class="section-header">
+                    <h2 class="section-title">Flashcards no Baralho</h2>
+                    <button id="add-card-manual-btn" class="btn btn-primary btn-icon">
+                        <i data-feather="plus"></i>
+                        Adicionar Card
                     </button>
                 </div>
-                <div id="flashcards-container" class="flashcards-list-revamped">
-                    <div class="flashcard-skeleton"></div>
-                    <div class="flashcard-skeleton"></div>
-                    <div class="flashcard-skeleton"></div>
+                <div id="flashcards-container" class="flashcards-grid">
+                    <div class="card-skeleton">
+                        <div class="skeleton-line skeleton-title"></div>
+                        <div class="skeleton-line skeleton-content"></div>
+                        <div class="skeleton-line skeleton-content"></div>
+                    </div>
+                    <div class="card-skeleton">
+                        <div class="skeleton-line skeleton-title"></div>
+                        <div class="skeleton-line skeleton-content"></div>
+                        <div class="skeleton-line skeleton-content"></div>
+                    </div>
+                    <div class="card-skeleton">
+                        <div class="skeleton-line skeleton-title"></div>
+                        <div class="skeleton-line skeleton-content"></div>
+                        <div class="skeleton-line skeleton-content"></div>
+                    </div>
                 </div>
             </section>
 
-            <aside class="deck-sidebar-revamped">
-                <div class="card ai-generator-card">
-                    <div class="ai-generator-header">
-                        <i data-feather="cpu"></i>
-                        <h2>Gerar com IA</h2>
+            <aside class="ai-generator-section">
+                <div class="generator-card">
+                    <div class="generator-header">
+                        <div class="generator-title-container">
+                            <i data-feather="cpu" class="generator-icon"></i>
+                            <h2>Gerar com IA</h2>
+                        </div>
+                        <p class="generator-subtitle">Crie flashcards automaticamente a partir de conteúdo</p>
                     </div>
-                    <form id="generate-cards-form">
+                    <form id="generate-cards-form" class="generator-form">
                         <div class="input-mode-selector">
-                            <button type="button" class="input-mode-btn active" data-mode="text" title="Colar Texto"><i data-feather="type"></i></button>
-                            <button type="button" class="input-mode-btn" data-mode="file" title="Carregar Ficheiro"><i data-feather="upload"></i></button>
-                            <button type="button" class="input-mode-btn" data-mode="youtube" title="Link do YouTube"><i data-feather="youtube"></i></button>
+                            <button type="button" class="input-mode-btn active" data-mode="text" title="Colar Texto">
+                                <i data-feather="type"></i>
+                                <span>Texto</span>
+                            </button>
+                            <button type="button" class="input-mode-btn" data-mode="file" title="Carregar Ficheiro">
+                                <i data-feather="upload"></i>
+                                <span>Arquivo</span>
+                            </button>
+                            <button type="button" class="input-mode-btn" data-mode="youtube" title="Link do YouTube">
+                                <i data-feather="youtube"></i>
+                                <span>YouTube</span>
+                            </button>
                         </div>
 
-                        <div id="text-input-area" class="form-group">
-                            <textarea id="text-content" placeholder="Cole seu texto, resumo ou transcrição aqui..." rows="7"></textarea>
+                        <div id="text-input-area" class="input-area">
+                            <label for="text-content" class="input-label">Cole seu texto abaixo</label>
+                            <textarea id="text-content" placeholder="Ex: Resumo do capítulo 3 sobre biologia celular..." rows="5"></textarea>
                         </div>
-                        <div id="file-input-area" class="form-group hidden">
+                        <div id="file-input-area" class="input-area hidden">
                             <label for="file-content" class="file-drop-zone">
-                                <span>Arraste e solte ou clique para selecionar um ficheiro (.pdf, .txt)</span>
+                                <div class="drop-zone-content">
+                                    <i data-feather="upload-cloud" class="drop-zone-icon"></i>
+                                    <p class="drop-zone-text">Arraste e solte um arquivo aqui ou clique para selecionar</p>
+                                    <p class="drop-zone-subtext">Formatos suportados: PDF, TXT, MD</p>
+                                </div>
                                 <input type="file" id="file-content" accept=".txt,.md,.pdf">
                             </label>
                         </div>
-                        <div id="youtube-input-area" class="form-group hidden">
+                        <div id="youtube-input-area" class="input-area hidden">
+                            <label for="youtube-url" class="input-label">URL do vídeo do YouTube</label>
                             <input type="url" id="youtube-url" placeholder="https://www.youtube.com/watch?v=...">
                         </div>
 
                         <div class="generation-options">
-                            <div class="form-group">
-                                <label for="card-count">Nº de Cards</label>
-                                <input type="number" id="card-count" value="5" min="1" max="15">
+                            <div class="option-group">
+                                <label for="card-count" class="option-label">Número de Cards</label>
+                                <div class="number-input">
+                                    <button type="button" class="number-btn" data-action="decrease">-</button>
+                                    <input type="number" id="card-count" value="5" min="1" max="15">
+                                    <button type="button" class="number-btn" data-action="increase">+</button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="card-type">Tipo</label>
-                                <select id="card-type">
-                                    <option value="Pergunta e Resposta">P & R</option>
+                            <div class="option-group">
+                                <label for="card-type" class="option-label">Tipo de Card</label>
+                                <select id="card-type" class="custom-select">
+                                    <option value="Pergunta e Resposta">Pergunta e Resposta</option>
                                     <option value="Múltipla Escolha">Múltipla Escolha</option>
                                 </select>
                             </div>
                         </div>
-                        <button type="submit" id="generate-button" class="btn btn-primary btn-full">Gerar Flashcards</button>
+                        <button type="submit" id="generate-button" class="btn btn-primary btn-full">
+                            <i data-feather="zap" class="btn-icon"></i>
+                            Gerar Flashcards
+                        </button>
                     </form>
                     <div id="processing-feedback" class="processing-feedback hidden">
-                        <div class="spinner"></div>
-                        <p>A IA está a trabalhar... Os seus novos cards aparecerão em breve.</p>
+                        <div class="processing-spinner"></div>
+                        <div class="processing-text">
+                            <h3>A IA está trabalhando</h3>
+                            <p>Seus novos cards aparecerão em breve. Isso pode levar alguns segundos.</p>
+                        </div>
                     </div>
                 </div>
             </aside>
@@ -153,22 +216,25 @@
         feather.replace();
     </script>
 
+    <!-- Modal de Edição de Flashcard -->
     <div id="edit-flashcard-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
                 <h2 id="modal-title">Editar Flashcard</h2>
-                <button class="close-btn" data-close-modal="edit-flashcard-modal">&times;</button>
+                <button class="close-btn" data-close-modal="edit-flashcard-modal">
+                    <i data-feather="x"></i>
+                </button>
             </div>
             <form id="edit-flashcard-form" novalidate>
                 <div class="modal-body">
                     <input type="hidden" id="edit-card-id">
                     <div class="form-group">
-                        <label for="edit-question">Pergunta</label>
-                        <textarea id="edit-question" name="question" rows="4" required></textarea>
+                        <label for="edit-question" class="form-label">Pergunta</label>
+                        <textarea id="edit-question" name="question" rows="4" placeholder="Digite a pergunta..." required></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="edit-answer">Resposta</label>
-                        <textarea id="edit-answer" name="answer" rows="4" required></textarea>
+                        <label for="edit-answer" class="form-label">Resposta</label>
+                        <textarea id="edit-answer" name="answer" rows="4" placeholder="Digite a resposta..." required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -179,20 +245,27 @@
         </div>
     </div>
 
+    <!-- Modal de Compartilhamento -->
     <div id="share-deck-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
                 <h2>Compartilhar Baralho</h2>
-                <button class="close-btn" data-close-modal="share-deck-modal">&times;</button>
+                <button class="close-btn" data-close-modal="share-deck-modal">
+                    <i data-feather="x"></i>
+                </button>
             </div>
             <div class="modal-body">
-                <p>Qualquer pessoa com este link poderá ver o seu baralho.</p>
+                <p class="modal-description">Qualquer pessoa com este link poderá ver o seu baralho.</p>
                 <div class="share-link-container">
                     <input type="text" id="shareable-link-input" readonly>
-                    <button id="copy-link-button" class="btn">Copiar</button>
+                    <button id="copy-link-button" class="btn btn-secondary">
+                        <i data-feather="copy" class="btn-icon"></i>
+                        Copiar
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </body>
 </html>
+
