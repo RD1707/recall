@@ -20,3 +20,5 @@
 {"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-25 15:36:58"}
 {"level":"info","message":"A processar tarefa 4 para o baralho 9a21a36b-bde4-4d7b-b918-29eec3bc3530","service":"recall-api","timestamp":"2025-08-25 15:37:16"}
 {"level":"info","message":"Tarefa 4 concluída com sucesso. 5 flashcards guardados.","service":"recall-api","timestamp":"2025-08-25 15:37:20"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-26 21:09:53"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-26 21:11:27"}
