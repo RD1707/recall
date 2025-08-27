@@ -5,117 +5,159 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baralho - Recall</title>
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/deck.css">
+    <link rel="stylesheet" href="css/deck-revamped.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body>
     <header class="app-header">
-    <div class="header-container">
-        <div class="logo">
-            <a href="dashboard.html">Recall</a>
+        <div class="header-container">
+            <div class="logo">
+                <a href="dashboard.html">Recall</a>
+            </div>
+            <nav class="app-nav">
+                <div class="user-stats">
+                    <span class="user-stat">
+                        <i data-feather="star"></i>
+                        <span id="user-points">0</span> Pontos
+                    </span>
+                    <span class="user-stat">
+                        <i data-feather="zap"></i>
+                        <span id="user-streak">0</span> Dias
+                    </span>
+                </div>
+                <a href="progress.html" class="nav-link">Meu Progresso</a>
+                <div class="user-actions">
+                    <span id="user-email"></span>
+                    <button id="logout-button">Sair</button>
+                </div>
+            </nav>
         </div>
-        <nav class="app-nav">
-            <div class="user-stats">
-                <span class="user-stat">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                    <span id="user-points">0</span> Pontos
-                </span>
-                <span class="user-stat">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l.34 3.39h-1.38L12 2.69z M12.34 6.08H11.66L12 2.69z M12 11.28c-2.88 0-5.22 2.34-5.22 5.22s2.34 5.22 5.22 5.22 5.22-2.34 5.22-5.22S14.88 11.28 12 11.28z M12 20.72c-2.31 0-4.18-1.87-4.18-4.18s1.87-4.18 4.18-4.18 4.18 1.87 4.18 4.18-1.87 4.18-4.18 4.18z"></path><path d="M12 2.69C8.16 2.69 5.22 5.63 5.22 9.47c0 2.22 1.02 4.22 2.62 5.51.3.24.64.4.98.5.42.12.86.18 1.3.18s.88-.06 1.3-.18c.34-.1.68-.26.98-.5 1.6-1.29 2.62-3.29 2.62-5.51C18.78 5.63 15.84 2.69 12 2.69z"></path></svg>
-                    <span id="user-streak">0</span> Dias
-                </span>
-            </div>
-            <a href="progress.html" class="nav-link">Meu Progresso</a>
-            <div class="user-actions">
-                <span id="user-email"></span>
-                <button id="logout-button">Sair</button>
-            </div>
-        </nav>
-    </div>
-</header>
+    </header>
 
-    <main class="deck-main">
-        <section class="deck-header" aria-labelledby="deck-title-heading">
+    <main class="deck-main-revamped">
+        <section class="deck-header-revamped" aria-labelledby="deck-title-heading">
             <div class="deck-header-content">
-                <h1 id="deck-title-heading">Carregando baralho...</h1>
-                <p id="deck-description-paragraph"></p>
+                <div class="deck-title-group">
+                    <a href="dashboard.html" class="back-link" title="Voltar ao Dashboard">
+                        <i data-feather="arrow-left"></i>
+                    </a>
+                    <div>
+                        <h1 id="deck-title-heading">Carregando baralho...</h1>
+                        <p id="deck-description-paragraph"></p>
+                    </div>
+                </div>
                 <div class="deck-actions">
-                    <a href="#" id="study-deck-button" class="btn btn-primary">Estudar este Baralho</a>
-                    <button id="share-deck-button" class="btn">Compartilhar</button> </div>
+                    <button id="share-deck-button" class="btn btn-secondary">
+                        <i data-feather="share-2"></i> Compartilhar
+                    </button>
+                    <a href="#" id="study-deck-button" class="btn btn-primary">
+                        <i data-feather="play-circle"></i> Estudar Agora
+                    </a>
+                </div>
+            </div>
+
+            <div class="deck-stats-bar">
+                <div class="stat-item">
+                    <i data-feather="layers"></i>
+                    <span id="total-cards-stat">--</span>
+                    <label>Total de Cards</label>
+                </div>
+                <div class="stat-item">
+                    <i data-feather="clock"></i>
+                    <span id="review-cards-stat">--</span>
+                    <label>Para Revisar Hoje</label>
+                </div>
+                <div class="stat-item">
+                    <i data-feather="award"></i>
+                    <span id="mastered-cards-stat">--</span>
+                    <label>Dominados</label>
                 </div>
             </div>
         </section>
 
-        <div class="deck-layout">
-            <aside class="deck-sidebar">
-                <div class="card generate-card">
-                    <h2>Gerar com IA</h2>
+        <div class="deck-layout-revamped">
+            <section class="deck-content-revamped" aria-labelledby="flashcards-heading">
+                <div class="flashcards-toolbar">
+                    <h2 id="flashcards-heading">Flashcards no Baralho</h2>
+                    <button id="add-card-manual-btn" class="btn btn-primary">
+                        <i data-feather="plus"></i> Adicionar Card
+                    </button>
+                </div>
+                <div id="flashcards-container" class="flashcards-list-revamped">
+                    <div class="flashcard-skeleton"></div>
+                    <div class="flashcard-skeleton"></div>
+                    <div class="flashcard-skeleton"></div>
+                </div>
+            </section>
+
+            <aside class="deck-sidebar-revamped">
+                <div class="card ai-generator-card">
+                    <div class="ai-generator-header">
+                        <i data-feather="cpu"></i>
+                        <h2>Gerar com IA</h2>
+                    </div>
                     <form id="generate-cards-form">
                         <div class="input-mode-selector">
-                            <button type="button" class="input-mode-btn active" data-mode="text">Colar Texto</button>
-                            <button type="button" class="input-mode-btn" data-mode="file">Carregar Ficheiro</button>
-                            <button type="button" class="input-mode-btn" data-mode="youtube">Link do YouTube</button>
+                            <button type="button" class="input-mode-btn active" data-mode="text" title="Colar Texto"><i data-feather="type"></i></button>
+                            <button type="button" class="input-mode-btn" data-mode="file" title="Carregar Ficheiro"><i data-feather="upload"></i></button>
+                            <button type="button" class="input-mode-btn" data-mode="youtube" title="Link do YouTube"><i data-feather="youtube"></i></button>
                         </div>
 
                         <div id="text-input-area" class="form-group">
-                            <label for="text-content" class="sr-only">Cole o seu texto aqui</label>
-                            <textarea id="text-content" placeholder="Cole o seu texto, resumo ou transcrição aqui para a IA criar os flashcards..." rows="8"></textarea>
+                            <textarea id="text-content" placeholder="Cole seu texto, resumo ou transcrição aqui..." rows="7"></textarea>
                         </div>
-
                         <div id="file-input-area" class="form-group hidden">
-                            <label for="file-content">Selecione um ficheiro (.txt, .md, .pdf)</label>
-                            <input type="file" id="file-content" accept=".txt,.md,.pdf">
+                            <label for="file-content" class="file-drop-zone">
+                                <span>Arraste e solte ou clique para selecionar um ficheiro (.pdf, .txt)</span>
+                                <input type="file" id="file-content" accept=".txt,.md,.pdf">
+                            </label>
                         </div>
-
                         <div id="youtube-input-area" class="form-group hidden">
-                            <label for="youtube-url" class="sr-only">Cole o link do vídeo do YouTube</label>
                             <input type="url" id="youtube-url" placeholder="https://www.youtube.com/watch?v=...">
                         </div>
 
-                        <div class="form-group">
-                            <label for="card-count">Número de Flashcards</label>
-                            <input type="number" id="card-count" value="5" min="1" max="15" required>
+                        <div class="generation-options">
+                            <div class="form-group">
+                                <label for="card-count">Nº de Cards</label>
+                                <input type="number" id="card-count" value="5" min="1" max="15">
+                            </div>
+                            <div class="form-group">
+                                <label for="card-type">Tipo</label>
+                                <select id="card-type">
+                                    <option value="Pergunta e Resposta">P & R</option>
+                                    <option value="Múltipla Escolha">Múltipla Escolha</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="card-type">Tipo de Flashcard</label>
-                            <select id="card-type" required>
-                                <option value="Pergunta e Resposta">Pergunta e Resposta</option>
-                                <option value="Múltipla Escolha">Múltipla Escolha</option>
-                            </select>
-                        </div>
-                        <button type="submit" id="generate-button" class="btn btn-primary">Gerar Flashcards</button>
+                        <button type="submit" id="generate-button" class="btn btn-primary btn-full">Gerar Flashcards</button>
                     </form>
-                    <div class="card generate-card">
-                        <h2>Gerar com IA</h2>
-                        <form id="generate-cards-form">
-                            </form>
-                        <div id="processing-feedback" class="processing-feedback hidden">
-                            <div class="spinner"></div>
-                            <p>A IA está a trabalhar... Os seus novos cards aparecerão em breve.</p>
+                    <div id="processing-feedback" class="processing-feedback hidden">
+                        <div class="spinner"></div>
+                        <p>A IA está a trabalhar... Os seus novos cards aparecerão em breve.</p>
                     </div>
                 </div>
             </aside>
-
-            <section class="deck-content" aria-labelledby="flashcards-heading">
-                <h2 id="flashcards-heading">Flashcards no Baralho</h2>
-                <ul id="flashcards-container" class="flashcards-list">
-                    <li id="loading-flashcards"><p>Carregando flashcards...</p></li>
-                </ul>
-            </section>
         </div>
     </main>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="js/notifications.js"></script>
     <script src="js/main.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/deck.js"></script> 
+    <script src="js/deck.js"></script>
+    <script>
+        // Ativa os ícones do Feather
+        feather.replace();
+    </script>
 
     <div id="edit-flashcard-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2>Editar Flashcard</h2>
-                <button id="close-modal-btn" class="close-btn" aria-label="Fechar modal">&times;</button>
+                <h2 id="modal-title">Editar Flashcard</h2>
+                <button class="close-btn" data-close-modal="edit-flashcard-modal">&times;</button>
             </div>
             <form id="edit-flashcard-form" novalidate>
                 <div class="modal-body">
@@ -130,35 +172,27 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="cancel-edit-btn" class="btn">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-close-modal="edit-flashcard-modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                 </div>
             </form>
         </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <script src="js/notifications.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/deck.js"></script> 
 
     <div id="share-deck-modal" class="modal-overlay">
-    <div class="modal">
-        <div class="modal-header">
-            <h2>Compartilhar Baralho</h2>
-            <button class="close-btn" data-close-modal="share-deck-modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p>Qualquer pessoa com este link poderá ver o seu baralho.</p>
-            <div class="share-link-container">
-                <input type="text" id="shareable-link-input" readonly>
-                <button id="copy-link-button">Copiar</button>
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Compartilhar Baralho</h2>
+                <button class="close-btn" data-close-modal="share-deck-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Qualquer pessoa com este link poderá ver o seu baralho.</p>
+                <div class="share-link-container">
+                    <input type="text" id="shareable-link-input" readonly>
+                    <button id="copy-link-button" class="btn">Copiar</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </body>
 </html>
