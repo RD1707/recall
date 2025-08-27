@@ -124,3 +124,7 @@ async function generateFlashcardsFromYouTube(deckId, params) {
 async function fetchPerformanceInsights() {
     return apiCall('/analytics/insights');
 }
+
+async function fetchAnalyticsSummary() {
+    return apiCall('/analytics/summary');
+}
