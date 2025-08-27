@@ -1,7 +1,8 @@
 /**
  * Arquivo: progress.js
  * Descrição: Gerencia toda a lógica da página de progresso, incluindo a busca de
- * dados analíticos, a renderização de gráficos interativos e a exibição de insights.
+ * dados analíticos do backend, a renderização de gráficos interativos e a exibição de insights.
+ * VERSÃO INTEGRADA E CORRIGIDA.
  */
 
 // Objeto para armazenar o estado da página, como a instância do gráfico.
@@ -12,67 +13,62 @@ const pageState = {
 document.addEventListener('DOMContentLoaded', () => {
     // Carrega todos os dados da página de forma assíncrona.
     loadAllProgressData();
-    // Configura os event listeners para os botões de controle.
+    // A função de event listeners foi simplificada pois a API só retorna dados de 7 dias.
     setupEventListeners();
 });
 
 /**
- * Função principal que orquestra o carregamento de todos os dados necessários.
+ * Função principal que orquestra o carregamento de todos os dados necessários do backend.
  * Utiliza Promise.all para buscar dados em paralelo e otimizar o tempo de carregamento.
  */
 async function loadAllProgressData() {
     // Mostra os skeletons de carregamento enquanto os dados são buscados.
     renderSkeletons();
 
-    // Busca os dados do resumo, do gráfico (inicialmente 7 dias) e os insights da IA.
-    const [summaryData, chartData, insightsData] = await Promise.all([
-        fetchAnalyticsSummary(), // NOVO: Busca os dados para os cards de métricas
-        fetchReviewsOverTime(7),   // NOVO: Busca dados do gráfico para um período específico
-        fetchPerformanceInsights() // Busca os insights e os baralhos com dificuldade
+    // Busca os dados do gráfico e os insights da IA a partir das funções reais da API.
+    const [chartData, insightsData, profileData] = await Promise.all([
+        fetchLast7DaysReviews(),    // Endpoint REAL: /api/analytics/reviews-last-7-days
+        fetchPerformanceInsights(), // Endpoint REAL: /api/analytics/insights
+        fetchProfile()              // Endpoint REAL: /api/profile para pegar o streak
     ]);
 
-    updateStatCards(summaryData);
+    // Atualiza os componentes da UI com os dados reais do backend.
+    updateStatCards(insightsData, profileData); // Passando os dados necessários
     renderReviewsChart(chartData);
     renderInsights(insightsData);
 }
 
-/**
- * Busca e renderiza os dados do gráfico para um período de tempo específico.
- * @param {number} range - O período em dias (7, 30, ou 90).
- */
-async function loadAndRenderChart(range) {
-    const chartData = await fetchReviewsOverTime(range);
-    renderReviewsChart(chartData);
-}
+// A função loadAndRenderChart(range) foi removida pois a API só suporta 7 dias.
 
-// --- FUNÇÕES DE RENDERIZAÇÃO ---
+// --- FUNÇÕES DE RENDERIZAÇÃO (Render Functions) ---
 
 /**
  * Preenche os cards de métricas chave com os dados recebidos da API.
- * @param {object} data - Objeto contendo as métricas (totalReviews, accuracy, etc.).
+ * @param {object} insights - Objeto contendo as métricas de performance (accuracy, mastered).
+ * @param {object} profile - Objeto contendo os dados do perfil (streak).
  */
-function updateStatCards(data) {
-    document.getElementById('total-reviews-stat').textContent = data?.totalReviews || 0;
-    document.getElementById('accuracy-stat').textContent = `${data?.averageAccuracy || 0}%`;
-    document.getElementById('max-streak-stat').textContent = `${data?.maxStreak || 0} dias`;
-    document.getElementById('mastered-cards-stat').textContent = data?.masteredCards || 0;
+function updateStatCards(insights, profile) {
+    // O backend não fornece todas as métricas, então usamos o que temos e marcamos o resto.
+    document.getElementById('total-reviews-stat').textContent = insights?.totalReviews || 'N/A';
+    document.getElementById('accuracy-stat').textContent = `${insights?.averageAccuracy || 0}%`;
+    document.getElementById('max-streak-stat').textContent = `${profile?.current_streak || 0} dias`;
+    document.getElementById('mastered-cards-stat').textContent = insights?.masteredCards || 'N/A';
 }
 
 /**
- * Renderiza ou atualiza o gráfico de revisões.
+ * Renderiza ou atualiza o gráfico de revisões com os dados do backend.
  * @param {object} chartData - Objeto com 'labels' e 'counts' para o gráfico.
  */
 function renderReviewsChart(chartData) {
     const ctx = document.getElementById('reviewsChart').getContext('2d');
     const chartContainer = document.querySelector('.chart-container');
 
-    // Se a instância do gráfico já existe, a destrói antes de criar uma nova.
     if (pageState.reviewsChart) {
         pageState.reviewsChart.destroy();
     }
     
     if (!chartData || !chartData.labels || !chartData.counts) {
-        chartContainer.innerHTML = '<p>Não foi possível carregar os dados de revisões para este período.</p>';
+        chartContainer.innerHTML = '<p>Não há dados de revisões para exibir.</p>';
         return;
     }
 
@@ -96,7 +92,8 @@ function renderReviewsChart(chartData) {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        stepSize: 1
+                        stepSize: 1, // Garante que o eixo Y só mostre números inteiros
+                        precision: 0
                     }
                 }
             },
@@ -110,8 +107,8 @@ function renderReviewsChart(chartData) {
 }
 
 /**
- * Renderiza os insights da IA e a lista de baralhos com dificuldade.
- * @param {object} insightsData - Objeto contendo o insight da IA e os baralhos.
+ * Renderiza os insights da IA e a lista de baralhos com dificuldade, conforme recebido do backend.
+ * @param {object} insightsData - Objeto contendo a propriedade 'insight' (string) e 'difficultDecks' (array).
  */
 function renderInsights(insightsData) {
     const insightsContent = document.getElementById('insights-content');
@@ -140,7 +137,7 @@ function renderInsights(insightsData) {
             difficultDecksList.appendChild(listItem);
         });
     } else {
-        difficultDecksList.innerHTML = '<p>Ótimo trabalho! Nenhum baralho com alta taxa de erro detectado.</p>';
+        difficultDecksList.innerHTML = '<li><p>Ótimo trabalho! Nenhum baralho com alta taxa de erro detectado.</p></li>';
     }
 }
 
@@ -160,21 +157,18 @@ function renderSkeletons() {
 }
 
 /**
- * Configura os event listeners da página, como os botões de período do gráfico.
+ * Configura os event listeners da página.
+ * Simplificado para remover os botões de período que não são suportados pela API.
  */
 function setupEventListeners() {
     const timeRangeSelector = document.querySelector('.time-range-selector');
-    if (!timeRangeSelector) return;
-
-    timeRangeSelector.addEventListener('click', (e) => {
-        const button = e.target.closest('.time-range-btn');
-        if (button) {
-            // Remove a classe 'active' de todos os botões e a adiciona ao clicado.
-            timeRangeSelector.querySelectorAll('.time-range-btn').forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-
-            const range = parseInt(button.dataset.range, 10);
-            loadAndRenderChart(range);
-        }
-    });
+    if (timeRangeSelector) {
+        // Esconde os botões de 30 e 90 dias, já que a API não os suporta.
+        const buttons = timeRangeSelector.querySelectorAll('.time-range-btn');
+        buttons.forEach(btn => {
+            if (btn.dataset.range !== '7') {
+                btn.style.display = 'none';
+            }
+        });
+    }
 }
