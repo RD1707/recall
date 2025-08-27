@@ -102,7 +102,8 @@ async function generateFlashcardsFromFile(deckId, formData) {
 }
 
 async function fetchLast7DaysReviews() {
-    return apiCall('/analytics/reviews-last-7-days');
+    // Corrigido para corresponder à rota definida no backend.
+    return apiCall('/analytics/reviews-over-time');
 }
 
 async function shareDeck(deckId) {
