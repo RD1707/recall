@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sessão de Estudo - Recall</title>
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/study.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
     <header class="app-header">
         <div class="header-container">
             <div class="logo">
-                <a id="deck-link" href="dashboard.html">Recall</a>
+                <a id="deck-link" href="dashboard.html">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span>Voltar ao Baralho</span>
+                </a>
             </div>
             <nav class="app-nav">
                 <div class="user-stats">
@@ -28,50 +31,70 @@
     </header>
 
     <main class="study-main">
-        <h1 class="sr-only">Sessão de Estudo</h1>
+        <div id="study-container" class="study-container">
+            <section class="progress-section" aria-label="Progresso da sessão">
+                <span id="progress-indicator" class="progress-text">Carregando...</span>
+                <div class="progress-bar-container">
+                    <div id="progress-bar" class="progress-bar"></div>
+                </div>
+            </section>
 
-        <div id="study-session">
-            <div class="progress-container">
-                <p id="progress-indicator" aria-live="polite">Carregando...</p>
-            </div>
-
-            <div class="flip-card-container">
+            <section class="flip-card-container" aria-live="polite">
                 <div class="flip-card" id="flip-card">
                     <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            <p id="card-question" aria-live="polite"></p>
+                        <div class="flip-card-front card">
+                            <div class="card-header">Pergunta</div>
+                            <div class="card-content">
+                                <p id="card-question" class="card-text"></p>
+                            </div>
                         </div>
-                        <div class="flip-card-back">
-                            <p id="card-answer"></p>
+                        <div class="flip-card-back card">
+                            <div class="card-header">Resposta</div>
+                            <div class="card-content">
+                                <p id="card-answer" class="card-text"></p>
+                            </div>
+                            <button id="explain-button" class="btn-explain-ai" title="Pedir uma explicação detalhada para a IA">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M10 14a2 2 0 1 0 4 0a2 2 0 0 0-4 0m3-7a2 2 0 1 0-4 0a2 2 0 0 0 4 0M5.5 8A2.5 2.5 0 0 0 8 5.5a2.5 2.5 0 0 0-2.5-2.5A2.5 2.5 0 0 0 3 5.5A2.5 2.5 0 0 0 5.5 8m13 13a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5M10 21a2 2 0 1 0 4 0a2 2 0 0 0-4 0m8.5-10a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5Z"/></svg>
+                                <span>Me explique melhor</span>
+                            </button>
                         </div>
                     </div>
+                    <div id="card-feedback-overlay" class="card-feedback-overlay">
+                        <span id="feedback-text"></span>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <div id="controls" class="study-controls">
-                <button id="flip-button" class="btn btn-primary btn-lg">Virar Card</button>
+            <section id="controls" class="study-controls">
+                <button id="flip-button" class="btn btn-primary btn-lg">Mostrar Resposta (Espaço)</button>
                 <div id="quality-buttons" class="hidden">
-                    <button class="btn quality-btn" data-quality="1" title="Não lembrei a resposta">Errei</button>
-                    <button class="btn quality-btn" data-quality="3" title="Lembrei com dificuldade">Difícil</button>
-                    <button class="btn quality-btn" data-quality="4" title="Lembrei com facilidade">Bom</button>
-                    <button class="btn quality-btn" data-quality="5" title="Lembrei perfeitamente">Fácil</button>
+                    <p class="controls-label">Como você se saiu?</p>
+                    <div class="quality-btn-group">
+                        <button class="btn quality-btn quality-errado" data-quality="1" title="Atalho: 1">Errei</button>
+                        <button class="btn quality-btn quality-dificil" data-quality="3" title="Atalho: 2">Difícil</button>
+                        <button class="btn quality-btn quality-bom" data-quality="4" title="Atalho: 3">Bom</button>
+                        <button class="btn quality-btn quality-facil" data-quality="5" title="Atalho: 4">Fácil</button>
+                    </div>
                 </div>
-                <button id="explain-button" class="btn btn-secondary hidden">Me explique melhor</button>
+            </section>
+        </div>
+
+        <div id="completion-container" class="completion-container hidden">
+            <div class="card completion-card">
+                <h2 id="completion-heading">Sessão Concluída!</h2>
+                <p>Você revisou todos os cards agendados para hoje. Ótimo trabalho!</p>
+                <div id="session-summary" class="session-summary"></div>
+                <div class="completion-actions">
+                    <a id="back-to-deck-link-2" href="#" class="btn btn-secondary">Voltar ao Baralho</a>
+                    <a href="dashboard.html" class="btn btn-primary">Ver outros baralhos</a>
+                </div>
             </div>
         </div>
 
-        <section id="completion-message" class="card completion-card hidden" aria-labelledby="completion-heading">
-            <h2 id="completion-heading">Parabéns!</h2>
-            <p>Você concluiu sua sessão de estudos de hoje para este baralho.</p>
-            <div class="completion-actions">
-                <a id="back-to-deck-link" href="#" class="btn btn-secondary">Voltar ao Baralho</a>
-                <a href="dashboard.html" class="btn btn-primary">Ir para o Dashboard</a>
-            </div>
-        </section>
         <div id="explanation-modal" class="modal-overlay">
             <div class="modal">
                 <div class="modal-header">
-                    <h2>Explicação</h2>
+                    <h2>Explicação do Tutor IA</h2>
                     <button id="close-explanation-modal-btn" class="close-btn" aria-label="Fechar modal">&times;</button>
                 </div>
                 <div class="modal-body" id="explanation-content">
