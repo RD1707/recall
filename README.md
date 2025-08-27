@@ -66,11 +66,12 @@ Para executar o projeto em sua máquina, você precisará ter o Node.js e o npm 
     ```
 3.  Crie um arquivo `.env` na raiz da pasta `backend` e adicione as seguintes variáveis de ambiente:
     ```env
-    PORT=3000
-    SUPABASE_URL=URL_DO_SEU_PROJETO_SUPABASE
-    SUPABASE_ANON_KEY=SUA_CHAVE_ANON_SUPABASE
-    COHERE_API_KEY=SUA_CHAVE_DA_COHERE_AI
-    REDIS_URL=URL_DA_SUA_INSTANCIA_REDIS
+    PORT=3001
+SUPABASE_URL=https://khofqsjwyunicxdxapih.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtob2Zxc2p3eXVuaWN4ZHhhcGloIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NjEyMzY0OSwiZXhwIjoyMDcxNjk5NjQ5fQ.PUwN1cL4h86Y2W-kdUpA11TZAY9TCKZcXkmxG6N53yQ
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtob2Zxc2p3eXVuaWN4ZHhhcGloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMjM2NDksImV4cCI6MjA3MTY5OTY0OX0.3Fr8b6u3b6dqoh84qx0ulcddb-vj4gGqlOQvAI2weGE
+COHERE_API_KEY=ZARae3qHNLURySfTT7NjXzzNTEeyDO0OeNRdMhYG
+REDIS_URL=redis://default:ARofAAImcDFlZjk3NDAzMjc4ZmM0MjYzOTE4NTgzZDk0OGRlYTZiMHAxNjY4Nw@composed-oarfish-6687.upstash.io:6379
     ```
 4.  Inicie o servidor principal:
     ```bash
