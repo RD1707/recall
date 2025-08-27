@@ -1,136 +1,227 @@
 /*
  * Arquivo: login.css
- * Descrição: Estilos para a página de login/registro, reformulados para um design mais limpo e moderno.
- * Baseado nas variáveis e no sistema de design de base.css.
+ * Descrição: Estilos para a página de login/registro com um layout moderno de duas colunas,
+ * focado em usabilidade, design limpo e responsividade.
 */
 
-.login-main {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* --- Layout Principal --- */
+.auth-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     min-height: 100vh;
     width: 100%;
-    padding: 1.5rem;
-    background-color: var(--background-color);
 }
 
-.login-container {
-    width: 100%;
+/* --- Painel Promocional (Esquerda) --- */
+.auth-promo-panel {
+    background-color: var(--color-background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-2xl);
+}
+
+.promo-content {
     max-width: 450px;
-}
-
-.login-logo {
     text-align: center;
-    margin-bottom: 2rem;
 }
 
-.login-logo a {
-    font-size: 2.5rem;
+.promo-logo {
+    font-size: var(--font-size-2xl);
     font-weight: 700;
-    color: var(--dark-color);
+    color: var(--color-dark-900);
     text-decoration: none;
-    font-family: var(--font-family-secondary);
+    font-family: var(--font-family-heading);
+    margin-bottom: var(--space-lg);
+    display: inline-block;
 }
 
-.login-card {
-    background-color: var(--white-color);
-    border-radius: var(--border-radius-md);
-    padding: 2.5rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-lg);
-    transition: all 0.3s ease;
+.promo-title {
+    font-size: var(--font-size-3xl);
+    margin-bottom: var(--space-md);
 }
 
-.login-card:hover {
-    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+.promo-subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-bottom: var(--space-xl);
 }
 
-.login-card h1 {
-    font-size: 1.75rem;
+/* --- Painel do Formulário (Direita) --- */
+.auth-form-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-2xl) var(--space-lg);
+    background-color: var(--color-surface);
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.form-header {
     text-align: center;
-    margin-bottom: 2rem;
-    color: var(--dark-color);
+    margin-bottom: var(--space-xl);
 }
 
-#auth-form,
-#reset-password-form,
-#update-password-form {
+.form-header h1 {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--space-xs);
+}
+
+.form-header p {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-base);
+}
+
+/* Social Logins */
+.social-logins {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: var(--space-md);
 }
 
-#auth-form .form-group input,
-#reset-password-form .form-group input,
-#update-password-form .form-group input {
-    padding: 0.9rem 1.25rem;
-    border-radius: var(--border-radius-sm);
-    font-size: 1rem;
-    font-family: var(--font-family-primary);
-}
-
-#auth-form button,
-#reset-password-form button,
-#update-password-form button {
+.btn-social {
     width: 100%;
-    margin-top: 0.5rem;
+    background-color: var(--color-surface);
+    color: var(--color-text-default);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+.btn-social:hover {
+    background-color: var(--color-background);
+}
+.btn-social .icon {
+    width: 20px;
+    height: 20px;
 }
 
-.error-message {
-    color: #dc2626; 
-    background-color: #fee2e2;
-    border: 1px solid #fca5a5;
-    border-radius: var(--border-radius-sm);
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+/* Separador "OU" */
+.separator {
+    display: flex;
+    align-items: center;
     text-align: center;
-    display: none;
-    margin-bottom: 1.25rem; 
+    color: var(--color-border);
+    margin: var(--space-xl) 0;
+}
+.separator::before, .separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--color-border);
+}
+.separator span {
+    padding: 0 var(--space-md);
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
 }
 
-.error-message:not(:empty) {
-    display: block;
+/* Grupos de Input com Ícones */
+.input-group {
+    position: relative;
+}
+.input-group .icon {
+    position: absolute;
+    left: var(--space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--color-text-muted);
+    pointer-events: none;
+}
+.input-group .form-control {
+    padding-left: 2.75rem; /* Espaço para o ícone */
 }
 
-.toggle-panel {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: var(--text-light);
+/* Botão de Mostrar/Esconder Senha */
+.password-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+}
+.password-toggle:hover {
+    color: var(--color-dark-800);
+}
+.password-toggle svg {
+    width: 20px;
+    height: 20px;
 }
 
-.toggle-panel a {
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s;
-    color: var(--primary-color);
-}
-
-.toggle-panel a:hover {
-    color: var(--primary-hover);
+/* Outras opções de formulário */
+.form-options {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: var(--space-md);
 }
 
 .forgot-password {
-    display: block;
-    text-align: right;
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-    margin-top: -0.75rem; 
-    color: var(--text-light);
-    transition: color 0.2s;
+    font-size: var(--font-size-sm);
+    color: var(--color-primary-500);
+    text-decoration: none;
 }
-
 .forgot-password:hover {
-    color: var(--primary-color);
+    text-decoration: underline;
 }
 
-#reset-password-panel .reset-info {
+.btn-full {
+    width: 100%;
+}
+
+.error-message {
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    border-radius: var(--border-radius-sm);
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
     text-align: center;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-    color: var(--text-light);
+    margin-top: var(--space-md);
 }
 
-.hidden {
-    display: none;
+/* Painel de alternância Login/Registro */
+.toggle-panel {
+    text-align: center;
+    margin-top: var(--space-xl);
+    font-size: var(--font-size-sm);
+}
+.toggle-panel a {
+    font-weight: 600;
+    text-decoration: none;
+}
+.toggle-panel a:hover {
+    text-decoration: underline;
+}
+
+.back-to-login {
+    font-weight: 600;
+    text-decoration: none;
+}
+.back-to-login:hover {
+    text-decoration: underline;
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 992px) {
+    .auth-layout {
+        grid-template-columns: 1fr;
+    }
+    .auth-promo-panel {
+        display: none; /* O painel some em telas menores para focar no formulário */
+    }
+    .auth-form-panel {
+        align-items: flex-start;
+        padding-top: 5vh;
+    }
 }
