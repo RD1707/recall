@@ -93,7 +93,6 @@
 .focus-mode-toggle .icon-btn:hover {
     background: var(--study-primary);
     color: white;
-    transform: translateY(-2px);
     box-shadow: var(--study-shadow-md);
 }
 
@@ -439,7 +438,6 @@
 }
 
 .flip-btn:hover {
-    transform: translateY(-2px);
     box-shadow: var(--study-shadow-lg);
 }
 
@@ -481,7 +479,6 @@
 }
 
 .quality-btn:hover {
-    transform: translateY(-3px);
     box-shadow: var(--study-shadow-md);
     color: white;
 }

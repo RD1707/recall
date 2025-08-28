@@ -107,7 +107,6 @@ section {
 }
 
 .btn:hover {
-    transform: translateY(-3px);
     box-shadow: var(--shadow-lg);
 }
 
@@ -246,7 +245,6 @@ section {
 }
 
 .feature-card:hover {
-    transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
     border-color: var(--secondary-color);
 }

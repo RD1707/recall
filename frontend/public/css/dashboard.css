@@ -262,7 +262,6 @@ body {
 }
 
 .deck-card:hover {
-    transform: translateY(-5px);
     box-shadow: var(--shadow-lg);
     border-color: var(--color-primary-500);
 }
@@ -387,7 +386,6 @@ body {
 .deck-card.create-new:hover {
     border-color: var(--color-primary-500);
     background: var(--color-primary-100);
-    transform: translateY(-5px);
     box-shadow: var(--shadow-md);
 }
 
@@ -623,7 +621,6 @@ body {
 
 .quick-action-btn:hover {
     background: var(--color-primary-600);
-    transform: translateY(-3px);
     box-shadow: var(--shadow-lg);
 }
 
@@ -677,7 +674,6 @@ body {
 .user-menu:hover .dropdown-menu {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
 }
 
 .dropdown-user-info {
