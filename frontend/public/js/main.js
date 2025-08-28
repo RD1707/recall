@@ -6,29 +6,35 @@ const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- VARIÁVEIS GLOBAIS ---
+const API_BASE_URL = '/api';
 let allDecks = [];
 let currentUser = null;
-let selectedDeckColor = '#4f46e5';
+let selectedDeckColor = '#4f46e5'; // Cor padrão
 
-// --- FUNÇÕES DE INICIALIZAÇÃO ---
+// --- INICIALIZAÇÃO DA APLICAÇÃO ---
+
+document.addEventListener('DOMContentLoaded', initApp);
 
 /**
- * Inicializa a aplicação quando o DOM estiver pronto
+ * Ponto de entrada: Inicializa a aplicação quando o DOM estiver pronto.
  */
 async function initApp() {
-    await routeGuard();
-    
+    await routeGuard(); // Primeiro, verifica se o usuário está logado
+
+    // Se estamos no dashboard, carrega os dados e configura os eventos
     if (window.location.pathname.endsWith('dashboard.html')) {
         await loadUserProfile();
         await loadDecks();
         setupEventListeners();
         setupSearchFunctionality();
-        updateDashboardStats();
     }
 }
 
+
+// --- FUNÇÕES DE LÓGICA DA PÁGINA (Dashboard) ---
+
 /**
- * Configura todos os event listeners da página
+ * Configura todos os event listeners da página do dashboard.
  */
 function setupEventListeners() {
     // Modal de criação de baralho
@@ -41,401 +47,454 @@ function setupEventListeners() {
             showModal(createDeckModal);
         });
     }
-    
+
     closeModalBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const modal = e.target.closest('.modal-overlay');
             hideModal(modal);
         });
     });
-    
-    // Formulários
+
+    // Submissão de formulários
     const createDeckForm = document.getElementById('create-deck-form');
-    const editDeckForm = document.getElementById('edit-deck-form');
-    
     if (createDeckForm) {
         createDeckForm.addEventListener('submit', handleCreateDeck);
     }
-    
+
+    const editDeckForm = document.getElementById('edit-deck-form');
     if (editDeckForm) {
         editDeckForm.addEventListener('submit', handleEditDeck);
     }
-    
-    // Botão de deletar baralho
+
+    // Ação de deletar baralho no modal de edição
     const deleteDeckBtn = document.getElementById('delete-deck-btn');
     if (deleteDeckBtn) {
-        deleteDeckBtn.addEventListener('click', handleDeleteDeck);
+        deleteDeckBtn.addEventListener('click', () => handleDeleteDeck());
     }
-    
+
     // Botão de scroll para o topo
     const scrollToTopBtn = document.getElementById('scroll-to-top');
     if (scrollToTopBtn) {
         scrollToTopBtn.addEventListener('click', scrollToTop);
         window.addEventListener('scroll', toggleScrollToTopButton);
     }
-    
+
     // Color picker
     const colorOptions = document.querySelectorAll('.color-option');
     colorOptions.forEach(option => {
         option.addEventListener('click', (e) => {
-            selectColor(e.target);
+            selectColor(e.target.closest('.color-option'));
         });
     });
-    
-    // Menu de usuário
+
+    // Menu dropdown do usuário
     const userMenuButton = document.getElementById('user-menu-button');
     if (userMenuButton) {
         userMenuButton.addEventListener('click', toggleUserMenu);
     }
     
-    // Card de criação rápida
-    const createNewCard = document.querySelector('.deck-card.create-new');
-    if (createNewCard) {
-        createNewCard.addEventListener('click', () => {
-            showModal(createDeckModal);
-        });
-    }
+    // Card de "Criar Novo Baralho"
+    // Esta função será chamada dentro de `renderDecks` para adicionar o listener
 }
 
 /**
- * Configura a funcionalidade de busca em tempo real
+ * Configura a funcionalidade de busca em tempo real.
  */
 function setupSearchFunctionality() {
     const searchInput = document.getElementById('deck-search');
     if (!searchInput) return;
-    
+
     let searchTimeout;
-    
     searchInput.addEventListener('input', (e) => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             filterDecks(e.target.value);
-        }, 300);
+        }, 300); // Debounce de 300ms para evitar buscas a cada tecla
     });
 }
 
-// --- FUNÇÕES DE UI/UX ---
+
+// --- FUNÇÕES DE RENDERIZAÇÃO E UI/UX ---
 
 /**
- * Mostra um modal
- * @param {HTMLElement} modal - Elemento do modal a ser mostrado
+ * Mostra um modal específico.
+ * @param {HTMLElement} modal - O elemento do modal a ser exibido.
  */
 function showModal(modal) {
     if (!modal) return;
     modal.classList.add('visible');
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'; // Impede o scroll do fundo
 }
 
 /**
- * Esconde um modal
- * @param {HTMLElement} modal - Elemento do modal a ser escondido
+ * Esconde um modal específico.
+ * @param {HTMLElement} modal - O elemento do modal a ser escondido.
  */
 function hideModal(modal) {
     if (!modal) return;
     modal.classList.remove('visible');
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = ''; // Restaura o scroll
 }
 
 /**
- * Alterna a visibilidade do menu de usuário
+ * Alterna a visibilidade do menu dropdown do usuário.
  */
 function toggleUserMenu() {
     const dropdown = document.getElementById('user-dropdown');
-    if (!dropdown) return;
-    
-    dropdown.classList.toggle('visible');
+    dropdown?.classList.toggle('visible');
 }
 
 /**
- * Filtra baralhos com base no termo de busca
- * @param {string} searchTerm - Termo para filtrar os baralhos
+ * Filtra os baralhos exibidos na UI com base em um termo de busca.
+ * @param {string} searchTerm - O texto a ser usado para o filtro.
  */
 function filterDecks(searchTerm) {
-    if (!searchTerm.trim()) {
-        renderDecks(allDecks);
+    const normalizedSearch = searchTerm.toLowerCase().trim();
+    if (!normalizedSearch) {
+        renderDecks(allDecks); // Mostra todos se a busca estiver vazia
         return;
     }
-    
-    const filteredDecks = allDecks.filter(deck => 
-        deck.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (deck.description && deck.description.toLowerCase().includes(searchTerm.toLowerCase()))
+
+    const filtered = allDecks.filter(deck =>
+        deck.title.toLowerCase().includes(normalizedSearch) ||
+        (deck.description && deck.description.toLowerCase().includes(normalizedSearch))
     );
-    
-    renderDecks(filteredDecks);
+
+    renderDecks(filtered);
 }
 
 /**
- * Seleciona uma cor no color picker
- * @param {HTMLElement} colorElement - Elemento de cor clicado
+ * Seleciona uma cor no seletor de cores do modal.
+ * @param {HTMLElement} colorElement - O elemento da cor que foi clicado.
  */
 function selectColor(colorElement) {
-    // Remove a seleção anterior
     document.querySelectorAll('.color-option').forEach(option => {
         option.classList.remove('selected');
     });
-    
-    // Adiciona a seleção atual
     colorElement.classList.add('selected');
     selectedDeckColor = colorElement.dataset.color;
 }
 
 /**
- * Mostra/esconde o botão de scroll para o topo baseado na posição de scroll
+ * Controla a visibilidade do botão "Voltar ao Topo".
  */
 function toggleScrollToTopButton() {
-    const scrollToTopBtn = document.getElementById('scroll-to-top');
-    if (!scrollToTopBtn) return;
-    
+    const btn = document.getElementById('scroll-to-top');
     if (window.scrollY > 300) {
-        scrollToTopBtn.style.opacity = '1';
-        scrollToTopBtn.style.visibility = 'visible';
+        btn.style.opacity = '1';
+        btn.style.visibility = 'visible';
     } else {
-        scrollToTopBtn.style.opacity = '0';
-        scrollToTopBtn.style.visibility = 'hidden';
+        btn.style.opacity = '0';
+        btn.style.visibility = 'hidden';
     }
 }
 
 /**
- * Scroll suave para o topo da página
+ * Rola a página suavemente para o topo.
  */
 function scrollToTop() {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// --- FUNÇÕES DE DADOS E API ---
+
+// --- LÓGICA DE DADOS (CARREGAMENTO E RENDERIZAÇÃO) ---
 
 /**
- * Carrega o perfil do usuário e atualiza a UI
+ * Busca os dados do perfil do usuário e atualiza o cabeçalho.
  */
 async function loadUserProfile() {
-    try {
-        const { data: { user } } = await _supabase.auth.getUser();
-        currentUser = user;
-        
-        // Atualiza o email do usuário
+    const { data: { user } } = await _supabase.auth.getUser();
+    currentUser = user;
+
+    if (user?.email) {
         const userEmailElement = document.getElementById('user-email');
-        if (userEmailElement && user?.email) {
-            userEmailElement.textContent = user.email;
-        }
-        
-        // Atualiza o avatar do usuário
-        const avatarTextElements = document.querySelectorAll('#user-avatar-text, #dropdown-avatar-text');
-        avatarTextElements.forEach(element => {
-            if (user?.email) {
-                element.textContent = user.email.charAt(0).toUpperCase();
-            }
+        if (userEmailElement) userEmailElement.textContent = user.email;
+
+        // Atualiza as iniciais nos avatares
+        const initial = user.email.charAt(0).toUpperCase();
+        document.querySelectorAll('.user-avatar-text').forEach(el => {
+            el.textContent = initial;
         });
-        
-        // Carrega as estatísticas do perfil
-        await updateProfileHeader();
-    } catch (error) {
-        console.error('Erro ao carregar perfil do usuário:', error);
     }
+
+    await updateProfileHeader(); // Busca pontos e streak
 }
 
 /**
- * Atualiza o header com as informações do perfil do usuário
- */
-async function updateProfileHeader() {
-    try {
-        const profile = await fetchProfile();
-        if (profile) {
-            document.getElementById('user-points').textContent = profile.points || 0;
-            document.getElementById('user-streak').textContent = profile.current_streak || 0;
-        }
-    } catch (error) {
-        console.error('Erro ao atualizar header do perfil:', error);
-    }
-}
-
-/**
- * Carrega todos os baralhos do usuário
+ * Busca os baralhos do usuário e os renderiza na página.
  */
 async function loadDecks() {
     const decksContainer = document.getElementById('decks-grid');
     if (!decksContainer) return;
-    
-    // Mostra skeleton loading
-    decksContainer.innerHTML = `
-        <div class="skeleton-deck">
-            <div class="skeleton skeleton-image"></div>
-            <div class="skeleton-content">
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-button"></div>
-            </div>
-        </div>
-        <div class="skeleton-deck">
-            <div class="skeleton skeleton-image"></div>
-            <div class="skeleton-content">
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-button"></div>
-            </div>
-        </div>
-        <div class="skeleton-deck">
-            <div class="skeleton skeleton-image"></div>
-            <div class="skeleton-content">
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-text"></div>
-                <div class="skeleton skeleton-button"></div>
-            </div>
-        </div>
-    `;
-    
-    try {
-        const decks = await fetchDecks();
-        allDecks = decks || [];
-        
-        if (allDecks.length === 0) {
-            showEmptyState();
-        } else {
-            renderDecks(allDecks);
-            updateDashboardStats();
-        }
-    } catch (error) {
-        console.error('Erro ao carregar baralhos:', error);
-        showToast('Erro ao carregar baralhos. Tente novamente.', 'error');
-    }
+
+    // Exibe o estado de carregamento (skeleton)
+    decksContainer.innerHTML = Array(3).fill('<div class="skeleton-deck"></div>').join('');
+
+    const decks = await fetchDecks();
+    allDecks = decks || [];
+
+    renderDecks(allDecks);
+    updateDashboardStats();
 }
 
 /**
- * Renderiza a lista de baralhos na UI
- * @param {Array} decks - Array de baralhos para renderizar
+ * Renderiza a grade de baralhos na UI.
+ * @param {Array} decks - A lista de baralhos a ser renderizada.
  */
 function renderDecks(decks) {
     const decksContainer = document.getElementById('decks-grid');
-    if (!decksContainer) return;
+    const emptyStateContainer = document.getElementById('empty-state');
     
+    decksContainer.innerHTML = ''; // Limpa o conteúdo atual
+
     if (decks.length === 0) {
-        showEmptyState();
-        return;
+        emptyStateContainer.classList.remove('hidden');
+        decksContainer.appendChild(createNewDeckCard()); // Mostra o card de criar mesmo vazio
+    } else {
+        emptyStateContainer.classList.add('hidden');
+        decksContainer.appendChild(createNewDeckCard());
+        decks.forEach((deck, index) => {
+            decksContainer.appendChild(renderSingleDeck(deck, index));
+        });
     }
-    
-    // Esconde o empty state se estiver visível
-    const emptyState = document.getElementById('empty-state');
-    if (emptyState) {
-        emptyState.classList.add('hidden');
-    }
-    
-    decksContainer.innerHTML = '';
-    
-    // Adiciona o card de criação rápida
-    decksContainer.appendChild(createNewDeckCard());
-    
-    // Adiciona os baralhos
-    decks.forEach((deck, index) => {
-        const deckElement = renderDeck(deck, index);
-        decksContainer.appendChild(deckElement);
-    });
 }
 
 /**
- * Cria o card de "Criar Novo Baralho"
- * @returns {HTMLElement} Elemento do card
+ * Cria e retorna o HTML para um único card de baralho.
+ * @param {object} deck - O objeto do baralho.
+ * @param {number} index - O índice do baralho para animação.
+ * @returns {HTMLElement} O elemento do card de baralho.
+ */
+function renderSingleDeck(deck, index) {
+    const card = document.createElement('div');
+    card.className = 'deck-card';
+    card.style.animationDelay = `${index * 50}ms`;
+
+    const deckColor = deck.color || '#4f46e5';
+
+    card.innerHTML = `
+        <div class="deck-card-inner">
+            <div class="deck-card-header" style="background-color: ${deckColor}">
+                <a href="deck.html?id=${deck.id}" class="deck-card-link"></a>
+                <button class="deck-menu-btn" data-deck-id="${deck.id}" aria-label="Opções do baralho">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+            <div class="deck-card-body">
+                <h3>${escapeHtml(deck.title)}</h3>
+                <p>${deck.description ? escapeHtml(deck.description) : 'Sem descrição'}</p>
+            </div>
+            <div class="deck-card-footer">
+                <a href="deck.html?id=${deck.id}" class="btn btn-primary">Estudar Agora</a>
+            </div>
+        </div>
+    `;
+
+    // Adiciona evento ao botão de menu do card
+    const menuBtn = card.querySelector('.deck-menu-btn');
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Impede que o clique propague para o link do card
+        const clickedDeck = allDecks.find(d => d.id === deck.id);
+        openEditDeckModal(clickedDeck);
+    });
+
+    return card;
+}
+
+/**
+ * Cria e retorna o card especial "Criar Novo".
+ * @returns {HTMLElement} O elemento do card.
  */
 function createNewDeckCard() {
     const card = document.createElement('div');
     card.className = 'deck-card create-new';
     card.innerHTML = `
         <div class="deck-card-inner">
-            <div class="create-icon">
-                <i class="fas fa-plus"></i>
-            </div>
+            <div class="create-icon"><i class="fas fa-plus"></i></div>
             <h3>Criar Novo Baralho</h3>
-            <p>Comece um novo conjunto de flashcards</p>
-            <button class="btn btn-outline">Criar</button>
         </div>
     `;
-    
+    card.addEventListener('click', () => {
+        showModal(document.getElementById('create-deck-modal'));
+    });
     return card;
 }
 
 /**
- * Renderiza um único card de baralho
- * @param {Object} deck - Dados do baralho
- * @param {number} index - Índice para animação escalonada
- * @returns {HTMLElement} Elemento do card renderizado
+ * Exibe o estado de "sem baralhos" na UI.
  */
-function renderDeck(deck, index) {
-    const card = document.createElement('div');
-    card.className = 'deck-card';
-    card.style.animationDelay = `${index * 0.1}s`;
-    
-    // Cor personalizada do baralho (se disponível)
-    const deckColor = deck.color || selectedDeckColor;
-    
-    card.innerHTML = `
-        <div class="deck-card-inner">
-            <div class="deck-card-header">
-                <div class="deck-color" style="background-color: ${deckColor}"></div>
-                <button class="deck-menu-btn">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-            </div>
-            <h3>${escapeHtml(deck.title)}</h3>
-            <p>${deck.description ? escapeHtml(deck.description) : 'Sem descrição'}</p>
-            
-            <div class="deck-stats">
-                <div class="deck-stat">
-                    <span class="deck-stat-value">${deck.card_count || 0}</span>
-                    <span class="deck-stat-label">Cartões</span>
-                </div>
-                <div class="deck-stat">
-                    <span class="deck-stat-value">${deck.due_count || 0}</span>
-                    <span class="deck-stat-label">Para revisar</span>
-                </div>
-            </div>
-            
-            <div class="deck-card-actions">
-                <a href="deck.html?id=${deck.id}" class="deck-action-btn btn-primary">
-                    <i class="fas fa-play"></i> Estudar
-                </a>
-                <button class="deck-action-btn btn-outline edit-deck-btn" data-deck-id="${deck.id}">
-                    <i class="fas fa-edit"></i> Editar
-                </button>
-            </div>
-        </div>
-    `;
-    
-    // Adiciona event listeners aos botões
-    const editBtn = card.querySelector('.edit-deck-btn');
-    if (editBtn) {
-        editBtn.addEventListener('click', () => {
-            openEditDeckModal(deck);
-        });
-    }
-    
-    const menuBtn = card.querySelector('.deck-menu-btn');
-    if (menuBtn) {
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            showDeckContextMenu(e, deck);
-        });
-    }
-    
-    return card;
+function showEmptyState() {
+    document.getElementById('decks-grid').innerHTML = '';
+    const emptyState = document.getElementById('empty-state');
+    emptyState.classList.remove('hidden');
+
+    const createBtn = emptyState.querySelector('button');
+    createBtn.addEventListener('click', () => {
+        showModal(document.getElementById('create-deck-modal'));
+    });
 }
 
 /**
- * Abre o modal de edição para um baralho
- * @param {Object} deck - Dados do baralho a ser editado
+ * Atualiza os contadores de estatísticas no topo do dashboard.
+ */
+function updateDashboardStats() {
+    const totalDecks = allDecks.length;
+    const totalCards = allDecks.reduce((sum, deck) => sum + (deck.card_count || 0), 0);
+    const dueCards = allDecks.reduce((sum, deck) => sum + (deck.due_count || 0), 0);
+
+    document.getElementById('total-decks').textContent = totalDecks;
+    document.getElementById('total-cards').textContent = totalCards;
+    document.getElementById('due-cards').textContent = dueCards;
+}
+
+
+// --- HANDLERS DE EVENTOS DE FORMULÁRIO ---
+
+/**
+ * Manipula a submissão do formulário de criação de baralho.
+ * @param {Event} e - O evento de submit.
+ */
+async function handleCreateDeck(e) {
+    e.preventDefault();
+    const form = e.target;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const title = form.querySelector('#deck-title').value.trim();
+    const description = form.querySelector('#deck-description').value.trim();
+
+    if (!validateDeckTitle(title, 'title-error')) return;
+
+    setButtonLoading(submitButton, 'Criando...');
+    try {
+        const newDeck = await createDeck(title, description, selectedDeckColor);
+        if (newDeck) {
+            showToast('Baralho criado com sucesso!', 'success');
+            hideModal(document.getElementById('create-deck-modal'));
+            form.reset();
+            await loadDecks();
+        }
+    } finally {
+        setButtonIdle(submitButton, 'Criar Baralho');
+    }
+}
+
+/**
+ * Manipula a submissão do formulário de edição de baralho.
+ * @param {Event} e - O evento de submit.
+ */
+async function handleEditDeck(e) {
+    e.preventDefault();
+    const form = e.target;
+    const submitButton = form.querySelector('button[type="submit"]');
+    const deckId = form.querySelector('#edit-deck-id').value;
+    const title = form.querySelector('#edit-deck-title').value.trim();
+    const description = form.querySelector('#edit-deck-description').value.trim();
+
+    if (!validateDeckTitle(title, 'edit-title-error')) return;
+
+    setButtonLoading(submitButton, 'Salvando...');
+    try {
+        const updatedDeck = await updateDeck(deckId, title, description, selectedDeckColor);
+        if (updatedDeck) {
+            showToast('Baralho atualizado!', 'success');
+            hideModal(document.getElementById('edit-deck-modal'));
+            await loadDecks();
+        }
+    } finally {
+        setButtonIdle(submitButton, 'Salvar Alterações');
+    }
+}
+
+/**
+ * Manipula a exclusão de um baralho a partir do modal de edição.
+ */
+async function handleDeleteDeck() {
+    const deckId = document.getElementById('edit-deck-id').value;
+    const deck = allDecks.find(d => d.id === deckId);
+
+    if (!deck) return;
+
+    if (confirm(`Tem certeza que deseja excluir o baralho "${deck.title}"?`)) {
+        await deleteDeck(deckId);
+        showToast('Baralho excluído com sucesso.', 'success');
+        hideModal(document.getElementById('edit-deck-modal'));
+        await loadDecks();
+    }
+}
+
+
+// --- FUNÇÕES DE VALIDAÇÃO E UTILITÁRIOS ---
+
+/**
+ * Valida o título do baralho e exibe uma mensagem de erro se necessário.
+ * @param {string} title - O título a ser validado.
+ * @param {string} errorElementId - O ID do elemento onde o erro será exibido.
+ * @returns {boolean} - Retorna true se o título for válido.
+ */
+function validateDeckTitle(title, errorElementId) {
+    const errorElement = document.getElementById(errorElementId);
+    if (title.length < 3 || title.length > 50) {
+        errorElement.textContent = 'O título deve ter entre 3 e 50 caracteres.';
+        errorElement.style.display = 'block';
+        return false;
+    }
+    errorElement.style.display = 'none';
+    return true;
+}
+
+/**
+ * Define o estado de um botão para "carregando".
+ * @param {HTMLButtonElement} button - O botão a ser modificado.
+ * @param {string} text - O texto a ser exibido no botão.
+ */
+function setButtonLoading(button, text = 'Aguarde...') {
+    button.disabled = true;
+    button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
+}
+
+/**
+ * Restaura um botão para o seu estado normal.
+ * @param {HTMLButtonElement} button - O botão a ser restaurado.
+ * @param {string} text - O texto original do botão.
+ */
+function setButtonIdle(button, text) {
+    button.disabled = false;
+    button.innerHTML = text;
+}
+
+/**
+ * Escapa caracteres HTML para prevenir injeção de XSS.
+ * @param {string} str - A string a ser escapada.
+ * @returns {string} - A string segura.
+ */
+function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return str.replace(/[&<>"']/g, (match) => {
+        return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[match];
+    });
+}
+
+/**
+ * Abre o modal de edição e preenche com os dados do baralho.
+ * @param {object} deck - O objeto do baralho a ser editado.
  */
 function openEditDeckModal(deck) {
     const modal = document.getElementById('edit-deck-modal');
     if (!modal) return;
     
-    // Preenche o formulário com os dados atuais
-    document.getElementById('edit-deck-id').value = deck.id;
-    document.getElementById('edit-deck-title').value = deck.title;
-    document.getElementById('edit-deck-description').value = deck.description || '';
+    // Preenche os campos do formulário
+    modal.querySelector('#edit-deck-id').value = deck.id;
+    modal.querySelector('#edit-deck-title').value = deck.title;
+    modal.querySelector('#edit-deck-description').value = deck.description || '';
     
-    // Seleciona a cor atual (se disponível)
-    const deckColor = deck.color || selectedDeckColor;
-    const colorOption = document.querySelector(`.color-option[data-color="${deckColor}"]`);
+    // Seleciona a cor correta
+    const colorToSelect = deck.color || '#4f46e5';
+    const colorOption = modal.querySelector(`.color-option[data-color="${colorToSelect}"]`);
     if (colorOption) {
         selectColor(colorOption);
     }
@@ -443,236 +502,96 @@ function openEditDeckModal(deck) {
     showModal(modal);
 }
 
-/**
- * Mostra o menu de contexto para um baralho
- * @param {Event} e - Evento de clique
- * @param {Object} deck - Dados do baralho
- */
-function showDeckContextMenu(e, deck) {
-    // Implementação simplificada - poderia ser um menu flutuante com mais opções
-    const shouldDelete = confirm(`Tem certeza que deseja excluir o baralho "${deck.title}"?`);
-    if (shouldDelete) {
-        handleDeleteDeck(deck.id);
-    }
-}
+// --- GUARDA DE ROTAS E AUTENTICAÇÃO ---
 
 /**
- * Mostra o estado vazio quando não há baralhos
+ * Verifica se o usuário está logado e redireciona se necessário.
  */
-function showEmptyState() {
-    const decksContainer = document.getElementById('decks-grid');
-    const emptyState = document.getElementById('empty-state');
-    
-    if (decksContainer) {
-        decksContainer.innerHTML = '';
-        decksContainer.appendChild(createNewDeckCard());
-    }
-    
-    if (emptyState) {
-        emptyState.classList.remove('hidden');
-        
-        // Adiciona event listener ao botão do empty state
-        const emptyStateButton = emptyState.querySelector('button');
-        if (emptyStateButton) {
-            emptyStateButton.addEventListener('click', () => {
-                const modal = document.getElementById('create-deck-modal');
-                showModal(modal);
-            });
+async function routeGuard() {
+    const { data: { session } } = await _supabase.auth.getSession();
+    const isAuthPage = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('login.html') || window.location.pathname === '/';
+
+    if (session) { // Usuário está logado
+        if (isAuthPage) {
+            window.location.href = 'dashboard.html';
+        }
+    } else { // Usuário NÃO está logado
+        if (!isAuthPage) {
+            window.location.href = 'login.html';
         }
     }
 }
 
-/**
- * Atualiza as estatísticas do dashboard
- */
-function updateDashboardStats() {
-    const totalDecks = allDecks.length;
-    const totalCards = allDecks.reduce((sum, deck) => sum + (deck.card_count || 0), 0);
-    const dueCards = allDecks.reduce((sum, deck) => sum + (deck.due_count || 0), 0);
-    
-    document.getElementById('total-decks').textContent = totalDecks;
-    document.getElementById('total-cards').textContent = totalCards;
-    document.getElementById('due-cards').textContent = dueCards;
-}
 
-// --- HANDLERS DE FORMULÁRIOS ---
+// --- FUNÇÕES DE API (Integradas para cumprir o pedido) ---
 
 /**
- * Manipula a criação de um novo baralho
- * @param {Event} e - Evento de submit do formulário
+ * Função base para todas as chamadas à API.
+ * @param {string} endpoint - O endpoint da API (ex: '/decks').
+ * @param {string} method - O método HTTP (GET, POST, PUT, DELETE).
+ * @param {object|null} body - O corpo da requisição para POST/PUT.
+ * @returns {Promise<any|null>} - Os dados da resposta ou null em caso de erro.
  */
-async function handleCreateDeck(e) {
-    e.preventDefault();
-    
-    const form = e.target;
-    const titleInput = document.getElementById('deck-title');
-    const descriptionInput = document.getElementById('deck-description');
-    const submitButton = form.querySelector('button[type="submit"]');
-    
-    const title = titleInput.value.trim();
-    const description = descriptionInput.value.trim();
-    
-    // Validação
-    if (!validateDeckTitle(title)) return;
-    
-    submitButton.disabled = true;
-    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando...';
-    
+async function apiCall(endpoint, method = 'GET', body = null) {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) {
+        window.location.href = 'login.html';
+        return null;
+    }
+
+    const headers = {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json'
+    };
+
+    const config = { method, headers };
+    if (body) {
+        config.body = JSON.stringify(body);
+    }
+
     try {
-        const newDeckData = await createDeck(title, description, selectedDeckColor);
-        if (newDeckData) {
-            showToast('Baralho criado com sucesso!', 'success');
-            form.reset();
-            hideModal(document.getElementById('create-deck-modal'));
-            await loadDecks(); // Recarrega a lista
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: `Erro ${response.status}` }));
+            throw new Error(errorData.message);
         }
+        // Retorna um objeto para DELETE para indicar sucesso
+        return response.status === 204 ? { success: true } : await response.json();
     } catch (error) {
-        console.error('Erro ao criar baralho:', error);
-        showToast('Erro ao criar baralho. Tente novamente.', 'error');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Criar Baralho';
+        console.error(`API Error on ${method} ${endpoint}:`, error);
+        showToast(error.message || 'Ocorreu um erro de comunicação.', 'error');
+        return null;
     }
 }
 
-/**
- * Manipula a edição de um baralho existente
- * @param {Event} e - Evento de submit do formulário
- */
-async function handleEditDeck(e) {
-    e.preventDefault();
-    
-    const form = e.target;
-    const deckId = document.getElementById('edit-deck-id').value;
-    const titleInput = document.getElementById('edit-deck-title');
-    const descriptionInput = document.getElementById('edit-deck-description');
-    const submitButton = form.querySelector('button[type="submit"]');
-    
-    const title = titleInput.value.trim();
-    const description = descriptionInput.value.trim();
-    
-    // Validação
-    if (!validateDeckTitle(title)) return;
-    
-    submitButton.disabled = true;
-    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
-    
-    try {
-        const result = await updateDeck(deckId, title, description, selectedDeckColor);
-        if (result) {
-            showToast('Baralho atualizado com sucesso!', 'success');
-            hideModal(document.getElementById('edit-deck-modal'));
-            await loadDecks(); // Recarrega a lista
-        }
-    } catch (error) {
-        console.error('Erro ao atualizar baralho:', error);
-        showToast('Erro ao atualizar baralho. Tente novamente.', 'error');
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Salvar Alterações';
-    }
-}
+function fetchDecks() { return apiCall('/decks'); }
+function createDeck(title, description, color) { return apiCall('/decks', 'POST', { title, description, color }); }
+function updateDeck(deckId, title, description, color) { return apiCall(`/decks/${deckId}`, 'PUT', { title, description, color }); }
+function deleteDeck(deckId) { return apiCall(`/decks/${deckId}`, 'DELETE'); }
+function fetchProfile() { return apiCall('/profile'); }
+
+
+// --- FUNÇÃO DE NOTIFICAÇÃO (Toast) ---
 
 /**
- * Manipula a exclusão de um baralho
- * @param {string} deckId - ID do baralho a ser excluído
+ * Exibe uma notificação toast na tela.
+ * @param {string} message - A mensagem a ser exibida.
+ * @param {'info'|'success'|'error'} type - O tipo de notificação.
  */
-async function handleDeleteDeck(deckId) {
-    if (!deckId) {
-        // Se não foi passado um ID, tenta obter do formulário de edição
-        deckId = document.getElementById('edit-deck-id').value;
-    }
-    
-    if (!deckId) {
-        showToast('ID do baralho não encontrado.', 'error');
-        return;
-    }
-    
-    const shouldDelete = confirm('Tem certeza que deseja excluir este baralho? Esta ação não pode ser desfeita.');
-    if (!shouldDelete) return;
-    
-    try {
-        // Como a função deleteDeck não existe no api.js original, vamos criar uma
-        const result = await deleteDeck(deckId);
-        if (result) {
-            showToast('Baralho excluído com sucesso!', 'success');
-            hideModal(document.getElementById('edit-deck-modal'));
-            await loadDecks(); // Recarrega a lista
-        }
-    } catch (error) {
-        console.error('Erro ao excluir baralho:', error);
-        showToast('Erro ao excluir baralho. Tente novamente.', 'error');
-    }
+function showToast(message, type = 'info') {
+    const backgroundColor = {
+        success: 'linear-gradient(to right, #00b09b, #96c93d)',
+        error: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+        info: 'linear-gradient(to right, #6a11cb, #2575fc)'
+    }[type];
+
+    Toastify({
+        text: message,
+        duration: 3000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+        style: { background: backgroundColor },
+    }).showToast();
 }
-
-// --- FUNÇÕES AUXILIARES ---
-
-/**
- * Valida o título de um baralho
- * @param {string} title - Título a ser validado
- * @returns {boolean} True se válido, False caso contrário
- */
-function validateDeckTitle(title) {
-    const titleError = document.getElementById('title-error');
-    
-    if (title.length < 3) {
-        titleError.textContent = 'O título deve ter pelo menos 3 caracteres.';
-        titleError.style.display = 'block';
-        return false;
-    }
-    
-    if (title.length > 50) {
-        titleError.textContent = 'O título deve ter no máximo 50 caracteres.';
-        titleError.style.display = 'block';
-        return false;
-    }
-    
-    titleError.style.display = 'none';
-    return true;
-}
-
-/**
- * Escapa HTML para prevenir XSS
- * @param {string} text - Texto a ser escapado
- * @returns {string} Texto escapado
- */
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-/**
- * Função para deletar baralho (não existia no api.js original)
- * @param {string} deckId - ID do baralho a ser deletado
- * @returns {Promise} Resultado da operação
- */
-async function deleteDeck(deckId) {
-    return apiCall(`/decks/${deckId}`, 'DELETE');
-}
-
-/**
- * Função para criar baralho com cor
- * @param {string} title - Título do baralho
- * @param {string} description - Descrição do baralho
- * @param {string} color - Cor do baralho
- * @returns {Promise} Resultado da operação
- */
-async function createDeck(title, description, color) {
-    return apiCall('/decks', 'POST', { title, description, color });
-}
-
-/**
- * Função para atualizar baralho com cor
- * @param {string} deckId - ID do baralho
- * @param {string} title - Novo título do baralho
- * @param {string} description - Nova descrição do baralho
- * @param {string} color - Nova cor do baralho
- * @returns {Promise} Resultado da operação
- */
-async function updateDeck(deckId, title, description, color) {
-    return apiCall(`/decks/${deckId}`, 'PUT', { title, description, color });
-}
-
-// --- INICIALIZAÇÃO ---
-document.addEventListener('DOMContentLoaded', initApp);
