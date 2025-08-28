@@ -7,102 +7,322 @@
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/study.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header class="app-header">
         <div class="header-container">
             <div class="logo">
-                <a id="deck-link" href="dashboard.html">
+                <a id="deck-link" href="dashboard.html" class="back-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>
                     <span>Voltar ao Baralho</span>
                 </a>
             </div>
+            <div class="session-info">
+                <div class="timer" id="session-timer">
+                    <i class="far fa-clock"></i>
+                    <span>00:00</span>
+                </div>
+                <div class="focus-mode-toggle">
+                    <button id="focus-mode-btn" title="Modo Foco">
+                        <i class="fas fa-crosshairs"></i>
+                    </button>
+                </div>
+            </div>
             <nav class="app-nav">
                 <div class="user-stats">
-                    <span class="user-stat"> <span id="user-points">0</span> Pontos</span>
-                    <span class="user-stat"> <span id="user-streak">0</span> Dias</span>
+                    <span class="user-stat">
+                        <i class="fas fa-star"></i>
+                        <span id="user-points">0</span> Pontos
+                    </span>
+                    <span class="user-stat">
+                        <i class="fas fa-fire"></i>
+                        <span id="user-streak">0</span> Dias
+                    </span>
                 </div>
                 <div class="user-actions">
-                    <span id="user-email"></span>
-                    <button id="logout-button">Sair</button>
+                    <button id="session-settings-btn" class="icon-btn" title="Configurações">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="logout-button" class="icon-btn" title="Sair">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
                 </div>
             </nav>
         </div>
     </header>
 
     <main class="study-main">
+        <!-- Modo Foco (tela cheia) -->
+        <div id="focus-mode-overlay" class="focus-mode-overlay hidden">
+            <div class="focus-card-container">
+                <div class="focus-card">
+                    <div class="focus-content">
+                        <p id="focus-text"></p>
+                    </div>
+                    <button id="exit-focus-mode" class="btn-exit-focus">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container principal de estudo -->
         <div id="study-container" class="study-container">
             <section class="progress-section" aria-label="Progresso da sessão">
-                <span id="progress-indicator" class="progress-text">Carregando...</span>
+                <div class="progress-info">
+                    <span id="progress-indicator" class="progress-text">Carregando...</span>
+                    <div class="progress-stats">
+                        <span class="stat-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="stats-correct">0</span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-times-circle"></i>
+                            <span id="stats-incorrect">0</span>
+                        </span>
+                    </div>
+                </div>
                 <div class="progress-bar-container">
                     <div id="progress-bar" class="progress-bar"></div>
                 </div>
             </section>
 
-            <section class="flip-card-container" aria-live="polite">
-                <div class="flip-card" id="flip-card">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front card">
-                            <div class="card-header">Pergunta</div>
-                            <div class="card-content">
-                                <p id="card-question" class="card-text"></p>
+            <section class="card-section">
+                <div class="card-navigation">
+                    <button id="prev-card" class="nav-btn" disabled title="Card anterior">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <div class="flip-card-container" aria-live="polite">
+                        <div class="flip-card" id="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front card">
+                                    <div class="card-header">
+                                        <span>Pergunta</span>
+                                        <button class="card-action-btn" id="card-actions-btn" title="Ações do card">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="card-text-container">
+                                            <p id="card-question" class="card-text"></p>
+                                        </div>
+                                        <div class="card-hint">
+                                            <p><i class="fas fa-lightbulb"></i> Pressione Espaço ou clique no card para ver a resposta</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back card">
+                                    <div class="card-header">
+                                        <span>Resposta</span>
+                                        <div class="card-actions">
+                                            <button id="read-aloud-btn" class="icon-btn small" title="Ouvir resposta">
+                                                <i class="fas fa-volume-up"></i>
+                                            </button>
+                                            <button class="icon-btn small" id="explain-button" title="Explicação da IA">
+                                                <i class="fas fa-robot"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-content">
+                                        <div class="card-text-container">
+                                            <p id="card-answer" class="card-text"></p>
+                                        </div>
+                                        <div class="answer-quality-prompt">
+                                            <p>Como você se saiu ao responder?</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="card-feedback-overlay" class="card-feedback-overlay">
+                                <div class="feedback-content">
+                                    <span id="feedback-text"></span>
+                                    <div class="feedback-emoji"></div>
+                                </div>
                             </div>
                         </div>
-                        <div class="flip-card-back card">
-                            <div class="card-header">Resposta</div>
-                            <div class="card-content">
-                                <p id="card-answer" class="card-text"></p>
-                            </div>
-                            <button id="explain-button" class="btn-explain-ai" title="Pedir uma explicação detalhada para a IA">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M10 14a2 2 0 1 0 4 0a2 2 0 0 0-4 0m3-7a2 2 0 1 0-4 0a2 2 0 0 0 4 0M5.5 8A2.5 2.5 0 0 0 8 5.5a2.5 2.5 0 0 0-2.5-2.5A2.5 2.5 0 0 0 3 5.5A2.5 2.5 0 0 0 5.5 8m13 13a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5M10 21a2 2 0 1 0 4 0a2 2 0 0 0-4 0m8.5-10a2.5 2.5 0 0 0 2.5-2.5a2.5 2.5 0 0 0-2.5-2.5a2.5 2.5 0 0 0-2.5 2.5a2.5 2.5 0 0 0 2.5 2.5Z"/></svg>
-                                <span>Me explique melhor</span>
-                            </button>
-                        </div>
                     </div>
-                    <div id="card-feedback-overlay" class="card-feedback-overlay">
-                        <span id="feedback-text"></span>
-                    </div>
+                    
+                    <button id="next-card" class="nav-btn" title="Próximo card">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="card-position-indicator">
+                    <span id="card-position">1/0</span>
                 </div>
             </section>
 
             <section id="controls" class="study-controls">
-                <button id="flip-button" class="btn btn-primary btn-lg">Mostrar Resposta (Espaço)</button>
-                <div id="quality-buttons" class="hidden">
-                    <p class="controls-label">Como você se saiu?</p>
+                <button id="flip-button" class="btn btn-primary btn-lg flip-btn">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Mostrar Resposta (Espaço)</span>
+                </button>
+                <div id="quality-buttons" class="quality-buttons hidden">
+                    <p class="controls-label">Avalie sua resposta:</p>
                     <div class="quality-btn-group">
-                        <button class="btn quality-btn quality-errado" data-quality="1" title="Atalho: 1">Errei</button>
-                        <button class="btn quality-btn quality-dificil" data-quality="3" title="Atalho: 2">Difícil</button>
-                        <button class="btn quality-btn quality-bom" data-quality="4" title="Atalho: 3">Bom</button>
-                        <button class="btn quality-btn quality-facil" data-quality="5" title="Atalho: 4">Fácil</button>
+                        <button class="btn quality-btn quality-errado" data-quality="1" title="Não lembrei (Atalho: 1)">
+                            <i class="fas fa-times"></i>
+                            <span>Errei</span>
+                        </button>
+                        <button class="btn quality-btn quality-dificil" data-quality="3" title="Lembrei com dificuldade (Atalho: 2)">
+                            <i class="fas fa-hard-hat"></i>
+                            <span>Difícil</span>
+                        </button>
+                        <button class="btn quality-btn quality-bom" data-quality="4" title="Lembrei corretamente (Atalho: 3)">
+                            <i class="fas fa-check"></i>
+                            <span>Bom</span>
+                        </button>
+                        <button class="btn quality-btn quality-facil" data-quality="5" title="Muito fácil (Atalho: 4)">
+                            <i class="fas fa-bolt"></i>
+                            <span>Fácil</span>
+                        </button>
                     </div>
                 </div>
             </section>
         </div>
 
+        <!-- Tela de conclusão -->
         <div id="completion-container" class="completion-container hidden">
             <div class="card completion-card">
+                <div class="completion-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
                 <h2 id="completion-heading">Sessão Concluída!</h2>
                 <p>Você revisou todos os cards agendados para hoje. Ótimo trabalho!</p>
-                <div id="session-summary" class="session-summary"></div>
+                
+                <div id="session-summary" class="session-summary">
+                    <div class="summary-stats">
+                        <div class="stat-box">
+                            <div class="stat-value" id="summary-total">0</div>
+                            <div class="stat-label">Cards revisados</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="summary-correct">0</div>
+                            <div class="stat-label">Acertos</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" id="summary-time">00:00</div>
+                            <div class="stat-label">Tempo total</div>
+                        </div>
+                    </div>
+                    
+                    <div class="accuracy-meter">
+                        <div class="accuracy-label">Taxa de acerto</div>
+                        <div class="accuracy-bar">
+                            <div class="accuracy-fill" id="accuracy-fill"></div>
+                        </div>
+                        <div class accuracy-percentage" id="accuracy-percentage">0%</div>
+                    </div>
+                </div>
+                
                 <div class="completion-actions">
-                    <a id="back-to-deck-link-2" href="#" class="btn btn-secondary"></a>
-                    <a href="dashboard.html" class="btn btn-primary">Ver outros baralhos</a>
+                    <a id="back-to-deck-link-2" href="#" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Voltar ao Baralho
+                    </a>
+                    <a href="dashboard.html" class="btn btn-primary">
+                        <i class="fas fa-th-large"></i>
+                        Ver outros baralhos
+                    </a>
+                    <button id="restart-session-btn" class="btn btn-outline">
+                        <i class="fas fa-redo"></i>
+                        Reiniciar Sessão
+                    </button>
                 </div>
             </div>
         </div>
 
+        <!-- Modal de explicação da IA -->
         <div id="explanation-modal" class="modal-overlay">
-            <div class="modal">
+            <div class="modal explanation-modal">
                 <div class="modal-header">
-                    <h2>Explicação do Tutor IA</h2>
-                    <button id="close-explanation-modal-btn" class="close-btn" aria-label="Fechar modal">&times;</button>
+                    <h2>
+                        <i class="fas fa-robot"></i>
+                        Explicação do Tutor IA
+                    </h2>
+                    <div class="modal-actions">
+                        <button id="read-explanation-btn" class="icon-btn small" title="Ouvir explicação">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <button id="close-explanation-modal-btn" class="close-btn" aria-label="Fechar modal">&times;</button>
+                    </div>
                 </div>
                 <div class="modal-body" id="explanation-content">
-                    <div class="skeleton skeleton-text"></div>
-                    <div class="skeleton skeleton-text"></div>
-                    <div class="skeleton skeleton-text"></div>
+                    <div class="explanation-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Gerando explicação personalizada...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span class="explanation-disclaimer">
+                        <i class="fas fa-info-circle"></i>
+                        Explicação gerada por inteligência artificial
+                    </span>
                 </div>
             </div>
+        </div>
+
+        <!-- Modal de configurações -->
+        <div id="settings-modal" class="modal-overlay">
+            <div class="modal settings-modal">
+                <div class="modal-header">
+                    <h2>Configurações de Estudo</h2>
+                    <button class="close-btn close-settings-modal" aria-label="Fechar modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="settings-group">
+                        <h3>Preferências de Estudo</h3>
+                        <div class="setting-item">
+                            <label for="auto-flip">Virar card automaticamente após</label>
+                            <select id="auto-flip">
+                                <option value="0">Não virar automaticamente</option>
+                                <option value="3">3 segundos</option>
+                                <option value="5">5 segundos</option>
+                                <option value="10">10 segundos</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="read-aloud">Ler perguntas e respostas em voz alta</label>
+                            <label class="switch">
+                                <input type="checkbox" id="read-aloud">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="settings-group">
+                        <h3>Aparência</h3>
+                        <div class="setting-item">
+                            <label for="font-size">Tamanho da fonte</label>
+                            <select id="font-size">
+                                <option value="small">Pequeno</option>
+                                <option value="medium" selected>Médio</option>
+                                <option value="large">Grande</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <label for="dark-mode">Modo escuro</label>
+                            <label class="switch">
+                                <input type="checkbox" id="dark-mode">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary save-settings">Salvar Configurações</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu de ações do card -->
+        <div id="card-actions-menu" class="dropdown-menu hidden">
+            <ul>
+                <li><a href="#" id="edit-card-btn"><i class="fas fa-edit"></i> Editar card</a></li>
+                <li><a href="#" id="flag-card-btn"><i class="fas fa-flag"></i> Marcar para revisão</a></li>
+                <li><a href="#" id="skip-card-btn"><i class="fas fa-forward"></i> Pular card</a></li>
+            </ul>
         </div>
     </main>
     
