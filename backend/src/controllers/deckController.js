@@ -1,15 +1,16 @@
 const supabase = require('../config/supabaseClient');
-const { generateFlashcardsFromText } = require('../services/cohereService');
 const { z } = require('zod');
 const logger = require('../config/logger'); 
-const { flashcardGenerationQueue } = require('../config/queue');
 const pdf = require('pdf-parse');
 const { YoutubeTranscript } = require('youtube-transcript');
+const { flashcardGenerationQueue, isRedisConnected } = require('../config/queue');
+const { processGenerationAndSave } = require('../services/generationService');
 
-
+// Schema para validação, agora incluindo o campo 'color'
 const deckSchema = z.object({
   title: z.string({ required_error: 'O título é obrigatório.' }).min(1, 'O título não pode estar vazio.'),
   description: z.string().optional(),
+  color: z.string().optional(),
 });
 
 const generateSchema = z.object({
@@ -18,18 +19,28 @@ const generateSchema = z.object({
     type: z.enum(['Pergunta e Resposta', 'Múltipla Escolha'])
 });
 
-
 const getDecks = async (req, res) => {
   const userId = req.user.id;
   try {
+    // A query agora busca a contagem de flashcards associados
     const { data, error } = await supabase
       .from('decks')
-      .select('*')
+      .select('*, flashcards(count)')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    res.status(200).json(data);
+    
+    // Simplifica a contagem de cards para o frontend
+    const decksWithCount = data.map(deck => {
+        const { flashcards, ...deckData } = deck;
+        return {
+            ...deckData,
+            card_count: flashcards[0]?.count || 0
+        };
+    });
+
+    res.status(200).json(decksWithCount);
   } catch (error) {
     logger.error(`Error fetching decks for user ${userId}: ${error.message}`);
     res.status(500).json({ message: 'Erro ao buscar os baralhos.', code: 'INTERNAL_SERVER_ERROR' });
@@ -39,11 +50,11 @@ const getDecks = async (req, res) => {
 const createDeck = async (req, res) => {
   const userId = req.user.id;
   try {
-    const { title, description } = deckSchema.parse(req.body);
+    const { title, description, color } = deckSchema.parse(req.body);
 
     const { data, error } = await supabase
       .from('decks')
-      .insert([{ title, description, user_id: userId }])
+      .insert([{ title, description, user_id: userId, color }])
       .select()
       .single();
 
@@ -62,11 +73,11 @@ const updateDeck = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
     try {
-        const { title, description } = deckSchema.parse(req.body);
+        const { title, description, color } = deckSchema.parse(req.body);
 
         const { data, error } = await supabase
             .from('decks')
-            .update({ title, description })
+            .update({ title, description, color })
             .eq('id', id)
             .eq('user_id', userId)
             .select()
@@ -116,22 +127,23 @@ const generateCardsForDeck = async (req, res) => {
             return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
         }
 
-        await flashcardGenerationQueue.add('generate', {
-            deckId,
-            userId,
-            textContent,
-            count,
-            type
-        });
+        const jobData = { deckId, textContent, count, type };
 
-        res.status(202).json({ message: 'Pedido de geração recebido! Os flashcards estão a ser criados em segundo plano.' });
+        if (isRedisConnected) {
+            await flashcardGenerationQueue.add('generate-text', jobData);
+            res.status(202).json({ processing: true, message: 'Pedido de geração recebido! Os flashcards estão a ser criados em segundo plano.' });
+        } else {
+            logger.info(`Modo síncrono: Gerando flashcards para o baralho ${deckId}`);
+            const savedFlashcards = await processGenerationAndSave(jobData);
+            res.status(201).json({ processing: false, message: 'Flashcards gerados com sucesso!', flashcards: savedFlashcards });
+        }
 
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: error.errors[0].message, code: 'VALIDATION_ERROR' });
         }
-        console.error(`Erro ao adicionar tarefa à fila para o baralho ${deckId}: ${error.message}`);
-        res.status(500).json({ message: 'Erro ao iniciar a geração dos flashcards.', code: 'QUEUE_ERROR' });
+        logger.error(`Erro na rota de geração para o baralho ${deckId}: ${error.message}`);
+        res.status(500).json({ message: error.message || 'Erro ao iniciar a geração dos flashcards.', code: 'GENERATION_ERROR' });
     }
 };
 
@@ -171,7 +183,6 @@ const generateCardsFromFile = async (req, res) => {
         }
 
         let textContent;
-
         if (req.file.mimetype === 'application/pdf') {
             const data = await pdf(req.file.buffer);
             textContent = data.text;
@@ -184,6 +195,12 @@ const generateCardsFromFile = async (req, res) => {
         }
 
         const { count, type } = generateSchema.partial().parse(req.body);
+        const jobData = {
+            deckId,
+            textContent,
+            count: parseInt(count, 10) || 5,
+            type: type || 'Pergunta e Resposta',
+        };
 
         const { data: deck, error: deckError } = await supabase
             .from('decks').select('id').eq('id', deckId).eq('user_id', userId).single();
@@ -192,15 +209,14 @@ const generateCardsFromFile = async (req, res) => {
             return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
         }
 
-        await flashcardGenerationQueue.add('generate-from-file', {
-            deckId,
-            userId,
-            textContent,
-            count: parseInt(count, 10) || 5,
-            type: type || 'Pergunta e Resposta',
-        });
-
-        res.status(202).json({ message: 'Ficheiro recebido! Os flashcards estão a ser criados em segundo plano.' });
+        if (isRedisConnected) {
+            await flashcardGenerationQueue.add('generate-file', jobData);
+            res.status(202).json({ processing: true, message: 'Ficheiro recebido! Os flashcards estão a ser criados em segundo plano.' });
+        } else {
+            logger.info(`Modo síncrono: Gerando flashcards a partir de ficheiro para o baralho ${deckId}`);
+            const savedFlashcards = await processGenerationAndSave(jobData);
+            res.status(201).json({ processing: false, message: 'Flashcards gerados com sucesso!', flashcards: savedFlashcards });
+        }
 
     } catch (error) {
         if (error instanceof z.ZodError) {
@@ -238,7 +254,7 @@ const shareDeck = async (req, res) => {
 const generateCardsFromYouTube = async (req, res) => {
     const { id: deckId } = req.params;
     const userId = req.user.id;
-    const { youtubeUrl } = req.body;
+    const { youtubeUrl, count, type } = req.body;
 
     try {
         if (!youtubeUrl) {
@@ -258,16 +274,21 @@ const generateCardsFromYouTube = async (req, res) => {
         }
 
         const textContent = transcript.map(item => item.text).join(' ');
-
-        await flashcardGenerationQueue.add('generate-from-youtube', {
+        const jobData = {
             deckId,
-            userId,
             textContent,
-            count: parseInt(req.body.count, 10) || 10, 
-            type: req.body.type || 'Pergunta e Resposta',
-        });
+            count: parseInt(count, 10) || 10,
+            type: type || 'Pergunta e Resposta',
+        };
 
-        res.status(202).json({ message: 'Vídeo recebido! Os flashcards estão a ser extraídos da transcrição.' });
+        if (isRedisConnected) {
+            await flashcardGenerationQueue.add('generate-youtube', jobData);
+            res.status(202).json({ processing: true, message: 'Vídeo recebido! Os flashcards estão a ser extraídos da transcrição.' });
+        } else {
+            logger.info(`Modo síncrono: Gerando flashcards a partir do YouTube para o baralho ${deckId}`);
+            const savedFlashcards = await processGenerationAndSave(jobData);
+            res.status(201).json({ processing: false, message: 'Flashcards gerados com sucesso!', flashcards: savedFlashcards });
+        }
 
     } catch (error) {
         logger.error(`Erro ao processar URL do YouTube para o baralho ${deckId}: ${error.message}`);

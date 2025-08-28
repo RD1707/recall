@@ -42,3 +42,11 @@
 {"level":"info","message":"A processar tarefa 10 para o baralho ca100a8c-dfa5-41d0-8809-3ce9caf8cda2","service":"recall-api","timestamp":"2025-08-27 19:20:07"}
 {"level":"info","message":"Tarefa 10 concluída com sucesso. 5 flashcards guardados.","service":"recall-api","timestamp":"2025-08-27 19:20:11"}
 {"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-27 21:55:09"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-28 08:40:45"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-28 09:24:39"}
+{"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-28 09:28:09"}
+{"level":"warn","message":"⚠️  Redis está desabilitado. As funcionalidades de geração de flashcards por IA não estarão disponíveis.","service":"recall-api","timestamp":"2025-08-28 09:33:07"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-08-28 09:40:20"}
+{"level":"info","message":"Modo síncrono: Gerando flashcards para o baralho 9e35ee7b-e604-47fa-b562-ebf05f17bbbf","service":"recall-api","timestamp":"2025-08-28 09:40:43"}
+{"level":"info","message":"Iniciando geração de IA para o baralho 9e35ee7b-e604-47fa-b562-ebf05f17bbbf","service":"recall-api","timestamp":"2025-08-28 09:40:43"}
+{"level":"info","message":"Geração para o baralho 9e35ee7b-e604-47fa-b562-ebf05f17bbbf concluída. 5 flashcards guardados.","service":"recall-api","timestamp":"2025-08-28 09:40:51"}
