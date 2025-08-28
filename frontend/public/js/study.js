@@ -256,22 +256,19 @@ class StudySessionPro {
     /**
      * Exibe o estado de carregamento
      */
-    showLoadingState() {
-        const loadingHTML = `
-            <div class="loading-state">
-                <div class="loading-spinner"></div>
-                <p>Preparando sua sessão de estudo...</p>
-            </div>
-        `;
-        this.studyContainer.innerHTML = loadingHTML;
+        showLoadingState() {
+        // Apenas esconde o conteúdo de estudo e mostra o de carregamento
+        document.getElementById('study-content')?.classList.add('hidden');
+        document.getElementById('loading-state')?.classList.remove('hidden');
     }
 
     /**
      * Remove o estado de carregamento
      */
     hideLoadingState() {
-        // Restaura o conteúdo original do study-container
-        // (será preenchido pelo displayCard)
+        // Esconde o carregamento e mostra o conteúdo de estudo
+        document.getElementById('loading-state')?.classList.add('hidden');
+        document.getElementById('study-content')?.classList.remove('hidden');
     }
 
     /**

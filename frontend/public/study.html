@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +10,17 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
     <header class="app-header">
         <div class="header-container">
             <div class="logo">
                 <a id="deck-link" href="dashboard.html" class="back-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-chevron-left">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
                     <span>Voltar ao Baralho</span>
                 </a>
             </div>
@@ -69,118 +75,131 @@
 
         <!-- Container principal de estudo -->
         <div id="study-container" class="study-container">
-            <section class="progress-section" aria-label="Progresso da sessão">
-                <div class="progress-info">
-                    <span id="progress-indicator" class="progress-text">Carregando...</span>
-                    <div class="progress-stats">
-                        <span class="stat-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span id="stats-correct">0</span>
-                        </span>
-                        <span class="stat-item">
-                            <i class="fas fa-times-circle"></i>
-                            <span id="stats-incorrect">0</span>
-                        </span>
+            <div id="loading-state" class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Preparando sua sessão de estudo...</p>
+            </div>
+            <div id="study-content" class="hidden">
+                <section class="progress-section" aria-label="Progresso da sessão">
+                    <div class="progress-info">
+                        <span id="progress-indicator" class="progress-text">Carregando...</span>
+                        <div class="progress-stats">
+                            <span class="stat-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span id="stats-correct">0</span>
+                            </span>
+                            <span class="stat-item">
+                                <i class="fas fa-times-circle"></i>
+                                <span id="stats-incorrect">0</span>
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <div class="progress-bar-container">
-                    <div id="progress-bar" class="progress-bar"></div>
-                </div>
-            </section>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                </section>
 
-            <section class="card-section">
-                <div class="card-navigation">
-                    <button id="prev-card" class="nav-btn" disabled title="Card anterior">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    
-                    <div class="flip-card-container" aria-live="polite">
-                        <div class="flip-card" id="flip-card">
-                            <div class="flip-card-inner">
-                                <div class="flip-card-front card">
-                                    <div class="card-header">
-                                        <span>Pergunta</span>
-                                        <button class="card-action-btn" id="card-actions-btn" title="Ações do card">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                    </div>
-                                    <div class="card-content">
-                                        <div class="card-text-container">
-                                            <p id="card-question" class="card-text"></p>
+                <section class="card-section">
+                    <div class="card-navigation">
+                        <button id="prev-card" class="nav-btn" disabled="" title="Card anterior">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+
+                        <div class="flip-card-container" aria-live="polite">
+                            <div class="flip-card" id="flip-card">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front card">
+                                        <div class="card-header">
+                                            <span>Pergunta</span>
+                                            <button class="card-action-btn" id="card-actions-btn" title="Ações do card">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
                                         </div>
-                                        <div class="card-hint">
-                                            <p><i class="fas fa-lightbulb"></i> Pressione Espaço ou clique no card para ver a resposta</p>
+                                        <div class="card-content">
+                                            <div class="card-text-container">
+                                                <p id="card-question" class="card-text"></p>
+                                            </div>
+                                            <div class="card-hint">
+                                                <p><i class="fas fa-lightbulb"></i> Pressione Espaço ou clique no card
+                                                    para ver a resposta</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flip-card-back card">
+                                        <div class="card-header">
+                                            <span>Resposta</span>
+                                            <div class="card-actions">
+                                                <button id="read-aloud-btn" class="icon-btn small"
+                                                    title="Ouvir resposta">
+                                                    <i class="fas fa-volume-up"></i>
+                                                </button>
+                                                <button class="icon-btn small" id="explain-button"
+                                                    title="Explicação da IA">
+                                                    <i class="fas fa-robot"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-content">
+                                            <div class="card-text-container">
+                                                <p id="card-answer" class="card-text"></p>
+                                            </div>
+                                            <div class="answer-quality-prompt">
+                                                <p>Como você se saiu ao responder?</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flip-card-back card">
-                                    <div class="card-header">
-                                        <span>Resposta</span>
-                                        <div class="card-actions">
-                                            <button id="read-aloud-btn" class="icon-btn small" title="Ouvir resposta">
-                                                <i class="fas fa-volume-up"></i>
-                                            </button>
-                                            <button class="icon-btn small" id="explain-button" title="Explicação da IA">
-                                                <i class="fas fa-robot"></i>
-                                            </button>
-                                        </div>
+                                <div id="card-feedback-overlay" class="card-feedback-overlay">
+                                    <div class="feedback-content">
+                                        <span id="feedback-text"></span>
+                                        <div class="feedback-emoji"></div>
                                     </div>
-                                    <div class="card-content">
-                                        <div class="card-text-container">
-                                            <p id="card-answer" class="card-text"></p>
-                                        </div>
-                                        <div class="answer-quality-prompt">
-                                            <p>Como você se saiu ao responder?</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="card-feedback-overlay" class="card-feedback-overlay">
-                                <div class="feedback-content">
-                                    <span id="feedback-text"></span>
-                                    <div class="feedback-emoji"></div>
                                 </div>
                             </div>
                         </div>
+
+                        <button id="next-card" class="nav-btn" title="Próximo card">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
-                    
-                    <button id="next-card" class="nav-btn" title="Próximo card">
-                        <i class="fas fa-chevron-right"></i>
+
+                    <div class="card-position-indicator">
+                        <span id="card-position">1/0</span>
+                    </div>
+                </section>
+
+                <section id="controls" class="study-controls">
+                    <button id="flip-button" class="btn btn-primary btn-lg flip-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Mostrar Resposta (Espaço)</span>
                     </button>
-                </div>
-
-                <div class="card-position-indicator">
-                    <span id="card-position">1/0</span>
-                </div>
-            </section>
-
-            <section id="controls" class="study-controls">
-                <button id="flip-button" class="btn btn-primary btn-lg flip-btn">
-                    <i class="fas fa-sync-alt"></i>
-                    <span>Mostrar Resposta (Espaço)</span>
-                </button>
-                <div id="quality-buttons" class="quality-buttons hidden">
-                    <p class="controls-label">Avalie sua resposta:</p>
-                    <div class="quality-btn-group">
-                        <button class="btn quality-btn quality-errado" data-quality="1" title="Não lembrei (Atalho: 1)">
-                            <i class="fas fa-times"></i>
-                            <span>Errei</span>
-                        </button>
-                        <button class="btn quality-btn quality-dificil" data-quality="3" title="Lembrei com dificuldade (Atalho: 2)">
-                            <i class="fas fa-hard-hat"></i>
-                            <span>Difícil</span>
-                        </button>
-                        <button class="btn quality-btn quality-bom" data-quality="4" title="Lembrei corretamente (Atalho: 3)">
-                            <i class="fas fa-check"></i>
-                            <span>Bom</span>
-                        </button>
-                        <button class="btn quality-btn quality-facil" data-quality="5" title="Muito fácil (Atalho: 4)">
-                            <i class="fas fa-bolt"></i>
-                            <span>Fácil</span>
-                        </button>
+                    <div id="quality-buttons" class="quality-buttons hidden">
+                        <p class="controls-label">Avalie sua resposta:</p>
+                        <div class="quality-btn-group">
+                            <button class="btn quality-btn quality-errado" data-quality="1"
+                                title="Não lembrei (Atalho: 1)">
+                                <i class="fas fa-times"></i>
+                                <span>Errei</span>
+                            </button>
+                            <button class="btn quality-btn quality-dificil" data-quality="3"
+                                title="Lembrei com dificuldade (Atalho: 2)">
+                                <i class="fas fa-hard-hat"></i>
+                                <span>Difícil</span>
+                            </button>
+                            <button class="btn quality-btn quality-bom" data-quality="4"
+                                title="Lembrei corretamente (Atalho: 3)">
+                                <i class="fas fa-check"></i>
+                                <span>Bom</span>
+                            </button>
+                            <button class="btn quality-btn quality-facil" data-quality="5"
+                                title="Muito fácil (Atalho: 4)">
+                                <i class="fas fa-bolt"></i>
+                                <span>Fácil</span>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
 
         <!-- Tela de conclusão -->
@@ -191,7 +210,7 @@
                 </div>
                 <h2 id="completion-heading">Sessão Concluída!</h2>
                 <p>Você revisou todos os cards agendados para hoje. Ótimo trabalho!</p>
-                
+
                 <div id="session-summary" class="session-summary">
                     <div class="summary-stats">
                         <div class="stat-box">
@@ -207,7 +226,7 @@
                             <div class="stat-label">Tempo total</div>
                         </div>
                     </div>
-                    
+
                     <div class="accuracy-meter">
                         <div class="accuracy-label">Taxa de acerto</div>
                         <div class="accuracy-bar">
@@ -216,7 +235,7 @@
                         <div class accuracy-percentage" id="accuracy-percentage">0%</div>
                     </div>
                 </div>
-                
+
                 <div class="completion-actions">
                     <a id="back-to-deck-link-2" href="#" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i>
@@ -246,7 +265,8 @@
                         <button id="read-explanation-btn" class="icon-btn small" title="Ouvir explicação">
                             <i class="fas fa-volume-up"></i>
                         </button>
-                        <button id="close-explanation-modal-btn" class="close-btn" aria-label="Fechar modal">&times;</button>
+                        <button id="close-explanation-modal-btn" class="close-btn"
+                            aria-label="Fechar modal">&times;</button>
                     </div>
                 </div>
                 <div class="modal-body" id="explanation-content">
@@ -325,12 +345,13 @@
             </ul>
         </div>
     </main>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="js/notifications.js"></script>
-    <script src="js/api.js"></script> 
+    <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/study.js"></script>
 </body>
+
 </html>
