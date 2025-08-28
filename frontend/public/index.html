@@ -6,171 +6,474 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recall - Estude de forma mais inteligente com Flashcards de IA</title>
     <link rel="stylesheet" href="css/landing.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-
+    <!-- Header com navegação melhorada -->
     <header class="landing-header">
-        <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
-        </button>
         <div class="header-container landing-container">
             <div class="logo">
-                <a href="#">Recall</a>
+                <a href="#">
+                    <span class="logo-icon"><i class="fas fa-brain"></i></span>
+                    Recall
+                </a>
             </div>
+            
+            <nav class="main-nav" id="main-nav">
+                <ul>
+                    <li><a href="#features">Recursos</a></li>
+                    <li><a href="#how-it-works">Como Funciona</a></li>
+                    <li><a href="#testimonials">Depoimentos</a></li>
+                    <li><a href="#pricing">Preços</a></li>
+                </ul>
+            </nav>
+            
             <div class="header-actions">
+                <a href="login.html" class="btn btn-outline">Entrar</a>
                 <a href="login.html" class="btn btn-primary">Começar Agora</a>
             </div>
+            
+            <button id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </header>
 
     <main>
-
+        <!-- Hero Section reformulada -->
         <section class="hero">
             <div class="hero-container landing-container">
                 <div class="hero-text">
-                    <h1>Memorize qualquer coisa, para sempre.</h1>
-                    <p class="hero-subtitle">Transforme suas anotações, PDFs e vídeos em flashcards inteligentes com o
-                        poder da Inteligência Artificial. Estude menos, aprenda mais.</p>
-                    <a href="login.html" class="btn btn-primary btn-lg">Crie seus flashcards grátis</a>
+                    <div class="badge">Tecnologia de Ponta com IA</div>
+                    <h1>Memorize qualquer coisa, <span class="text-gradient">para sempre</span>.</h1>
+                    <p class="hero-subtitle">Transforme suas anotações, PDFs e vídeos em flashcards inteligentes com o poder da Inteligência Artificial. Estude menos, aprenda mais.</p>
+                    <div class="hero-actions">
+                        <a href="login.html" class="btn btn-primary btn-lg">Crie seus flashcards grátis</a>
+                        <a href="#demo" class="btn-video">
+                            <span class="play-icon"><i class="fas fa-play"></i></span>
+                            Ver demonstração
+                        </a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <span class="stat-number">+50.000</span>
+                            <span class="stat-label">estudantes</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">98%</span>
+                            <span class="stat-label">retenção</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">+1M</span>
+                            <span class="stat-label">flashcards</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="hero-image">
-                    <svg width="100%" viewBox="0 0 499 398" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <g clip-path="url(#clip0_105_2)">
-                            <rect x="153.5" y="46.5" width="308" height="212" rx="15.5" fill="white" stroke="#E2E8F0"
-                                stroke-width="3" />
-                            <rect x="205" y="111" width="204" height="10" rx="5" fill="#E2E8F0" />
-                            <rect x="205" y="143" width="204" height="10" rx="5" fill="#E2E8F0" />
-                            <rect x="205" y="175" width="138" height="10" rx="5" fill="#E2E8F0" />
-                            <rect x="88.5" y="93.5" width="308" height="212" rx="15.5" fill="white" stroke="#E2E8F0"
-                                stroke-width="3" />
-                            <rect x="132" y="158" width="204" height="10" rx="5" fill="#E2E8F0" />
-                            <rect x="132" y="190" width="204" height="10" rx="5" fill="#E2E8F0" />
-                            <rect x="132" y="222" width="138" height="10" rx="5" fill="#E2E8F0" />
-
-                            <rect x="36.5" y="140.5" width="308" height="212" rx="15.5" fill="white" stroke="#4F46E5"
-                                stroke-width="3" />
-
-                            <rect x="73" y="180" width="150" height="12" rx="6" fill="#CBD5E0" />
-                            <rect x="73" y="212" width="240" height="8" rx="4" fill="#E2E8F0" />
-                            <rect x="73" y="230" width="240" height="8" rx="4" fill="#E2E8F0" />
-                            <rect x="73" y="248" width="240" height="8" rx="4" fill="#E2E8F0" />
-                            <rect x="73" y="266" width="180" height="8" rx="4" fill="#E2E8F0" />
-
-                        </g>
-                        <defs>
-                            <clipPath id="clip0_105_2">
-                                <rect width="499" height="398" fill="white" />
-                            </clipPath>
-                        </defs>
-                    </svg>
+                    <div class="floating-cards">
+                        <div class="card-item card-1">
+                            <div class="card-content">
+                                <h4>O que é mitocôndria?</h4>
+                                <p>Organela responsável pela produção de energia na célula</p>
+                            </div>
+                            <div class="card-badge">Biologia</div>
+                        </div>
+                        <div class="card-item card-2">
+                            <div class="card-content">
+                                <h4>Teorema de Pitágoras</h4>
+                                <p>a² = b² + c²</p>
+                            </div>
+                            <div class="card-badge">Matemática</div>
+                        </div>
+                        <div class="card-item card-3">
+                            <div class="card-content">
+                                <h4>Quem foi Machado de Assis?</h4>
+                                <p>Escritor brasileiro, fundador da Academia Brasileira de Letras</p>
+                            </div>
+                            <div class="card-badge">Literatura</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
+        <!-- Seção de empresas/clientes (nova) -->
+        <section class="clients">
+            <div class="landing-container">
+                <p class="clients-label">Utilizado por estudantes das melhores instituições</p>
+                <div class="clients-grid">
+                    <div class="client-item">USP</div>
+                    <div class="client-item">UNICAMP</div>
+                    <div class="client-item">ITA</div>
+                    <div class="client-item">Harvard</div>
+                    <div class="client-item">Stanford</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section reformulada -->
         <section id="features" class="features">
             <div class="landing-container">
-                <h2 class="section-title">A plataforma de estudos que trabalha por você</h2>
-                <p class="section-subtitle">Tudo o que você precisa para otimizar seu aprendizado em um só lugar.</p>
+                <div class="section-header">
+                    <h2 class="section-title">A plataforma de estudos que trabalha por você</h2>
+                    <p class="section-subtitle">Tudo o que você precisa para otimizar seu aprendizado em um só lugar.</p>
+                </div>
                 <div class="features-grid">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path
-                                    d="M12 3v2.355m0 16.29V23m8.66-16.29L19.205 8.2m-14.41 0L3.34 6.71M20.655 12H23m-22 0h2.345M19.205 15.8l1.455 1.49m-16.11-2.98L3.34 17.29m12.125-7.79a4.5 4.5 0 1 1-6.364 6.364 4.5 4.5 0 0 1 6.364-6.364z" />
-                            </svg>
+                            <i class="fas fa-wand-magic-sparkles"></i>
                         </div>
                         <h3>Geração Mágica com IA</h3>
-                        <p>Cole qualquer texto, envie um PDF ou um vídeo do YouTube e nossa IA cria flashcards precisos
-                            e relevantes em segundos.</p>
+                        <p>Cole qualquer texto, envie um PDF ou um vídeo do YouTube e nossa IA cria flashcards precisos e relevantes em segundos.</p>
+                        <a href="#" class="feature-link">Saiba mais <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path
-                                    d="M3 6h3M5 2v4M19 6h3M17 2v4M21 14V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8m-9-6h7m-1-4h.01M17 12h.01M16 19h6m-3-3v6" />
-                            </svg>
+                            <i class="fas fa-calendar-days"></i>
                         </div>
                         <h3>Repetição Espaçada Inteligente</h3>
-                        <p>Nosso algoritmo mostra o card certo no momento exato, maximizando a retenção e evitando o
-                            esquecimento.</p>
+                        <p>Nosso algoritmo mostra o card certo no momento exato, maximizando a retenção e evitando o esquecimento.</p>
+                        <a href="#" class="feature-link">Saiba mais <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                            </svg>
+                            <i class="fas fa-robot"></i>
                         </div>
                         <h3>Tutor com IA</h3>
-                        <p>Não entendeu uma resposta? Peça uma explicação detalhada e aprofunde seu conhecimento no
-                            assunto.</p>
+                        <p>Não entendeu uma resposta? Peça uma explicação detalhada e aprofunde seu conhecimento no assunto.</p>
+                        <a href="#" class="feature-link">Saiba mais <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- Seção de Demonstração (nova) -->
+        <section id="demo" class="demo">
+            <div class="landing-container">
+                <div class="demo-content">
+                    <div class="demo-text">
+                        <h2>Veja como é fácil começar</h2>
+                        <p>Nosso processo intuitivo torna a criação de flashcards rápida e eficiente. Assista ao vídeo para ver a plataforma em ação.</p>
+                        <ul class="demo-list">
+                            <li><i class="fas fa-check-circle"></i> Upload de múltiplos formatos</li>
+                            <li><i class="fas fa-check-circle"></i> Geração instantânea com IA</li>
+                            <li><i class="fas fa-check-circle"></i> Revisão inteligente agendada</li>
+                        </ul>
+                    </div>
+                    <div class="demo-video">
+                        <div class="video-placeholder">
+                            <div class="play-button">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it Works Section reformulada -->
         <section id="how-it-works" class="how-it-works">
             <div class="landing-container">
-                <h2 class="section-title">Comece a aprender em 3 passos simples</h2>
+                <div class="section-header">
+                    <h2 class="section-title">Comece a aprender em 3 passos simples</h2>
+                    <p class="section-subtitle">Um processo simplificado para transformar seu material de estudo em conhecimento duradouro.</p>
+                </div>
                 <div class="steps-container">
                     <div class="step">
+                        <div class="step-number">01</div>
                         <div class="step-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                <polyline points="17 8 12 3 7 8" />
-                                <line x1="12" y1="3" x2="12" y2="15" />
-                            </svg>
+                            <i class="fas fa-upload"></i>
                         </div>
                         <h3>Adicione seu Conteúdo</h3>
                         <p>Insira textos, PDFs ou links de vídeos do YouTube que você precisa estudar na plataforma.</p>
                     </div>
                     <div class="step">
+                        <div class="step-number">02</div>
                         <div class="step-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="m3.5 18.5 4-4 2 2 4-4 2 2 4-4" />
-                                <path d="M3.5 12.5 8 8l4 4 4-4 4.5 4.5" />
-                            </svg>
+                            <i class="fas fa-bolt"></i>
                         </div>
                         <h3>Gere com um Clique</h3>
                         <p>Deixe nossa IA analisar o material e criar um baralho de flashcards completo para você.</p>
                     </div>
                     <div class="step">
+                        <div class="step-number">03</div>
                         <div class="step-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round">
-                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                            </svg>
+                            <i class="fas fa-graduation-cap"></i>
                         </div>
                         <h3>Estude e Memorize</h3>
-                        <p>Use nosso sistema de repetição espaçada para revisar de forma inteligente e nunca mais
-                            esquecer.</p>
+                        <p>Use nosso sistema de repetição espaçada para revisar de forma inteligente e nunca mais esquecer.</p>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- Seção de Testemunhos reformulada -->
+        <section id="testimonials" class="testimonials">
+            <div class="landing-container">
+                <div class="section-header">
+                    <h2 class="section-title">O que nossos estudantes dizem</h2>
+                    <p class="section-subtitle">Veja como o Recall está transformando a forma de estudar.</p>
+                </div>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"O Recall revolucionou minha forma de estudar para a faculdade de medicina. A IA realmente entende o contexto e cria perguntas relevantes."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Ana Silva">
+                            </div>
+                            <div class="author-info">
+                                <h4>Ana Silva</h4>
+                                <p>Estudante de Medicina</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"Finalmente consegui passar no exame da OAB usando o Recall. O sistema de repetição espaçada é incrível para memorizar leis e artigos."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Carlos Oliveira">
+                            </div>
+                            <div class="author-info">
+                                <h4>Carlos Oliveira</h4>
+                                <p>Advogado</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <div class="testimonial-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <p class="testimonial-text">"Como professor, recomendo o Recall para todos os meus alunos. A ferramenta de explicação da IA ajuda a esclarecer conceitos complexos."</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Roberto Santos">
+                            </div>
+                            <div class="author-info">
+                                <h4>Roberto Santos</h4>
+                                <p>Professor Universitário</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Preços (nova) -->
+        <section id="pricing" class="pricing">
+            <div class="landing-container">
+                <div class="section-header">
+                    <h2 class="section-title">Planos Acessíveis para Todos</h2>
+                    <p class="section-subtitle">Escolha o plano ideal para suas necessidades de estudo.</p>
+                </div>
+                <div class="pricing-switch">
+                    <span>Mensal</span>
+                    <label class="switch">
+                        <input type="checkbox" id="pricing-toggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span>Anual <span class="discount-badge">-20%</span></span>
+                </div>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3>Grátis</h3>
+                            <div class="price">
+                                <span class="currency">R$</span>
+                                <span class="amount">0</span>
+                                <span class="period">/sempre</span>
+                            </div>
+                            <p>Ideal para experimentar a plataforma</p>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> 50 flashcards por mês</li>
+                            <li><i class="fas fa-check"></i> Estudo básico</li>
+                            <li><i class="fas fa-check"></i> Acesso ao app web</li>
+                            <li><i class="fas fa-times"></i> Geração por IA</li>
+                            <li><i class="fas fa-times"></i> Relatórios detalhados</li>
+                        </ul>
+                        <a href="login.html" class="btn btn-outline btn-block">Começar Grátis</a>
+                    </div>
+                    <div class="pricing-card featured">
+                        <div class="pricing-badge">Popular</div>
+                        <div class="pricing-header">
+                            <h3>Estudante</h3>
+                            <div class="price">
+                                <span class="currency">R$</span>
+                                <span class="amount">19</span>
+                                <span class="period">/mês</span>
+                            </div>
+                            <p>Perfeito para estudantes dedicados</p>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> Flashcards ilimitados</li>
+                            <li><i class="fas fa-check"></i> Geração por IA</li>
+                            <li><i class="fas fa-check"></i> Repetição espaçada</li>
+                            <li><i class="fas fa-check"></i> Tutor com IA</li>
+                            <li><i class="fas fa-check"></i> Relatórios de progresso</li>
+                        </ul>
+                        <a href="login.html" class="btn btn-primary btn-block">Assinar Agora</a>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3>Professor</h3>
+                            <div class="price">
+                                <span class="currency">R$</span>
+                                <span class="amount">39</span>
+                                <span class="period">/mês</span>
+                            </div>
+                            <p>Para educadores que ensinam em turmas</p>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="fas fa-check"></i> Tudo do plano Estudante</li>
+                            <li><i class="fas fa-check"></i> Criação de turmas</li>
+                            <li><i class="fas fa-check"></i> Compartilhamento de decks</li>
+                            <li><i class="fas fa-check"></i> Análise de desempenho da turma</li>
+                            <li><i class="fas fa-check"></i> Suporte prioritário</li>
+                        </ul>
+                        <a href="login.html" class="btn btn-outline btn-block">Assinar Agora</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section (nova) -->
+        <section class="faq">
+            <div class="landing-container">
+                <div class="section-header">
+                    <h2 class="section-title">Perguntas Frequentes</h2>
+                    <p class="section-subtitle">Tire suas dúvidas sobre o Recall.</p>
+                </div>
+                <div class="faq-grid">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Como a IA gera os flashcards?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Nossa IA utiliza processamento de linguagem natural para identificar conceitos-chave, fatos importantes e relações entre ideias no seu material de estudo, criando perguntas e respostas relevantes.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Posso usar o Recall no meu celular?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Sim! Temos aplicativos nativos para iOS e Android, além de uma versão web responsiva que funciona em qualquer dispositivo.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Quais tipos de arquivo são suportados?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Aceitamos PDFs, documentos Word, textos simples e links do YouTube. Em breve adicionaremos suporte a mais formatos.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <h4>Posso cancelar minha assinatura a qualquer momento?</h4>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Sim, você pode cancelar sua assinatura a qualquer momento sem taxas adicionais. Se cancelar no meio do período, terá acesso até o final do ciclo pago.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section reformulada -->
         <section class="final-cta">
             <div class="landing-container">
                 <h2>Pronto para turbinar seus estudos?</h2>
                 <p>Junte-se a milhares de estudantes que estão aprendendo de forma mais rápida e eficiente.</p>
                 <a href="login.html" class="btn btn-primary btn-lg">Começar a usar gratuitamente</a>
+                <p class="cta-subtext">Não é necessário cartão de crédito. Cancele a qualquer momento.</p>
             </div>
         </section>
-
     </main>
 
+    <!-- Footer reformulado -->
+    <footer class="landing-footer">
+        <div class="landing-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <a href="#">
+                            <span class="logo-icon"><i class="fas fa-brain"></i></span>
+                            Recall
+                        </a>
+                    </div>
+                    <p>Estude de forma mais inteligente com flashcards impulsionados por IA.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Produto</h4>
+                        <ul>
+                            <li><a href="#features">Recursos</a></li>
+                            <li><a href="#pricing">Preços</a></li>
+                            <li><a href="#testimonials">Depoimentos</a></li>
+                            <li><a href="#demo">Demonstração</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Suporte</h4>
+                        <ul>
+                            <li><a href="#">Centro de Ajuda</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Tutoriais</a></li>
+                            <li><a href="#">Contato</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Termos de Uso</a></li>
+                            <li><a href="#">Política de Privacidade</a></li>
+                            <li><a href="#">Cookies</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Recall. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/landing.js"></script>
 </body>
-<script src="js/landing.js"></script>
 
 </html>

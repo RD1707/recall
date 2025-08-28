@@ -5,30 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Progresso - Recall</title>
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/progress.css">
+    <link rel="stylesheet" href="css/header.css"> <link rel="stylesheet" href="css/progress.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    
     <header class="app-header">
         <div class="header-container">
-            <div class="logo">
-                <a href="dashboard.html">Recall</a>
+            <div class="header-logo-section">
+                <a href="dashboard.html" aria-label="Ir para o Dashboard">
+                    <i class="fas fa-brain"></i> Recall
+                </a>
             </div>
+
             <nav class="app-nav">
+                <a href="progress.html" class="nav-link active">
+                    <i class="fas fa-chart-line"></i> Meu Progresso
+                </a>
+
                 <div class="user-stats">
-                    <span class="user-stat">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    <div class="user-stat" title="Sua pontuação total">
+                        <span class="stat-icon"><i class="fas fa-star"></i></span>
                         <span id="user-points">0</span> Pontos
-                    </span>
-                    <span class="user-stat">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l.34 3.39h-1.38L12 2.69z M12.34 6.08H11.66L12 2.69z M12 11.28c-2.88 0-5.22 2.34-5.22 5.22s2.34 5.22 5.22 5.22 5.22-2.34 5.22-5.22S14.88 11.28 12 11.28z M12 20.72c-2.31 0-4.18-1.87-4.18-4.18s1.87-4.18 4.18-4.18 4.18 1.87 4.18 4.18-1.87 4.18-4.18 4.18z"></path><path d="M12 2.69C8.16 2.69 5.22 5.63 5.22 9.47c0 2.22 1.02 4.22 2.62 5.51.3.24.64.4.98.5.42.12.86.18 1.3.18s.88-.06 1.3-.18c.34-.1.68-.26.98-.5 1.6-1.29 2.62-3.29 2.62-5.51C18.78 5.63 15.84 2.69 12 2.69z"></path></svg>
+                    </div>
+                    <div class="user-stat" title="Sua sequência de dias de estudo">
+                        <span class="stat-icon"><i class="fas fa-fire"></i></span>
                         <span id="user-streak">0</span> Dias
-                    </span>
+                    </div>
                 </div>
-                <a href="progress.html" class="nav-link active">Meu Progresso</a>
-                <div class="user-actions">
-                    <span id="user-email"></span>
-                    <button id="logout-button">Sair</button>
+
+                <div class="user-menu">
+                    <button id="user-menu-button" class="user-avatar" aria-label="Abrir menu do usuário" aria-haspopup="true" aria-expanded="false">
+                        <span id="user-avatar-text"></span>
+                    </button>
+                    <div id="user-dropdown" class="dropdown-menu">
+                        <div class="dropdown-user-info">
+                            <div class="user-avatar">
+                                <span id="dropdown-avatar-text"></span>
+                            </div>
+                            <div class="user-details">
+                                <span id="user-email"></span>
+                                <span class="user-plan">Plano Free</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i> Meu Perfil
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Configurações
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button id="logout-button" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
                 </div>
             </nav>
         </div>
@@ -98,9 +130,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="js/notifications.js"></script>
-    <script src="js/main.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/progress.js"></script>
+    <script src="js/header.js"></script> <script src="js/progress.js"></script>
 </body>
 </html>

@@ -7,56 +7,64 @@
     <title>Sessão de Estudo - Recall</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/study.css">
+    <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
     <header class="app-header">
-        <div class="header-container">
-            <div class="logo">
-                <a id="deck-link" href="dashboard.html" class="back-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="feather feather-chevron-left">
-                        <polyline points="15 18 9 12 15 6"></polyline>
-                    </svg>
-                    <span>Voltar ao Baralho</span>
-                </a>
-            </div>
-            <div class="session-info">
-                <div class="timer" id="session-timer">
-                    <i class="far fa-clock"></i>
-                    <span>00:00</span>
-                </div>
-                <div class="focus-mode-toggle">
-                    <button id="focus-mode-btn" title="Modo Foco">
-                        <i class="fas fa-crosshairs"></i>
-                    </button>
-                </div>
-            </div>
-            <nav class="app-nav">
-                <div class="user-stats">
-                    <span class="user-stat">
-                        <i class="fas fa-star"></i>
-                        <span id="user-points">0</span> Pontos
-                    </span>
-                    <span class="user-stat">
-                        <i class="fas fa-fire"></i>
-                        <span id="user-streak">0</span> Dias
-                    </span>
-                </div>
-                <div class="user-actions">
-                    <button id="session-settings-btn" class="icon-btn" title="Configurações">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                    <button id="logout-button" class="icon-btn" title="Sair">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
-            </nav>
+    <div class="header-container">
+        <div class="header-back-section">
+            <a id="back-link" href="dashboard.html" aria-label="Voltar para a página anterior">
+                <i class="fas fa-chevron-left"></i> Voltar
+            </a>
         </div>
-    </header>
+
+        <nav class="app-nav">
+            <a href="progress.html" class="nav-link">
+                <i class="fas fa-chart-line"></i> Meu Progresso
+            </a>
+            <div class="user-stats">
+                <div class="user-stat" title="Sua pontuação total">
+                    <span class="stat-icon"><i class="fas fa-star"></i></span>
+                    <span id="user-points">0</span> Pontos
+                </div>
+                <div class="user-stat" title="Sua sequência de dias de estudo">
+                    <span class="stat-icon"><i class="fas fa-fire"></i></span>
+                    <span id="user-streak">0</span> Dias
+                </div>
+            </div>
+            <div class="user-menu">
+                <button id="user-menu-button" class="user-avatar" aria-label="Abrir menu do usuário" aria-haspopup="true" aria-expanded="false">
+                    <span id="user-avatar-text"></span>
+                </button>
+                <div id="user-dropdown" class="dropdown-menu">
+                    <div class="dropdown-user-info">
+                        <div class="user-avatar">
+                            <span id="dropdown-avatar-text"></span>
+                        </div>
+                        <div class="user-details">
+                            <span id="user-email"></span>
+                            <span class="user-plan">Plano Free</span>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user"></i> Meu Perfil
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-cog"></i> Configurações
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <button id="logout-button" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </div>
+</header>
 
     <main class="study-main">
         <!-- Modo Foco (tela cheia) -->
@@ -352,6 +360,7 @@
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/study.js"></script>
+    <script src="js/header.js"></script>
 </body>
 
 </html>

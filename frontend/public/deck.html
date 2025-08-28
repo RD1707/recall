@@ -5,51 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baralho - Recall</title>
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/deck.css">
+    <link rel="stylesheet" href="css/header.css"> <link rel="stylesheet" href="css/deck.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script src="https://unpkg.com/feather-icons"></script>
-</head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://unpkg.com/feather-icons"></script> </head>
 <body>
     <header class="app-header">
         <div class="header-container">
-            <div class="logo">
-                <a href="dashboard.html" class="logo-link">
-                    <i data-feather="layers" class="logo-icon"></i>
-                    <span class="logo-text">Recall</span>
+            <div class="header-logo-section">
+                <a href="dashboard.html">
+                    <i class="fas fa-brain"></i> Recall
                 </a>
             </div>
             <nav class="app-nav">
-                <div class="user-stats">
-                    <span class="user-stat">
-                        <i data-feather="star" class="stat-icon"></i>
-                        <span id="user-points">0</span> Pontos
-                    </span>
-                    <span class="user-stat">
-                        <i data-feather="zap" class="stat-icon"></i>
-                        <span id="user-streak">0</span> Dias
-                    </span>
-                </div>
                 <a href="progress.html" class="nav-link">
-                    <i data-feather="trending-up" class="nav-icon"></i>
-                    <span class="nav-text">Meu Progresso</span>
+                    <i class="fas fa-chart-line"></i> Meu Progresso
                 </a>
-                <div class="user-actions">
-                    <span id="user-email" class="user-email"></span>
-                    <button id="logout-button" class="logout-btn">
-                        <i data-feather="log-out" class="logout-icon"></i>
-                        Sair
+                <div class="user-stats">
+                    <div class="user-stat tooltip">
+                        <span class="stat-icon"><i class="fas fa-star"></i></span>
+                        <span id="user-points">0</span> Pontos
+                        <span class="tooltip-text">Pontuação</span>
+                    </div>
+                    <div class="user-stat tooltip">
+                        <span class="stat-icon"><i class="fas fa-fire"></i></span>
+                        <span id="user-streak">0</span> Dias
+                        <span class="tooltip-text">Sequência</span>
+                    </div>
+                </div>
+                <div class="user-menu">
+                    <button id="user-menu-button" class="user-avatar" aria-label="Menu do usuário">
+                        <span id="user-avatar-text"></span>
                     </button>
+                    <div id="user-dropdown" class="dropdown-menu">
+                        <div class="dropdown-user-info">
+                            <div class="user-avatar">
+                                <span id="dropdown-avatar-text"></span>
+                            </div>
+                            <div class="user-details">
+                                <span id="user-email"></span>
+                                <span class="user-plan">Plano Free</span>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i> Meu Perfil
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Configurações
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button id="logout-button" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
                 </div>
             </nav>
         </div>
     </header>
 
     <main class="deck-main">
-        <section class="deck-hero">
+         <section class="deck-hero">
             <div class="hero-content">
                 <a href="dashboard.html" class="back-btn">
                     <i data-feather="arrow-left"></i>
-                    Voltar
+                    Voltar aos Baralhos
                 </a>
                 <div class="deck-info">
                     <h1 id="deck-title-heading">Carregando baralho...</h1>
@@ -208,14 +228,11 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="js/notifications.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/deck.js"></script>
+    <script src="js/header.js"></script> <script src="js/deck.js"></script>
     <script>
-        // Ativa os ícones do Feather
         feather.replace();
     </script>
 
-    <!-- Modal de Edição de Flashcard -->
     <div id="edit-flashcard-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -244,7 +261,6 @@
         </div>
     </div>
 
-    <!-- Modal de Compartilhamento -->
     <div id="share-deck-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -267,4 +283,3 @@
     </div>
 </body>
 </html>
-
