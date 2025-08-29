@@ -2,7 +2,9 @@
 const SUPABASE_URL = 'https://khofqsjwyunicxdxapih.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtob2Zxc2p3eXVuaWN4ZHhhcGloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMjM2NDksImV4cCI6MjA3MTY5OTY0OX0.3Fr8b6u3b6dqoh84qx0ulcddb-vj4gGqlOQvAI2weGE';
 
-const { createClient } = supabase;
+const {
+    createClient
+} = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- VARIÁVEIS GLOBAIS ---
@@ -26,7 +28,7 @@ async function initApp() {
         await loadUserProfile();
         await loadDecks();
         setupEventListeners();
-        setupSearchFunctionality();
+        setupSearchAndFilter(); // Renomeado para incluir filtro
     }
 }
 
@@ -37,25 +39,15 @@ async function initApp() {
  * Configura todos os event listeners da página do dashboard.
  */
 function setupEventListeners() {
-    // Modal de criação de baralho
+    // Modais de Deck
     const createDeckBtn = document.getElementById('create-deck-btn');
     const createDeckModal = document.getElementById('create-deck-modal');
-    const closeModalBtns = document.querySelectorAll('.close-modal-btn');
-    
+
     if (createDeckBtn) {
-        createDeckBtn.addEventListener('click', () => {
-            showModal(createDeckModal);
-        });
+        createDeckBtn.addEventListener('click', () => showModal(createDeckModal));
     }
 
-    closeModalBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const modal = e.target.closest('.modal-overlay');
-            hideModal(modal);
-        });
-    });
-
-    // Submissão de formulários
+    // Submissão de formulários de Deck
     const createDeckForm = document.getElementById('create-deck-form');
     if (createDeckForm) {
         createDeckForm.addEventListener('submit', handleCreateDeck);
@@ -66,7 +58,6 @@ function setupEventListeners() {
         editDeckForm.addEventListener('submit', handleEditDeck);
     }
 
-    // Ação de deletar baralho no modal de edição
     const deleteDeckBtn = document.getElementById('delete-deck-btn');
     if (deleteDeckBtn) {
         deleteDeckBtn.addEventListener('click', () => handleDeleteDeck());
@@ -82,32 +73,98 @@ function setupEventListeners() {
     // Color picker
     const colorOptions = document.querySelectorAll('.color-option');
     colorOptions.forEach(option => {
-        option.addEventListener('click', (e) => {
-            selectColor(e.target.closest('.color-option'));
-        });
+        option.addEventListener('click', (e) => selectColor(e.target.closest('.color-option')));
     });
 
-    // Menu dropdown do usuário
+    // --- Novos Listeners para Header e Modais ---
     const userMenuButton = document.getElementById('user-menu-button');
     if (userMenuButton) {
         userMenuButton.addEventListener('click', toggleUserMenu);
     }
+
+    const profileLink = document.getElementById('profile-link');
+    if (profileLink) {
+        profileLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showModal(document.getElementById('profile-modal'));
+            toggleUserMenu(); // Fecha o dropdown
+        });
+    }
+
+    const settingsLink = document.getElementById('settings-link');
+    if (settingsLink) {
+        settingsLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            showModal(document.getElementById('settings-modal'));
+            toggleUserMenu(); // Fecha o dropdown
+        });
+    }
+
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            await _supabase.auth.signOut();
+            window.location.href = 'index.html';
+        });
+    }
+
+    // Listener para fechar todos os modais
+    document.querySelectorAll('.close-modal-btn, .modal-overlay').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) { // Garante que o clique no overlay não propague dos filhos
+                const modalId = e.target.dataset.modalId || e.target.closest('.modal-overlay')?.id;
+                if (modalId) {
+                    hideModal(document.getElementById(modalId));
+                }
+            }
+        });
+    });
 }
 
-/**
- * Configura a funcionalidade de busca em tempo real.
- */
-function setupSearchFunctionality() {
-    const searchInput = document.getElementById('deck-search');
-    if (!searchInput) return;
 
-    let searchTimeout;
-    searchInput.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            filterDecks(e.target.value);
-        }, 300); // Debounce de 300ms para evitar buscas a cada tecla
-    });
+/**
+ * Configura a funcionalidade de busca e filtro.
+ */
+function setupSearchAndFilter() {
+    // Lógica da Busca
+    const searchInput = document.getElementById('deck-search');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                filterAndRenderDecks();
+            }, 300);
+        });
+    }
+
+    // Lógica do Filtro
+    const filterBtn = document.getElementById('filter-btn');
+    const filterMenu = document.getElementById('filter-menu');
+    if (filterBtn && filterMenu) {
+        filterBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            filterMenu.classList.toggle('visible');
+        });
+
+        filterMenu.addEventListener('click', (e) => {
+            e.preventDefault();
+            const filterType = e.target.dataset.filter;
+            if (filterType) {
+                // Remove a classe 'active' de todos os itens e adiciona ao clicado
+                filterMenu.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('active'));
+                e.target.classList.add('active');
+
+                filterAndRenderDecks();
+                filterMenu.classList.remove('visible');
+            }
+        });
+
+        // Fecha o menu de filtro ao clicar fora
+        document.addEventListener('click', () => {
+            filterMenu.classList.remove('visible');
+        });
+    }
 }
 
 
@@ -120,7 +177,7 @@ function setupSearchFunctionality() {
 function showModal(modal) {
     if (!modal) return;
     modal.classList.add('visible');
-    document.body.style.overflow = 'hidden'; // Impede o scroll do fundo
+    document.body.style.overflow = 'hidden';
 }
 
 /**
@@ -130,40 +187,44 @@ function showModal(modal) {
 function hideModal(modal) {
     if (!modal) return;
     modal.classList.remove('visible');
-    document.body.style.overflow = ''; // Restaura o scroll
+    document.body.style.overflow = '';
 }
 
-/**
- * Alterna a visibilidade do menu dropdown do usuário.
- */
+
 function toggleUserMenu() {
     const dropdown = document.getElementById('user-dropdown');
     dropdown?.classList.toggle('visible');
 }
 
 /**
- * Filtra os baralhos exibidos na UI com base em um termo de busca.
- * @param {string} searchTerm - O texto a ser usado para o filtro.
+ * Filtra e ordena os baralhos com base nos inputs de busca e filtro, e depois renderiza.
  */
-function filterDecks(searchTerm) {
-    const normalizedSearch = searchTerm.toLowerCase().trim();
-    if (!normalizedSearch) {
-        renderDecks(allDecks); // Mostra todos se a busca estiver vazia
-        return;
+function filterAndRenderDecks() {
+    const searchTerm = document.getElementById('deck-search').value.toLowerCase().trim();
+    const activeFilter = document.querySelector('#filter-menu .dropdown-item.active')?.dataset.filter || 'all';
+
+    let decksToRender = [...allDecks];
+
+    // 1. Aplica o filtro de busca
+    if (searchTerm) {
+        decksToRender = decksToRender.filter(deck =>
+            deck.title.toLowerCase().includes(searchTerm) ||
+            (deck.description && deck.description.toLowerCase().includes(searchTerm))
+        );
     }
 
-    const filtered = allDecks.filter(deck =>
-        deck.title.toLowerCase().includes(normalizedSearch) ||
-        (deck.description && deck.description.toLowerCase().includes(normalizedSearch))
-    );
+    // 2. Aplica o filtro de ordenação
+    if (activeFilter === 'recent') {
+        decksToRender.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    } else if (activeFilter === 'oldest') {
+        decksToRender.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    }
+    // 'all' não precisa de ordenação específica, mantém a padrão da API.
 
-    renderDecks(filtered);
+    renderDecks(decksToRender);
 }
 
-/**
- * Seleciona uma cor no seletor de cores do modal.
- * @param {HTMLElement} colorElement - O elemento da cor que foi clicado.
- */
+
 function selectColor(colorElement) {
     document.querySelectorAll('.color-option').forEach(option => {
         option.classList.remove('selected');
@@ -172,9 +233,7 @@ function selectColor(colorElement) {
     selectedDeckColor = colorElement.dataset.color;
 }
 
-/**
- * Controla a visibilidade do botão "Voltar ao Topo".
- */
+
 function toggleScrollToTopButton() {
     const btn = document.getElementById('scroll-to-top');
     if (window.scrollY > 300) {
@@ -186,21 +245,23 @@ function toggleScrollToTopButton() {
     }
 }
 
-/**
- * Rola a página suavemente para o topo.
- */
+
 function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
 }
 
 
 // --- LÓGICA DE DADOS (CARREGAMENTO E RENDERIZAÇÃO) ---
 
-/**
- * Busca os dados do perfil do usuário e atualiza o cabeçalho.
- */
 async function loadUserProfile() {
-    const { data: { user } } = await _supabase.auth.getUser();
+    const {
+        data: {
+            user
+        }
+    } = await _supabase.auth.getUser();
     currentUser = user;
 
     if (user?.email) {
@@ -220,9 +281,7 @@ async function loadUserProfile() {
     }
 }
 
-/**
- * Busca os baralhos do usuário e os renderiza na página.
- */
+
 async function loadDecks() {
     const decksContainer = document.getElementById('decks-grid');
     const emptyStateContainer = document.getElementById('empty-state');
@@ -242,15 +301,12 @@ async function loadDecks() {
     updateDashboardStats();
 }
 
-/**
- * Renderiza a grade de baralhos na UI.
- * @param {Array} decks - A lista de baralhos a ser renderizada.
- */
+
 function renderDecks(decks) {
     const decksContainer = document.getElementById('decks-grid');
     const emptyStateContainer = document.getElementById('empty-state');
-    
-    decksContainer.innerHTML = ''; 
+
+    decksContainer.innerHTML = '';
 
     if (!decks || decks.length === 0) {
         emptyStateContainer.classList.remove('hidden');
@@ -271,26 +327,20 @@ function renderDecks(decks) {
 
 /**
  * **FUNÇÃO CORRIGIDA**
- * Cria e retorna o HTML para um único card de baralho, garantindo que seja clicável.
- * @param {object} deck - O objeto do baralho.
- * @param {number} index - O índice do baralho para animação.
- * @returns {HTMLElement} O elemento do card de baralho.
+ * Cria o HTML para um card de baralho, sem o botão de opções.
  */
 function renderSingleDeck(deck, index) {
     const card = document.createElement('div');
     card.className = 'deck-card';
     card.style.animationDelay = `${index * 50}ms`;
-    card.style.cursor = 'pointer'; // Adiciona feedback visual de que é clicável
 
     const deckColor = deck.color || '#4f46e5';
 
+    // O botão de menu foi removido desta versão.
     card.innerHTML = `
-        <div class="deck-card-inner">
+        <div class="deck-card-inner" data-deck-id="${deck.id}">
             <div class="deck-card-header" style="background-color: ${deckColor};">
-                <button class="deck-menu-btn" data-deck-id="${deck.id}" aria-label="Opções do baralho">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-            </div>
+                </div>
             <div class="deck-card-body">
                 <h3>${escapeHtml(deck.title)}</h3>
                 <p>${deck.description ? escapeHtml(deck.description) : 'Sem descrição'}</p>
@@ -301,32 +351,15 @@ function renderSingleDeck(deck, index) {
         </div>
     `;
 
-    // Adiciona um evento de clique ao card inteiro.
-    card.addEventListener('click', (e) => {
-        // A navegação só ocorre se o clique NÃO foi no botão de menu.
-        if (!e.target.closest('.deck-menu-btn')) {
-            window.location.href = `deck.html?id=${deck.id}`;
-        }
-    });
-
-    // Adiciona um evento separado APENAS para o botão de menu.
-    const menuBtn = card.querySelector('.deck-menu-btn');
-    menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Impede que o evento de clique do card (acima) seja acionado.
-        const clickedDeck = allDecks.find(d => d.id === deck.id);
-        if (clickedDeck) {
-            openEditDeckModal(clickedDeck);
-        }
+    // O card inteiro agora é um link. Clicar em qualquer lugar leva para a página do baralho.
+    card.addEventListener('click', () => {
+        window.location.href = `deck.html?id=${deck.id}`;
     });
 
     return card;
 }
 
 
-/**
- * Cria e retorna o card especial "Criar Novo".
- * @returns {HTMLElement} O elemento do card.
- */
 function createNewDeckCard() {
     const card = document.createElement('div');
     card.className = 'deck-card create-new';
@@ -342,9 +375,7 @@ function createNewDeckCard() {
     return card;
 }
 
-/**
- * Atualiza os contadores de estatísticas no topo do dashboard.
- */
+
 function updateDashboardStats() {
     const totalDecks = allDecks.length;
     const totalCards = allDecks.reduce((sum, deck) => sum + (deck.card_count || 0), 0);
@@ -446,31 +477,39 @@ function setButtonIdle(button, text) {
 function escapeHtml(str) {
     if (str === null || str === undefined) return '';
     return str.replace(/[&<>"']/g, (match) => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[match]));
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    } [match]));
 }
 
 function openEditDeckModal(deck) {
     const modal = document.getElementById('edit-deck-modal');
     if (!modal) return;
-    
+
     modal.querySelector('#edit-deck-id').value = deck.id;
     modal.querySelector('#edit-deck-title').value = deck.title;
     modal.querySelector('#edit-deck-description').value = deck.description || '';
-    
+
     const colorToSelect = deck.color || '#4f46e5';
     const colorOption = modal.querySelector(`.color-option[data-color="${colorToSelect}"]`);
     if (colorOption) {
         selectColor(colorOption);
     }
-    
+
     showModal(modal);
 }
 
 // --- GUARDA DE ROTAS E AUTENTICAÇÃO ---
 
 async function routeGuard() {
-    const { data: { session } } = await _supabase.auth.getSession();
+    const {
+        data: {
+            session
+        }
+    } = await _supabase.auth.getSession();
     const isAuthPage = window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('login.html') || window.location.pathname === '/';
 
     if (session) {
@@ -487,23 +526,37 @@ async function routeGuard() {
 
 // --- FUNÇÕES DE API ---
 async function apiCall(endpoint, method = 'GET', body = null) {
-    const { data: { session } } = await _supabase.auth.getSession();
+    const {
+        data: {
+            session
+        }
+    } = await _supabase.auth.getSession();
     if (!session) {
         window.location.href = 'login.html';
         return null;
     }
 
-    const headers = { 'Authorization': `Bearer ${session.access_token}`, 'Content-Type': 'application/json' };
-    const config = { method, headers };
+    const headers = {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json'
+    };
+    const config = {
+        method,
+        headers
+    };
     if (body) config.body = JSON.stringify(body);
 
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ message: `Erro ${response.status}` }));
+            const errorData = await response.json().catch(() => ({
+                message: `Erro ${response.status}`
+            }));
             throw new Error(errorData.message);
         }
-        return response.status === 204 ? { success: true } : await response.json();
+        return response.status === 204 ? {
+            success: true
+        } : await response.json();
     } catch (error) {
         console.error(`API Error on ${method} ${endpoint}:`, error);
         showToast(error.message || 'Ocorreu um erro de comunicação.', 'error');
@@ -511,8 +564,30 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     }
 }
 
-function fetchDecks() { return apiCall('/decks'); }
-function createDeck(title, description, color) { return apiCall('/decks', 'POST', { title, description, color }); }
-function updateDeck(deckId, title, description, color) { return apiCall(`/decks/${deckId}`, 'PUT', { title, description, color }); }
-function deleteDeck(deckId) { return apiCall(`/decks/${deckId}`, 'DELETE'); }
-function fetchProfile() { return apiCall('/profile'); }
+function fetchDecks() {
+    return apiCall('/decks');
+}
+
+function createDeck(title, description, color) {
+    return apiCall('/decks', 'POST', {
+        title,
+        description,
+        color
+    });
+}
+
+function updateDeck(deckId, title, description, color) {
+    return apiCall(`/decks/${deckId}`, 'PUT', {
+        title,
+        description,
+        color
+    });
+}
+
+function deleteDeck(deckId) {
+    return apiCall(`/decks/${deckId}`, 'DELETE');
+}
+
+function fetchProfile() {
+    return apiCall('/profile');
+}

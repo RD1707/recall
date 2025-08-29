@@ -6,7 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Recall</title>
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/header.css"> <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/loading.css">
+    <script src="js/loader.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -50,16 +53,12 @@
                             </div>
                         </div>
                         <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item">
+                        <a href="#" id="profile-link" class="dropdown-item">
                             <i class="fas fa-user"></i> Meu Perfil
                         </a>
-                        <a href="#" class="dropdown-item">
+                        <a href="#" id="settings-link" class="dropdown-item">
                             <i class="fas fa-cog"></i> Configurações
                         </a>
-                        <div class="dropdown-divider"></div>
-                        <button id="logout-button" class="dropdown-item">
-                            <i class="fas fa-sign-out-alt"></i> Sair
-                        </button>
                     </div>
                 </div>
             </nav>
@@ -100,10 +99,16 @@
                         <input type="text" id="deck-search" placeholder="Buscar baralhos...">
                     </div>
                     <div class="filter-dropdown">
-                        <button class="filter-btn">
+                        <button class="filter-btn" id="filter-btn">
                             <i class="fas fa-filter"></i> Filtrar
                         </button>
+                        <div class="dropdown-menu filter-menu" id="filter-menu">
+                            <a href="#" class="dropdown-item" data-filter="all">Todos</a>
+                            <a href="#" class="dropdown-item" data-filter="recent">Mais Recentes</a>
+                            <a href="#" class="dropdown-item" data-filter="oldest">Mais Antigos</a>
+                        </div>
                     </div>
+
                     <button id="create-deck-btn" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Novo Baralho
                     </button>
@@ -112,7 +117,7 @@
 
             <div class="decks-container">
                 <div id="decks-grid" class="decks-grid">
-                    </div>
+                </div>
 
                 <div id="empty-state" class="empty-state hidden">
                     <div class="empty-icon">
@@ -127,86 +132,50 @@
     </main>
 
     <div id="create-deck-modal" class="modal-overlay">
+        </div>
+
+    <div id="edit-deck-modal" class="modal-overlay">
+        </div>
+
+    <div id="profile-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2>Criar Novo Baralho</h2>
-                <button class="close-modal-btn" aria-label="Fechar modal">
+                <h2>Meu Perfil</h2>
+                <button class="close-modal-btn" data-modal-id="profile-modal" aria-label="Fechar modal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="create-deck-form" novalidate>
-                    <div class="form-group">
-                        <label for="deck-title">Título do baralho</label>
-                        <input type="text" id="deck-title" placeholder="Ex: Biologia Celular" required minlength="3"
-                            maxlength="50">
-                        <span class="error-message" id="title-error"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="deck-description">Descrição (opcional)</label>
-                        <textarea id="deck-description" placeholder="Ex: Conceitos do primeiro semestre" rows="3"
-                            maxlength="200"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="deck-color">Cor de identificação</label>
-                        <div class="color-picker">
-                            <div class="color-option" data-color="#4f46e5" style="background-color: #4f46e5;"></div>
-                            <div class="color-option" data-color="#10b981" style="background-color: #10b981;"></div>
-                            <div class="color-option" data-color="#f59e0b" style="background-color: #f59e0b;"></div>
-                            <div class="color-option" data-color="#ef4444" style="background-color: #ef4444;"></div>
-                            <div class="color-option" data-color="#8b5cf6" style="background-color: #8b5cf6;"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Criar Baralho</button>
-                    </div>
-                </form>
+                <p>Aqui você poderá visualizar e editar as informações do seu perfil.</p>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal-btn"
+                    data-modal-id="profile-modal">Fechar</button>
             </div>
         </div>
     </div>
 
-    <div id="edit-deck-modal" class="modal-overlay">
+    <div id="settings-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2>Editar Baralho</h2>
-                <button class="close-modal-btn" aria-label="Fechar modal">
+                <h2>Configurações</h2>
+                <button class="close-modal-btn" data-modal-id="settings-modal" aria-label="Fechar modal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
-                <form id="edit-deck-form" novalidate>
-                    <input type="hidden" id="edit-deck-id">
-                    <div class="form-group">
-                        <label for="edit-deck-title">Título</label>
-                        <input type="text" id="edit-deck-title" required minlength="3" maxlength="50">
-                        <span class="error-message" id="edit-title-error"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-deck-description">Descrição</label>
-                        <textarea id="edit-deck-description" rows="4" maxlength="200"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-deck-color">Cor de identificação</label>
-                        <div class="color-picker">
-                            <div class="color-option" data-color="#4f46e5" style="background-color: #4f46e5;"></div>
-                            <div class="color-option" data-color="#10b981" style="background-color: #10b981;"></div>
-                            <div class="color-option" data-color="#f59e0b" style="background-color: #f59e0b;"></div>
-                            <div class="color-option" data-color="#ef4444" style="background-color: #ef4444;"></div>
-                            <div class="color-option" data-color="#8b5cf6" style="background-color: #8b5cf6;"></div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary close-modal-btn">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                        <button type="button" id="delete-deck-btn" class="btn btn-danger">
-                            <i class="fas fa-trash"></i> Excluir
-                        </button>
-                    </div>
-                </form>
+                <p>Aqui você poderá ajustar as configurações da sua conta.</p>
+                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal-btn"
+                    data-modal-id="settings-modal">Fechar</button>
+                <button id="logout-button" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
             </div>
         </div>
     </div>
+
 
     <div class="quick-actions">
         <button class="quick-action-btn" id="scroll-to-top">
@@ -217,9 +186,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="js/notifications.js"></script>
-    <script src="js/main.js"></script> 
+    <script src="js/main.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/header.js"></script> 
+    <script src="js/header.js"></script>
+    
 </body>
 
 </html>
