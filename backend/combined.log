@@ -1,3 +1,4 @@
 {"level":"info","message":"🚀 Worker para a fila \"flashcardGeneration\" a iniciar...","service":"recall-api","timestamp":"2025-08-28 22:23:56"}
 {"level":"info","message":"✅ Conectado ao Redis com sucesso.","service":"recall-api","timestamp":"2025-08-28 22:23:56"}
 {"level":"info","message":"✅ Conectado ao Redis com sucesso.","service":"recall-api","timestamp":"2025-08-28 22:23:57"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-08-29 08:34:56"}

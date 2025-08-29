@@ -1,3 +1,4 @@
+/*************  ✨ Windsurf Command 🌟  *************/
 /**
  * Arquivo: landing.js
  * Descrição: Adiciona interatividade e animações avançadas à landing page,
@@ -39,10 +40,6 @@ function initAppState() {
     return state;
 }
 
-/**
- * Anima os elementos quando eles entram na área visível da tela (viewport).
- * Utiliza a IntersectionObserver API com configurações avançadas.
- */
 function initScrollAnimations() {
     const elementsToAnimate = document.querySelectorAll(
         '.feature-card, .step, .testimonial-card, .hero-text > *, .hero-image, ' +
@@ -618,3 +615,4 @@ if ('ontouchstart' in window) {
 if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.documentElement.classList.add('reduced-motion');
 }
+/*******  6d0608ef-13eb-402f-8793-aba95c1461c0  *******/

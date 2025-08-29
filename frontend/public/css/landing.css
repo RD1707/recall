@@ -950,12 +950,6 @@ input:checked + .slider:before {
     flex-direction: column;
 }
 
-.pricing-card.featured {
-    border: 2px solid var(--primary-color);
-    transform: scale(1.03);
-    box-shadow: var(--shadow-lg);
-}
-
 .pricing-card.featured::before {
     content: 'Mais Popular';
     position: absolute;
