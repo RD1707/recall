@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileLink = document.getElementById('profile-link');
     const settingsLink = document.getElementById('settings-link');
     const logoutButton = document.getElementById('logout-button');
-    
+    const logoutButtonSettings = document.getElementById('logout-button-settings');
+
     const profileModal = document.getElementById('profile-modal');
     const settingsModal = document.getElementById('settings-modal');
     const profileForm = document.getElementById('profile-form');
@@ -21,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (profile) {
             document.querySelectorAll('#user-points').forEach(el => el.textContent = profile.points || 0);
             document.querySelectorAll('#user-streak').forEach(el => el.textContent = profile.current_streak || 0);
-            
-            if(profileModal) {
+
+            if (profileModal) {
                 profileModal.querySelector('#profile-email').value = user?.email || '';
                 profileModal.querySelector('#profile-name').value = profile.full_name || '';
             }
@@ -51,6 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
             toggleUserMenu(true);
         }
     });
+    
+    const handleLogout = async () => {
+        await _supabase.auth.signOut();
+        window.location.href = 'index.html';
+    };
 
     profileLink?.addEventListener('click', (e) => {
         e.preventDefault();
@@ -64,10 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleUserMenu(true);
     });
 
-    logoutButton?.addEventListener('click', async () => {
-        await _supabase.auth.signOut();
-        window.location.href = 'index.html';
-    });
+    logoutButton?.addEventListener('click', handleLogout);
+    logoutButtonSettings?.addEventListener('click', handleLogout);
+
 
     profileForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -91,16 +96,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         setButtonLoading(submitButton, 'Salvando...');
-        
-        const result = await updateProfile(dataToUpdate); 
-        
+
+        const result = await updateProfile(dataToUpdate);
+
         setButtonIdle(submitButton, 'Salvar Alterações');
 
         if (result) {
             showToast('Perfil atualizado com sucesso!', 'success');
             hideModal(profileModal);
-            document.getElementById('profile-password').value = ''; 
+            document.getElementById('profile-password').value = '';
+            await loadUserProfile(); // Recarrega os dados do perfil
         }
+    });
+    
+    // Fechar modais
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                hideModal(modal);
+            }
+        });
+    });
+    document.querySelectorAll('.close-modal-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+             const modalId = btn.getAttribute('data-modal-id');
+             hideModal(document.getElementById(modalId));
+        });
     });
 
     loadUserProfile();
@@ -119,13 +140,13 @@ function hideModal(modal) {
 }
 
 function setButtonLoading(button, text = 'Aguarde...') {
-    if(!button) return;
+    if (!button) return;
     button.disabled = true;
     button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
 }
 
 function setButtonIdle(button, text) {
-    if(!button) return;
+    if (!button) return;
     button.disabled = false;
     button.innerHTML = text;
 }
