@@ -4,7 +4,6 @@ const cohere = new CohereClient({
     token: process.env.COHERE_API_KEY,
 });
 
-// FUNÇÃO ATUALIZADA
 const generateFlashcardsFromText = async (textContent, count = 5, type = 'Pergunta e Resposta') => {
     
     let promptInstruction = '';
@@ -32,11 +31,10 @@ const generateFlashcardsFromText = async (textContent, count = 5, type = 'Pergun
             temperature: 0.3, 
         });
 
-        // MUDANÇA: Limpar a resposta da IA antes de fazer o parse
         const cleanedResponse = response.text
             .trim()
-            .replace(/^```json\s*/, '') // Remove o ```json do início
-            .replace(/```$/, '');       // Remove o ``` do final
+            .replace(/^```json\s*/, '') 
+            .replace(/```$/, '');      
 
         const flashcards = JSON.parse(cleanedResponse);
 
@@ -51,8 +49,6 @@ const generateFlashcardsFromText = async (textContent, count = 5, type = 'Pergun
         return null;
     }
 };
-
-// As outras funções permanecem iguais, pois não fazem parse de JSON
 
 const getExplanationForFlashcard = async (question, answer) => {
     const message = `

@@ -39,7 +39,7 @@ class StudySessionPro {
             isFlipped: false,
             isTransitioning: false,
             sessionActive: true,
-            mode: 'normal', 
+            mode: 'normal',
             startTime: Date.now(),
             stats: {
                 correct: 0,
@@ -648,18 +648,14 @@ class StudySessionPro {
         const feedback = feedbackMap[quality];
         const overlay = this.dom.feedbackOverlay;
 
-        // Atualiza conteúdo
         overlay.querySelector('.feedback-icon').textContent = feedback.icon;
         overlay.querySelector('.feedback-text').textContent = feedback.text;
         overlay.querySelector('.feedback-subtitle').textContent = feedback.subtitle;
 
-        // Adiciona classe apropriada
         overlay.className = `feedback-overlay ${feedback.class}`;
 
-        // Mostra overlay
         overlay.classList.add('active');
 
-        // Som e vibração
         if (this.state.userPreferences.soundEffects) {
             this.playSound(feedback.sound);
         }
@@ -668,7 +664,6 @@ class StudySessionPro {
             navigator.vibrate(quality === 1 ? CONFIG.VIBRATION_PATTERNS.error : CONFIG.VIBRATION_PATTERNS.success);
         }
 
-        // Esconde após duração
         return new Promise(resolve => {
             setTimeout(() => {
                 overlay.classList.remove('active');
@@ -685,9 +680,6 @@ class StudySessionPro {
         }
     }
 
-    // ============================
-    // FUNCIONALIDADES EXTRAS
-    // ============================
 
     toggleBookmark() {
         const card = this.getCurrentCard();
@@ -696,11 +688,8 @@ class StudySessionPro {
         card.bookmarked = !card.bookmarked;
         this.updateActionButtons(card);
 
-        // Feedback visual
         this.showQuickFeedback(card.bookmarked ? 'Marcado!' : 'Desmarcado');
 
-        // Salva no servidor (implementar API)
-        // await saveBookmark(card.id, card.bookmarked);
     }
 
     toggleFlag() {
@@ -721,7 +710,6 @@ class StudySessionPro {
             hintContent.classList.remove('hidden');
             showHintBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Ocultar dica';
 
-            // Penalidade por usar dica (opcional)
             const card = this.getCurrentCard();
             if (card) {
                 card.usedHint = true;
@@ -739,7 +727,6 @@ class StudySessionPro {
         const modal = this.dom.notesModal;
         const noteContent = document.getElementById('note-content');
 
-        // Carrega notas existentes
         if (card.notes.length > 0) {
             noteContent.value = card.notes[card.notes.length - 1].content;
         } else {
@@ -748,7 +735,6 @@ class StudySessionPro {
 
         modal.showModal();
 
-        // Handler para salvar
         const saveHandler = () => {
             const content = noteContent.value.trim();
             if (content) {
@@ -762,7 +748,6 @@ class StudySessionPro {
             modal.close();
         };
 
-        // Adiciona listeners temporários
         const saveBtn = modal.querySelector('[data-action="save"]');
         saveBtn.onclick = saveHandler;
     }
@@ -780,13 +765,11 @@ class StudySessionPro {
     changeMode(mode) {
         this.state.mode = mode;
 
-        // Atualiza UI
         this.dom.modeBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.mode === mode);
             btn.setAttribute('aria-checked', btn.dataset.mode === mode);
         });
 
-        // Aplica modificações baseadas no modo
         switch (mode) {
             case 'speed':
                 this.state.userPreferences.autoFlip = true;
@@ -794,7 +777,6 @@ class StudySessionPro {
                 this.showQuickFeedback('Modo Rápido ativado!');
                 break;
             case 'hard':
-                // Apenas cards difíceis ou errados
                 this.filterHardCards();
                 this.showQuickFeedback('Modo Difícil ativado!');
                 break;
@@ -824,7 +806,6 @@ class StudySessionPro {
         this.state.userPreferences.theme = theme;
         this.savePreferences();
 
-        // Se auto, detecta preferência do sistema
         if (theme === 'auto') {
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             document.body.dataset.theme = prefersDark ? 'dark' : 'light';
@@ -838,10 +819,6 @@ class StudySessionPro {
         this.savePreferences();
     }
 
-    // ============================
-    // TIMER E ESTATÍSTICAS
-    // ============================
-
     startTimer() {
         this.timerInterval = setInterval(() => {
             const elapsed = Math.floor((Date.now() - this.state.startTime) / 1000);
@@ -851,7 +828,6 @@ class StudySessionPro {
             const seconds = elapsed % 60;
             this.dom.timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-            // Atualiza estatísticas em tempo real
             this.updateLiveStats();
         }, 1000);
     }
@@ -876,20 +852,17 @@ class StudySessionPro {
         const minutes = this.state.stats.totalTime / 60;
         const studiedCards = this.state.cards.filter(c => c.studied).length;
 
-        // Cards por minuto
         if (minutes > 0) {
             const cpm = (studiedCards / minutes).toFixed(1);
             this.dom.cardsPerMinute.textContent = cpm;
         }
 
-        // Taxa de acerto
         const total = this.state.stats.correct + this.state.stats.wrong + this.state.stats.hard;
         if (total > 0) {
             const accuracy = ((this.state.stats.correct / total) * 100).toFixed(0);
             this.dom.accuracyRate.textContent = `${accuracy}%`;
         }
 
-        // Score de retenção (baseado em múltiplos fatores)
         const retentionScore = this.calculateRetentionScore();
         this.dom.retentionScore.textContent = retentionScore;
     }
@@ -919,16 +892,11 @@ class StudySessionPro {
         return Math.round(score);
     }
 
-    // ============================
-    // CONQUISTAS E GAMIFICAÇÃO
-    // ============================
-
     checkAchievements() {
         const achievements = [];
         const stats = this.state.stats;
         const thresholds = CONFIG.ACHIEVEMENT_THRESHOLDS;
 
-        // Speed Demon
         if (stats.cardTimes.length >= thresholds.speedDemon.cards) {
             const avgTime = stats.cardTimes.slice(-10).reduce((a, b) => a + b, 0) / 10 / 1000;
             if (avgTime < thresholds.speedDemon.minutes * 60) {
@@ -941,7 +909,6 @@ class StudySessionPro {
             }
         }
 
-        // Perfect Streak
         if (stats.streak >= thresholds.perfectStreak.streak) {
             achievements.push({
                 id: 'perfect-streak',
@@ -951,7 +918,6 @@ class StudySessionPro {
             });
         }
 
-        // Marathoner
         if (stats.totalTime >= thresholds.marathoner.minutes * 60) {
             achievements.push({
                 id: 'marathoner',
@@ -961,7 +927,6 @@ class StudySessionPro {
             });
         }
 
-        // High Accuracy
         const total = stats.correct + stats.wrong + stats.hard;
         if (total >= thresholds.accuracy.minimum) {
             const accuracy = (stats.correct / total) * 100;
@@ -975,7 +940,6 @@ class StudySessionPro {
             }
         }
 
-        // Mostra conquistas novas
         achievements.forEach(achievement => {
             if (!this.state.achievements.has(achievement.id)) {
                 this.state.achievements.add(achievement.id);
@@ -985,7 +949,6 @@ class StudySessionPro {
     }
 
     showAchievement(achievement) {
-        // Cria elemento de conquista
         const achievementEl = document.createElement('div');
         achievementEl.className = 'achievement-popup';
         achievementEl.innerHTML = `
@@ -998,17 +961,14 @@ class StudySessionPro {
 
         document.body.appendChild(achievementEl);
 
-        // Som de conquista
         if (this.state.userPreferences.soundEffects) {
             this.playSound('achievement');
         }
 
-        // Animação
         setTimeout(() => {
             achievementEl.classList.add('show');
         }, 100);
 
-        // Remove após 3 segundos
         setTimeout(() => {
             achievementEl.classList.remove('show');
             setTimeout(() => {
@@ -1017,24 +977,17 @@ class StudySessionPro {
         }, 3000);
     }
 
-    // ============================
-    // CONCLUSÃO DA SESSÃO
-    // ============================
 
     completeSession() {
         this.state.sessionActive = false;
         clearInterval(this.timerInterval);
 
-        // Calcula estatísticas finais
         const sessionData = this.calculateSessionStats();
 
-        // Mostra tela de conclusão
         this.showCompletionScreen(sessionData);
 
-        // Salva progresso
         this.saveSessionData(sessionData);
 
-        // Analytics
         this.analytics.sessionComplete(sessionData);
     }
 
@@ -1059,35 +1012,27 @@ class StudySessionPro {
     }
 
     showCompletionScreen(data) {
-        // Esconde container de estudo
         this.dom.studyContainer.classList.add('hidden');
 
-        // Mostra container de conclusão
         this.dom.completionContainer.classList.remove('hidden');
 
-        // Atualiza estatísticas
         document.getElementById('final-time').textContent = this.formatTime(data.duration);
         document.getElementById('final-cards').textContent = data.cardsStudied;
         document.getElementById('final-speed').textContent = (data.cardsStudied / (data.duration / 60)).toFixed(1);
         document.getElementById('final-accuracy').textContent = `${data.accuracy}%`;
 
-        // Renderiza gráfico
         this.renderPerformanceChart(data);
 
-        // Mostra conquistas
         if (data.achievements.length > 0) {
             this.renderAchievements(data.achievements);
         }
 
-        // Gera insights
         this.generateInsights(data);
 
-        // Animação de confetti para alta performance
         if (data.accuracy >= 90) {
             this.celebrateSuccess();
         }
 
-        // Som de conclusão
         if (this.state.userPreferences.soundEffects) {
             this.playSound('complete');
         }
@@ -1131,7 +1076,6 @@ class StudySessionPro {
         container.classList.remove('hidden');
         const grid = container.querySelector('.achievements-grid');
 
-        // Mapa de conquistas (normalmente viria do servidor)
         const achievementsMap = {
             'speed-demon': { title: 'Velocista', icon: '⚡', description: 'Completou cards rapidamente' },
             'perfect-streak': { title: 'Sequência Perfeita', icon: '🔥', description: 'Múltiplos acertos seguidos' },
@@ -1156,7 +1100,6 @@ class StudySessionPro {
     generateInsights(data) {
         const insights = [];
 
-        // Insight de velocidade
         if (data.avgTime < 10) {
             insights.push({
                 icon: '⚡',
@@ -1169,7 +1112,6 @@ class StudySessionPro {
             });
         }
 
-        // Insight de precisão
         if (data.accuracy >= 90) {
             insights.push({
                 icon: '🎯',
@@ -1182,7 +1124,6 @@ class StudySessionPro {
             });
         }
 
-        // Insight de consistência
         if (data.maxStreak >= 10) {
             insights.push({
                 icon: '🔥',
@@ -1190,7 +1131,6 @@ class StudySessionPro {
             });
         }
 
-        // Renderiza insights
         const container = document.querySelector('.insights-list');
         if (container) {
             container.innerHTML = insights.map(insight => `
@@ -1201,12 +1141,8 @@ class StudySessionPro {
             `).join('');
         }
     }
-    // ============================
-    // FUNCIONALIDADES APÓS CONCLUSÃO
-    // ============================
 
     reviewMistakes() {
-        // Filtra apenas cards errados
         const mistakes = this.state.cards.filter(card => card.lastQuality === 1);
 
         if (mistakes.length === 0) {
@@ -1214,13 +1150,11 @@ class StudySessionPro {
             return;
         }
 
-        // Reinicia sessão com cards errados
         this.state.cards = mistakes;
         this.state.currentIndex = 0;
         this.state.sessionActive = true;
         this.resetStats();
 
-        // Volta para tela de estudo
         this.dom.completionContainer.classList.add('hidden');
         this.dom.studyContainer.classList.remove('hidden');
 
@@ -1231,7 +1165,6 @@ class StudySessionPro {
     }
 
     continueStudying() {
-        // Carrega mais cards ou reinicia
         this.state.currentIndex = 0;
         this.state.cards.forEach(card => {
             card.studied = false;
@@ -1262,9 +1195,6 @@ class StudySessionPro {
         this.state.startTime = Date.now();
     }
 
-    // ============================
-    // UTILIDADES
-    // ============================
 
     getCurrentCard() {
         return this.state.cards[this.state.currentIndex];
@@ -1279,15 +1209,11 @@ class StudySessionPro {
         this.dom.totalReview.textContent = total;
         this.dom.progressFill.style.width = `${progress}%`;
 
-        // Atualiza contadores
         this.dom.correctCount.textContent = this.state.stats.correct;
         this.dom.hardCount.textContent = this.state.stats.hard;
         this.dom.wrongCount.textContent = this.state.stats.wrong;
     }
 
-    updateStats() {
-        // Implementado em updateLiveStats()
-    }
 
     updateNavigation() {
         this.dom.prevCard.disabled = this.state.currentIndex === 0;
@@ -1306,7 +1232,6 @@ class StudySessionPro {
         const container = this.dom.cardIndicators;
         container.innerHTML = '';
 
-        // Limita indicadores para não poluir a UI
         const maxIndicators = 20;
         const showIndicators = Math.min(this.state.cards.length, maxIndicators);
 
@@ -1316,7 +1241,6 @@ class StudySessionPro {
             dot.dataset.card = i;
             dot.setAttribute('aria-label', `Card ${i + 1}`);
 
-            // Permite navegação direta
             dot.addEventListener('click', () => {
                 this.state.currentIndex = i;
                 this.render();
@@ -1325,7 +1249,6 @@ class StudySessionPro {
             container.appendChild(dot);
         }
 
-        // Adiciona indicador de "mais" se necessário
         if (this.state.cards.length > maxIndicators) {
             const more = document.createElement('span');
             more.className = 'indicator-more';
@@ -1347,10 +1270,6 @@ class StudySessionPro {
         this.dom.streakCount.textContent = stats.streak;
     }
 
-    // ============================
-    // ANIMAÇÕES
-    // ============================
-
     animateCardEntry() {
         const card = this.dom.flipCard;
         card.style.animation = 'cardEntry 0.3s ease-out';
@@ -1367,14 +1286,9 @@ class StudySessionPro {
             'slideOutLeft 0.3s ease-out';
     }
 
-    // ============================
-    // ÁUDIO
-    // ============================
-
     initializeAudio() {
         this.sounds = {};
 
-        // Pré-carrega sons se habilitado
         if (this.state.userPreferences.soundEffects) {
             Object.entries(CONFIG.SOUNDS).forEach(([key, url]) => {
                 const audio = new Audio(url);
@@ -1391,10 +1305,6 @@ class StudySessionPro {
             sound.play().catch(e => console.log('Erro ao tocar som:', e));
         }
     }
-
-    // ============================
-    // PREFERÊNCIAS
-    // ============================
 
     loadPreferences() {
         const defaults = {
@@ -1429,55 +1339,40 @@ class StudySessionPro {
     applyUserPreferences() {
         const prefs = this.state.userPreferences;
 
-        // Tema
         document.body.dataset.theme = prefs.theme;
 
-        // Tamanho da fonte
         document.body.style.setProperty('--card-font-size', `${prefs.fontSize}px`);
 
-        // Checkboxes
         document.getElementById('auto-flip').checked = prefs.autoFlip;
         document.getElementById('sound-effects').checked = prefs.soundEffects;
         document.getElementById('vibration').checked = prefs.vibration;
         document.getElementById('show-timer').checked = prefs.showTimer;
         document.getElementById('show-hints').checked = prefs.showHints;
 
-        // Ordem de revisão
         document.getElementById('review-order').value = prefs.reviewOrder;
     }
 
-    // ============================
-    // ANALYTICS
-    // ============================
 
     analytics = {
         sessionStart: () => {
-            // Implementar tracking
             console.log('Sessão iniciada');
         },
 
         cardFlipped: (card) => {
-            // Implementar tracking
             console.log('Card virado:', card.id);
         },
 
         sessionComplete: (data) => {
-            // Implementar tracking
             console.log('Sessão completa:', data);
         }
     };
 
-    // ============================
-    // TRATAMENTO DE ERROS
-    // ============================
 
     handleError(error) {
         console.error('Erro na sessão:', error);
 
         this.showError('Ocorreu um erro. Por favor, recarregue a página.');
 
-        // Log para servidor (implementar)
-        // logError(error);
     }
 
     showError(message) {
@@ -1521,9 +1416,6 @@ class StudySessionPro {
         this.dom.studyContainer.classList.remove('hidden');
     }
 
-    // ============================
-    // UTILIDADES AUXILIARES
-    // ============================
 
     truncateText(text, maxLength) {
         if (text.length <= maxLength) return text;
@@ -1537,7 +1429,6 @@ class StudySessionPro {
     }
 
     showQuickFeedback(message) {
-        // Usa Toastify ou implementação própria
         if (typeof showToast === 'function') {
             showToast(message, 'info');
         } else {
@@ -1560,11 +1451,9 @@ class StudySessionPro {
     }
 
     handleEscape() {
-        // Fecha modais ou sai do modo fullscreen
         if (document.fullscreenElement) {
             document.exitFullscreen();
         } else {
-            // Fecha modal aberto
             const openModal = document.querySelector('dialog[open]');
             if (openModal) {
                 openModal.close();
@@ -1580,10 +1469,6 @@ class StudySessionPro {
 
     async saveSessionData(data) {
         try {
-            // Implementar salvamento no servidor
-            // await saveSession(this.deckId, data);
-
-            // Salva localmente como backup
             localStorage.setItem(`session_${this.deckId}_${Date.now()}`, JSON.stringify(data));
         } catch (error) {
             console.error('Erro ao salvar dados da sessão:', error);
@@ -1591,7 +1476,6 @@ class StudySessionPro {
     }
 
     async preloadNextCards() {
-        // Pré-carrega próximos cards para melhor performance
         const nextIndex = this.state.currentIndex + 1;
         const preloadCount = Math.min(3, this.state.cards.length - nextIndex);
 
@@ -1605,12 +1489,7 @@ class StudySessionPro {
     }
 }
 
-// ============================
-// INICIALIZAÇÃO
-// ============================
-
 document.addEventListener('DOMContentLoaded', () => {
-    // Verifica parâmetros da URL
     const params = new URLSearchParams(window.location.search);
     const deckId = params.get('deckId');
 
@@ -1622,13 +1501,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Inicia sessão de estudo
     window.studySession = new StudySessionPro(deckId);
 });
 
-// ============================
-// CSS ANIMATIONS (adicionar ao CSS)
-// ============================
 const animationStyles = `
 @keyframes cardEntry {
     from {
@@ -1667,7 +1542,6 @@ const animationStyles = `
 }
 `;
 
-// Injeta estilos de animação
 const styleSheet = document.createElement('style');
 styleSheet.textContent = animationStyles;
 document.head.appendChild(styleSheet);

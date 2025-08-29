@@ -2,10 +2,6 @@ const supabase = require('../config/supabaseClient');
 const logger = require('../config/logger');
 const { generateStudyInsight } = require('../services/cohereService');
 
-/**
- * Busca as contagens de revisão diária para um determinado período.
- * Aceita um parâmetro 'range' na query string (ex: ?range=30).
- */
 const getReviewsOverTime = async (req, res) => {
     const userId = req.user.id;
     const range = parseInt(req.query.range, 10) || 7;
@@ -28,9 +24,6 @@ const getReviewsOverTime = async (req, res) => {
     }
 };
 
-/**
- * Busca um resumo das principais métricas de desempenho do usuário.
- */
 const getAnalyticsSummary = async (req, res) => {
     const userId = req.user.id;
     try {
@@ -50,9 +43,6 @@ const getAnalyticsSummary = async (req, res) => {
     }
 };
 
-/**
- * Gera insights de estudo e retorna os baralhos de maior dificuldade.
- */
 const getPerformanceInsights = async (req, res) => {
     const userId = req.user.id;
     try {

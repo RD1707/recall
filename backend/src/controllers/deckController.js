@@ -6,7 +6,6 @@ const { YoutubeTranscript } = require('youtube-transcript');
 const { flashcardGenerationQueue, isRedisConnected } = require('../config/queue');
 const { processGenerationAndSave } = require('../services/generationService');
 
-// Schema para validação, agora incluindo o campo 'color'
 const deckSchema = z.object({
   title: z.string({ required_error: 'O título é obrigatório.' }).min(1, 'O título não pode estar vazio.'),
   description: z.string().optional(),
@@ -22,7 +21,6 @@ const generateSchema = z.object({
 const getDecks = async (req, res) => {
   const userId = req.user.id;
   try {
-    // A query agora busca a contagem de flashcards associados
     const { data, error } = await supabase
       .from('decks')
       .select('*, flashcards(count)')
@@ -31,7 +29,6 @@ const getDecks = async (req, res) => {
 
     if (error) throw error;
     
-    // Simplifica a contagem de cards para o frontend
     const decksWithCount = data.map(deck => {
         const { flashcards, ...deckData } = deck;
         return {
@@ -160,14 +157,12 @@ const getReviewCardsForDeck = async (req, res) => {
             return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
         }
 
-        // ✅ LÓGICA CORRIGIDA:
-        // Busca cards que estão vencidos (due_date <= today) OU que nunca foram estudados (due_date IS NULL).
         const { data, error } = await supabase
             .from('flashcards')
             .select('*')
             .eq('deck_id', deckId)
             .or(`due_date.lte.${today},due_date.is.null`)
-            .limit(20); // Limita a 20 cards por sessão para não sobrecarregar.
+            .limit(20); 
 
         if (error) throw error;
         res.status(200).json(data);

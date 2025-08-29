@@ -1,15 +1,7 @@
-/*
- * Arquivo: shared-deck.css
- * Descrição: Estilos para a página de baralho compartilhado.
- * Baseado nas variáveis e no sistema de design de base.css.
-*/
-
 .deck-layout {
     grid-template-columns: 1fr;
-    /* Redefinido para layout de coluna única em telas maiores também para simplicidade da página pública */
 }
 
-/* Os estilos abaixo se sobrepõem aos de `deck.css` para a versão compartilhada */
 .app-header {
     background-color: var(--dark-color);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);

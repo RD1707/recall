@@ -1,17 +1,7 @@
-/*
- * Arquivo: base.css
- * Descrição: Um sistema de design fundamental e robusto para o projeto Recall.
- * Inclui um reset moderno, variáveis semânticas, tipografia escalável e estilos
- * base para componentes reutilizáveis, com foco em consistência e acessibilidade.
-*/
-
-/* --- FONTES --- */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
 
-/* --- VARIÁVEIS DO DESIGN SYSTEM (CUSTOM PROPERTIES) --- */
 :root {
-    /* Paleta de Cores Semântica */
     --color-primary-500: #4f46e5;
     --color-primary-600: #4338ca;
     --color-primary-100: #eef2ff;
@@ -23,27 +13,24 @@
     --color-surface: #ffffff;
     --color-border: #e5e7eb;
 
-    /* Tipografia */
     --font-family-body: 'Inter', sans-serif;
     --font-family-heading: 'Poppins', sans-serif;
-    --font-size-sm: 0.875rem; /* 14px */
-    --font-size-base: 1rem;   /* 16px */
-    --font-size-lg: 1.125rem; /* 18px */
-    --font-size-xl: 1.25rem;  /* 20px */
-    --font-size-2xl: 1.5rem;   /* 24px */
-    --font-size-3xl: 1.875rem; /* 30px */
+    --font-size-sm: 0.875rem; 
+    --font-size-base: 1rem;   
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem; 
+    --font-size-2xl: 1.5rem;  
+    --font-size-3xl: 1.875rem; 
     --line-height-body: 1.7;
     --line-height-heading: 1.3;
 
-    /* Espaçamento (Baseado em uma escala de 4px) */
-    --space-xs: 0.25rem;  /* 4px */
-    --space-sm: 0.5rem;   /* 8px */
-    --space-md: 1rem;     /* 16px */
-    --space-lg: 1.5rem;   /* 24px */
-    --space-xl: 2rem;     /* 32px */
-    --space-2xl: 2.5rem;  /* 40px */
+    --space-xs: 0.25rem;  
+    --space-sm: 0.5rem;   
+    --space-md: 1rem;     
+    --space-lg: 1.5rem;  
+    --space-xl: 2rem;     
+    --space-2xl: 2.5rem;  
 
-    /* Outros */
     --border-radius-sm: 6px;
     --border-radius-md: 10px;
     --container-width: 1120px;
@@ -53,7 +40,6 @@
     --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- RESET MODERNO E PADRÕES GLOBAIS --- */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -64,7 +50,7 @@ html {
     -webkit-text-size-adjust: 100%;
     -moz-tab-size: 4;
     tab-size: 4;
-    font-size: 100%; /* 16px por padrão */
+    font-size: 100%; 
 }
 
 body {
@@ -95,7 +81,6 @@ button {
     cursor: pointer;
 }
 
-/* Foco visível para acessibilidade */
 :focus-visible {
     outline: 3px solid var(--color-primary-100);
     outline-offset: 2px;
@@ -103,17 +88,12 @@ button {
 }
 
 
-/* --- LAYOUT E CONTAINERS --- */
 .container {
     max-width: var(--container-width);
     margin: 0 auto;
     padding: 0 var(--space-lg);
 }
 
-
-/* --- COMPONENTES BASE REUTILIZÁVEIS --- */
-
-/* Botões */
 .btn {
     display: inline-block;
     padding: var(--space-sm) var(--space-lg);
@@ -157,7 +137,6 @@ button {
     opacity: 0.7;
 }
 
-/* Cards */
 .card {
     background-color: var(--color-surface);
     border-radius: var(--border-radius-md);
@@ -166,7 +145,6 @@ button {
     padding: var(--space-xl);
 }
 
-/* Formulários */
 .form-group {
     margin-bottom: var(--space-lg);
 }
@@ -179,7 +157,6 @@ button {
     color: var(--color-text-default);
 }
 
-/* --- Formulários (VERSÃO MELHORADA) --- */
 .form-group {
     margin-bottom: var(--space-lg);
 }
@@ -192,7 +169,6 @@ button {
     color: var(--color-text-default);
 }
 
-/* Estilo unificado para todos os campos de entrada de texto e select */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -202,7 +178,7 @@ textarea,
 select {
     display: block;
     width: 100%;
-    padding: 0.875rem 1rem; /* Padding refinado */
+    padding: 0.875rem 1rem; 
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-sm);
     background-color: var(--color-surface);
@@ -213,7 +189,6 @@ select {
     box-shadow: var(--shadow-sm);
 }
 
-/* Efeito de foco aprimorado */
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
@@ -226,19 +201,16 @@ select:focus {
     box-shadow: 0 0 0 3px var(--color-primary-100);
 }
 
-/* Placeholder com estilo sutil */
 ::placeholder {
     color: #9ca3af;
     opacity: 1;
 }
 
-/* Estilo específico para textareas */
 textarea {
     resize: vertical;
     min-height: 120px;
 }
 
-/* Estilo para campos inválidos */
 .is-invalid {
     border-color: #ef4444 !important;
 }
@@ -257,10 +229,9 @@ textarea {
     color: #dc2626;
     font-size: var(--font-size-sm);
     margin-top: var(--space-xs);
-    display: none; /* Exibir via JS ou com :invalid + seletor */
+    display: none; 
 }
 
-/* Modais */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -329,7 +300,6 @@ textarea {
     gap: var(--space-sm);
 }
 
-/* Classes Utilitárias */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -346,7 +316,6 @@ textarea {
     display: none !important;
 }
 
-/* --- COMPONENTES GLOBAIS: CABEÇALHO DA APLICAÇÃO (VERSÃO MELHORADA) --- */
 .app-header {
     background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
@@ -386,7 +355,6 @@ textarea {
     gap: var(--space-xl);
 }
 
-/* Alinhamento refinado para as estatísticas e ícones */
 .app-header .user-stats,
 .app-header .user-actions {
     display: flex;
@@ -395,7 +363,7 @@ textarea {
 }
 
 .app-header .user-stat {
-    display: inline-flex; /* Alterado para alinhar ícones e texto */
+    display: inline-flex; 
     align-items: center;
     gap: var(--space-sm);
     font-size: var(--font-size-sm);
@@ -409,7 +377,7 @@ textarea {
 
 .app-header .user-stat svg {
     color: var(--color-primary-500);
-    flex-shrink: 0; /* Impede que o ícone seja esmagado */
+    flex-shrink: 0; 
 }
 
 .app-header .user-stat span {
@@ -465,8 +433,6 @@ textarea {
     color: var(--color-primary-500);
 }
 
-
-/* --- RESPONSIVIDADE DO CABEÇALHO --- */
 @media (max-width: 820px) {
     .app-header .app-nav {
         gap: var(--space-md);
@@ -476,13 +442,11 @@ textarea {
         gap: var(--space-md);
     }
     
-    /* Esconde elementos menos críticos em telas menores */
     .app-header #user-email,
     .app-header .nav-link {
         display: none;
     }
 }
-/* --- RESPONSIVIDADE DO CABEÇALHO --- */
 @media (max-width: 768px) {
     .app-header .app-nav {
         gap: var(--space-md);
@@ -492,12 +456,11 @@ textarea {
         gap: var(--space-md);
     }
 
-    /* Esconde elementos menos críticos em telas pequenas */
     .app-header #user-email,
     .app-header .nav-link {
         display: none;
     }
     html {
-        font-size: 93.75%; /* 15px */
+        font-size: 93.75%;
     }
 }

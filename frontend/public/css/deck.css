@@ -1,10 +1,3 @@
-/* 
- * Arquivo: deck-revamped.css
- * Descrição: Estilos modernos e profissionais para a página de visualização de baralho
- * Design system consistente com base.css, focado em usabilidade e experiência
- */
-
-/* --- VARIÁVEES ADICIONAIS --- */
 :root {
     --color-primary-50: #f0f9ff;
     --color-primary-200: #bae6fd;
@@ -17,7 +10,6 @@
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* --- ESTRUTURA PRINCIPAL --- */
 .deck-main {
     max-width: var(--container-width);
     margin: 0 auto;
@@ -78,7 +70,6 @@
     flex-wrap: wrap;
 }
 
-/* --- ESTATÍSTICAS DO BARALHO --- */
 .deck-stats-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -136,7 +127,6 @@
     color: var(--color-text-muted);
 }
 
-/* --- LAYOUT DE CONTEÚDO --- */
 .deck-content-grid {
     display: grid;
     grid-template-columns: 1fr 380px;
@@ -144,7 +134,6 @@
     align-items: start;
 }
 
-/* --- SEÇÃO DE FLASHCARDS --- */
 .flashcards-section {
     background: var(--color-surface);
     border-radius: var(--border-radius-md);
@@ -172,7 +161,6 @@
     gap: var(--space-lg);
 }
 
-/* Cartões de flashcard */
 .flashcard-item {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -232,7 +220,6 @@
     color: var(--color-surface);
 }
 
-/* Esqueletos de carregamento */
 .card-skeleton {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -272,7 +259,6 @@
     }
 }
 
-/* --- GERADOR IA --- */
 .ai-generator-section {
     position: sticky;
     top: 90px;
@@ -542,7 +528,6 @@ textarea {
     margin: 0;
 }
 
-/* --- MODAIS --- */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -647,7 +632,6 @@ textarea {
     flex-grow: 1;
 }
 
-/* --- ANIMAÇÕES --- */
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
@@ -673,7 +657,6 @@ textarea {
     animation: highlight 2s ease;
 }
 
-/* --- RESPONSIVIDADE --- */
 @media (max-width: 992px) {
     .deck-content-grid {
         grid-template-columns: 1fr;

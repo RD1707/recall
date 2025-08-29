@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- SELEÇÃO DE ELEMENTOS DO DOM ---
     const authPanel = document.getElementById('auth-panel');
     const resetPasswordPanel = document.getElementById('reset-password-panel');
     const updatePasswordPanel = document.getElementById('update-password-panel');
@@ -24,12 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isLogin = true;
 
-    // --- FUNÇÕES AUXILIARES ---
-
-    /**
-     * Mostra um painel específico e esconde os outros.
-     * @param {HTMLElement} panelToShow - O painel a ser exibido.
-     */
     function showPanel(panelToShow) {
         [authPanel, resetPasswordPanel, updatePasswordPanel].forEach(panel => {
             if (panel) panel.classList.add('hidden');
@@ -37,9 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (panelToShow) panelToShow.classList.remove('hidden');
     }
 
-    /**
-     * Atualiza a UI do formulário principal para alternar entre Login e Registro.
-     */
     function updateAuthFormUI() {
         errorMessage.textContent = '';
         if (isLogin) {
@@ -59,9 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * Configura a funcionalidade de mostrar/esconder senha.
-     */
     function setupPasswordToggle() {
         if (!passwordToggle || !passwordInput) return;
 
@@ -83,17 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-
-    // --- EVENT LISTENERS ---
-
-    // Ouve mudanças no estado de autenticação (ex: recuperação de senha)
     _supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'PASSWORD_RECOVERY') {
             showPanel(updatePasswordPanel);
         }
     });
 
-    // Alternar entre Login e Registro
     if (toggleFormLink) {
         toggleFormLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -102,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Abrir painel de "Esqueceu a senha"
     if (forgotPasswordLink) {
         forgotPasswordLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -110,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Voltar para o painel de login
     backToLoginLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -120,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Submissão do formulário de Login/Registro
     if (authForm) {
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -150,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Submissão do formulário de Recuperar Senha
     if (resetPasswordForm) {
         resetPasswordForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -175,7 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Submissão do formulário de Atualizar Senha
     if (updatePasswordForm) {
         updatePasswordForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -197,8 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     showToast('Senha atualizada com sucesso! Pode fazer o login.', 'success');
                     setTimeout(() => {
-                        window.location.hash = ''; // Limpa o hash da URL
-                        window.location.reload(); // Recarrega a página para o estado de login
+                        window.location.hash = ''; 
+                        window.location.reload(); 
                     }, 2000);
                 }
             } finally {
@@ -216,8 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // --- INICIALIZAÇÃO ---
-    // Verifica se a URL já contém o hash para recuperação de senha na carga inicial
     if (window.location.hash.includes('type=recovery')) {
          showPanel(updatePasswordPanel);
     } else {

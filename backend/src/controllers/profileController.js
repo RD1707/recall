@@ -2,7 +2,6 @@ const supabase = require('../config/supabaseClient');
 const logger = require('../config/logger');
 const { z } = require('zod');
 
-// ... (o schema de validação permanece o mesmo)
 const profileUpdateSchema = z.object({
     full_name: z.string().min(3, 'O nome completo deve ter pelo menos 3 caracteres.').optional().nullable(),
     password: z.string().min(6, 'A nova senha deve ter pelo menos 6 caracteres.').optional(),
@@ -17,10 +16,7 @@ const getProfile = async (req, res) => {
             .eq('id', req.user.id)
             .single();
 
-        // ✨ LÓGICA MODIFICADA: Verifica se o erro é porque o perfil não existe
-        // O código de erro 'PGRST116' indica que a consulta com .single() não retornou linhas.
         if (error && error.code === 'PGRST116') {
-            // Se o perfil não for encontrado, retorna um perfil padrão para o novo usuário.
             logger.warn(`Perfil não encontrado para o usuário ${req.user.id}. Retornando perfil padrão.`);
             return res.status(200).json({ 
                 points: 0, 
@@ -40,7 +36,6 @@ const getProfile = async (req, res) => {
     }
 };
 
-// ... (a função updateProfile permanece a mesma)
 const updateProfile = async (req, res) => {
     const userId = req.user.id;
     try {

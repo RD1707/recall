@@ -6,12 +6,11 @@ let flashcardGenerationQueue = null;
 let connection = null;
 let isRedisConnected = false;
 
-// Só tenta conectar se a REDIS_URL existir e não estiver explicitamente desabilitada.
 if (process.env.REDIS_URL && process.env.REDIS_URL !== 'DISABLED') {
   try {
     connection = new IORedis(process.env.REDIS_URL, {
       maxRetriesPerRequest: null,
-      connectTimeout: 5000, // Timeout de conexão mais curto
+      connectTimeout: 5000, 
     });
 
     connection.on('connect', () => {
@@ -38,7 +37,6 @@ if (!flashcardGenerationQueue) {
 module.exports = {
   flashcardGenerationQueue,
   connection,
-  // Exporta uma flag para verificar facilmente o estado da conexão noutros locais
   get isRedisConnected() {
     return isRedisConnected && connection && connection.status === 'ready';
   }

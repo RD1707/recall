@@ -1,29 +1,14 @@
-// frontend/public/js/main.js
-
-// --- VARIÁVEIS GLOBAIS ---
 let allDecks = [];
-let selectedDeckColor = '#4f46e5'; // Cor padrão
-
-// --- INICIALIZAÇÃO DA APLICAÇÃO ---
+let selectedDeckColor = '#4f46e5'; 
+-
 document.addEventListener('DOMContentLoaded', initDashboard);
 
-/**
- * Ponto de entrada: Inicializa a página do dashboard.
- */
 async function initDashboard() {
-    // A verificação de login agora é feita implicitamente pelo apiCall em api.js
-    // header.js já está carregando o perfil, então não precisamos fazer isso aqui.
     await loadDecks();
     setupEventListeners();
     setupSearchAndFilter();
 }
 
-
-// --- FUNÇÕES DE LÓGICA DA PÁGINA (Dashboard) ---
-
-/**
- * Configura todos os event listeners da página do dashboard.
- */
 function setupEventListeners() {
     document.getElementById('create-deck-btn').addEventListener('click', () => {
         showModal(document.getElementById('create-deck-modal'));
@@ -62,9 +47,6 @@ function setupEventListeners() {
     });
 }
 
-/**
- * Configura a funcionalidade de busca e filtro.
- */
 function setupSearchAndFilter() {
     const searchInput = document.getElementById('deck-search');
     let searchTimeout;
@@ -96,8 +78,6 @@ function setupSearchAndFilter() {
     });
 }
 
-
-// --- FUNÇÕES DE RENDERIZAÇÃO E UI/UX ---
 
 function showModal(modal) {
     if (!modal) return;
@@ -148,9 +128,6 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-
-// --- LÓGICA DE DADOS (CARREGAMENTO E RENDERIZAÇÃO) ---
-
 async function loadDecks() {
     const decksContainer = document.getElementById('decks-grid');
     const emptyStateContainer = document.getElementById('empty-state');
@@ -162,7 +139,6 @@ async function loadDecks() {
         <div class="skeleton-deck"></div>
     `;
 
-    // Utiliza a função centralizada de api.js
     const decks = await fetchDecks(); 
     allDecks = decks || [];
 
@@ -248,12 +224,8 @@ function updateDashboardStats() {
     
     document.getElementById('total-decks').textContent = totalDecks;
     document.getElementById('total-cards').textContent = totalCards;
-    // A métrica 'due-cards' pode ser implementada no futuro se a API a fornecer
     document.getElementById('due-cards').textContent = '0'; 
 }
-
-
-// --- HANDLERS DE FORMULÁRIO ---
 
 async function handleCreateDeck(e) {
     e.preventDefault();
@@ -266,7 +238,6 @@ async function handleCreateDeck(e) {
 
     setButtonLoading(submitButton, 'Criando...');
     try {
-        // Usa a função de api.js
         const result = await createDeck(title, description, selectedDeckColor);
         if (result) {
             showToast('Baralho criado com sucesso!', 'success');
@@ -291,7 +262,6 @@ async function handleEditDeck(e) {
 
     setButtonLoading(submitButton, 'Salvando...');
     try {
-        // Usa a função de api.js
         const result = await updateDeck(deckId, title, description, selectedDeckColor);
         if (result) {
             showToast('Baralho atualizado!', 'success');
@@ -306,7 +276,6 @@ async function handleEditDeck(e) {
 async function handleDeleteDeck() {
     const deckId = document.getElementById('edit-deck-id').value;
     if (confirm(`Tem certeza que deseja excluir este baralho?`)) {
-        // Usa a função de api.js
         const result = await deleteDeck(deckId);
         if (result) {
             showToast('Baralho excluído.', 'success');
@@ -330,9 +299,6 @@ function openEditDeckModal(deck) {
     
     showModal(modal);
 }
-
-
-// --- FUNÇÕES UTILITÁRIAS ---
 
 function setButtonLoading(button, text = 'Aguarde...') {
     button.disabled = true;

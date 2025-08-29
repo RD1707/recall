@@ -1,23 +1,13 @@
-/**
- * Arquivo: deck.js
- * Descrição: Lógica moderna e profissional para a página de visualização de baralho.
- * Gestão de estado, tratamento de erros robusto e padrões de código limpo.
- * VERSÃO CORRIGIDA
- */
-
-// --- ESTADO DA APLICAÇÃO ---
 const AppState = {
     deckId: null,
     currentFlashcards: [],
     deckDetails: null,
     pollingAttempts: 0,
     isGenerating: false,
-    // Constantes para o polling
-    POLLING_INTERVAL: 5000, // 5 segundos
-    MAX_POLLING_ATTEMPTS: 12, // Máximo de 1 minuto
+    POLLING_INTERVAL: 5000, 
+    MAX_POLLING_ATTEMPTS: 12, 
 };
 
-// --- INICIALIZAÇÃO DA APLICAÇÃO ---
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await initializeApplication();
@@ -29,9 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-/**
- * Inicializa a aplicação obtendo o ID do baralho da URL e verificando sua validade.
- */
 async function initializeApplication() {
     const params = new URLSearchParams(window.location.search);
     AppState.deckId = params.get('id');
@@ -43,9 +30,6 @@ async function initializeApplication() {
     }
 }
 
-/**
- * Configura todos os event listeners da página.
- */
 function setupEventListeners() {
     document.getElementById('generate-cards-form').addEventListener('submit', handleGenerateSubmit);
     document.querySelector('.input-mode-selector').addEventListener('click', handleInputModeChange);
@@ -62,9 +46,6 @@ function setupEventListeners() {
     setupFileDropZone();
 }
 
-/**
- * Orquestra o carregamento dos dados iniciais da página (detalhes e flashcards).
- */
 async function loadPageData() {
     try {
         await Promise.all([loadDeckDetails(), loadFlashcards()]);
@@ -74,11 +55,7 @@ async function loadPageData() {
     }
 }
 
-/**
- * Busca e renderiza os detalhes do cabeçalho do baralho.
- */
 async function loadDeckDetails() {
-    // A função `fetchDecks` vem do arquivo `api.js`
     const allDecks = await fetchDecks();
     if (!allDecks) return;
 
@@ -92,16 +69,11 @@ async function loadDeckDetails() {
     }
 }
 
-/**
- * Carrega e renderiza a lista de flashcards do baralho.
- * @param {number} previousCardCount - Usado para animar apenas os novos cards após a geração.
- */
 async function loadFlashcards(previousCardCount = -1) {
     const container = document.getElementById('flashcards-container');
     showLoadingState(container);
 
     try {
-        // A função `fetchFlashcards` vem do arquivo `api.js`
         AppState.currentFlashcards = await fetchFlashcards(AppState.deckId);
         renderFlashcards(container, AppState.currentFlashcards, previousCardCount);
         updateDeckStats();
@@ -111,17 +83,11 @@ async function loadFlashcards(previousCardCount = -1) {
     }
 }
 
-/**
- * Atualiza os contadores de estatísticas (total, para revisar, etc.).
- */
 function updateDeckStats() {
     document.getElementById('total-cards-stat').textContent = AppState.currentFlashcards.length;
-    // Lógica para "Para Revisar" e "Dominados" pode ser adicionada aqui se a API fornecer os dados.
     document.getElementById('review-cards-stat').textContent = '--';
     document.getElementById('mastered-cards-stat').textContent = '--';
 }
-
-// --- RENDERIZAÇÃO DA UI ---
 
 function renderDeckHeader(deck) {
     document.getElementById('deck-title-heading').textContent = deck.title;
@@ -189,8 +155,6 @@ function showErrorState(container, message) {
     feather.replace();
 }
 
-// --- HANDLERS DE EVENTOS ---
-
 async function handleGenerateSubmit(e) {
     e.preventDefault();
     if (AppState.isGenerating) return;
@@ -214,7 +178,7 @@ async function handleGenerateSubmit(e) {
             AppState.pollingAttempts = 0;
             startPollingForNewFlashcards();
         } else {
-            resetGenerationUI(true); // Reseta em caso de falha inicial
+            resetGenerationUI(true); 
         }
     } catch (error) {
         showToast(error.message || 'Erro ao iniciar a geração', 'error');
@@ -401,7 +365,7 @@ async function handleEditFormSubmit(e) {
         await updateFlashcard(cardId, { question, answer });
         showToast('Flashcard atualizado!', 'success');
         closeEditModal();
-        await loadFlashcards(); // Recarrega a lista para refletir a mudança
+        await loadFlashcards(); 
     } catch (error) {
         showToast('Erro ao atualizar.', 'error');
     } finally {
@@ -431,8 +395,6 @@ async function copyShareLink() {
     await navigator.clipboard.writeText(input.value);
     showToast('Link copiado para a área de transferência!', 'success');
 }
-
-// --- FUNÇÕES UTILITÁRIAS ---
 
 function showModal(modalId) { document.getElementById(modalId)?.classList.add('visible'); }
 function hideModal(modalId) { document.getElementById(modalId)?.classList.remove('visible'); }

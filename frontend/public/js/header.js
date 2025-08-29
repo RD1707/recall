@@ -1,28 +1,19 @@
-/**
- * Arquivo: header.js
- * Descrição: Controla toda a lógica do cabeçalho da aplicação, incluindo
- * o carregamento de dados do perfil, interatividade do menu e os modais de perfil e configurações.
- */
 document.addEventListener('DOMContentLoaded', () => {
-    // Garante que a API esteja disponível
     if (typeof apiCall === 'undefined') {
         console.error("Erro: O script api.js deve ser carregado antes de header.js");
         return;
     }
 
-    // --- SELEÇÃO DE ELEMENTOS DO DOM ---
     const userMenuButton = document.getElementById('user-menu-button');
     const userDropdown = document.getElementById('user-dropdown');
     const profileLink = document.getElementById('profile-link');
     const settingsLink = document.getElementById('settings-link');
     const logoutButton = document.getElementById('logout-button');
     
-    // Modais
     const profileModal = document.getElementById('profile-modal');
     const settingsModal = document.getElementById('settings-modal');
     const profileForm = document.getElementById('profile-form');
 
-    // --- CARREGAMENTO DE DADOS DO USUÁRIO ---
     const loadUserProfile = async () => {
         const profile = await fetchProfile();
         const { data: { user } } = await _supabase.auth.getUser();
@@ -31,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('#user-points').forEach(el => el.textContent = profile.points || 0);
             document.querySelectorAll('#user-streak').forEach(el => el.textContent = profile.current_streak || 0);
             
-            // Preenche os campos do modal de perfil
             if(profileModal) {
                 profileModal.querySelector('#profile-email').value = user?.email || '';
                 profileModal.querySelector('#profile-name').value = profile.full_name || '';
@@ -45,14 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // --- LÓGICA DE INTERAÇÃO (MENUS E MODAIS) ---
     const toggleUserMenu = (forceClose = false) => {
         if (userDropdown) {
             userDropdown.classList.toggle('visible', !forceClose && !userDropdown.classList.contains('visible'));
         }
     };
 
-    // --- EVENT LISTENERS ---
     userMenuButton?.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleUserMenu();
@@ -81,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'index.html';
     });
 
-    // Submissão do formulário de perfil
     profileForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const fullName = document.getElementById('profile-name').value.trim();
@@ -105,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setButtonLoading(submitButton, 'Salvando...');
         
-        // A função updateProfile precisa ser adicionada em api.js
         const result = await updateProfile(dataToUpdate); 
         
         setButtonIdle(submitButton, 'Salvar Alterações');
@@ -113,15 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (result) {
             showToast('Perfil atualizado com sucesso!', 'success');
             hideModal(profileModal);
-            document.getElementById('profile-password').value = ''; // Limpa o campo de senha
+            document.getElementById('profile-password').value = ''; 
         }
     });
 
-    // Inicializa a aplicação
     loadUserProfile();
 });
 
-// Funções utilitárias (podem ser movidas para um arquivo separado se preferir)
 function showModal(modal) {
     if (!modal) return;
     modal.classList.add('visible');
