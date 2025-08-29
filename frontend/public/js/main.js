@@ -70,11 +70,19 @@ function setupEventListeners() {
         window.addEventListener('scroll', toggleScrollToTopButton);
     }
 
-    // Color picker
-    const colorOptions = document.querySelectorAll('.color-option');
-    colorOptions.forEach(option => {
-        option.addEventListener('click', (e) => selectColor(e.target.closest('.color-option')));
+    // Color picker para ambos os modais
+    document.querySelectorAll('.color-picker').forEach(picker => {
+        picker.addEventListener('click', (e) => {
+            const colorOption = e.target.closest('.color-option');
+            if (colorOption) {
+                // Remove a seleção de outros na mesma paleta e seleciona o clicado
+                picker.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                colorOption.classList.add('selected');
+                selectedDeckColor = colorOption.dataset.color;
+            }
+        });
     });
+
 
     // --- Novos Listeners para Header e Modais ---
     const userMenuButton = document.getElementById('user-menu-button');
@@ -109,13 +117,19 @@ function setupEventListeners() {
     }
 
     // Listener para fechar todos os modais
-    document.querySelectorAll('.close-modal-btn, .modal-overlay').forEach(btn => {
+    document.querySelectorAll('.close-modal-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) { // Garante que o clique no overlay não propague dos filhos
-                const modalId = e.target.dataset.modalId || e.target.closest('.modal-overlay')?.id;
-                if (modalId) {
-                    hideModal(document.getElementById(modalId));
-                }
+             const modalId = e.target.closest('.modal-overlay')?.id || e.target.dataset.modalId;
+             if (modalId) {
+                hideModal(document.getElementById(modalId));
+             }
+        });
+    });
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                hideModal(overlay);
             }
         });
     });
@@ -226,7 +240,9 @@ function filterAndRenderDecks() {
 
 
 function selectColor(colorElement) {
-    document.querySelectorAll('.color-option').forEach(option => {
+    // Garante que estamos selecionando dentro do contexto do modal correto
+    const picker = colorElement.closest('.color-picker');
+    picker.querySelectorAll('.color-option').forEach(option => {
         option.classList.remove('selected');
     });
     colorElement.classList.add('selected');
@@ -326,8 +342,8 @@ function renderDecks(decks) {
 }
 
 /**
- * **FUNÇÃO CORRIGIDA**
- * Cria o HTML para um card de baralho, sem o botão de opções.
+ * **FUNÇÃO ATUALIZADA**
+ * Cria o HTML para um card de baralho, adicionando um botão de opções.
  */
 function renderSingleDeck(deck, index) {
     const card = document.createElement('div');
@@ -336,24 +352,34 @@ function renderSingleDeck(deck, index) {
 
     const deckColor = deck.color || '#4f46e5';
 
-    // O botão de menu foi removido desta versão.
     card.innerHTML = `
-        <div class="deck-card-inner" data-deck-id="${deck.id}">
-            <div class="deck-card-header" style="background-color: ${deckColor};">
-                </div>
-            <div class="deck-card-body">
-                <h3>${escapeHtml(deck.title)}</h3>
-                <p>${deck.description ? escapeHtml(deck.description) : 'Sem descrição'}</p>
-            </div>
-            <div class="deck-card-footer">
-                <span class="btn btn-primary-static">Abrir Baralho</span>
-            </div>
+        <div class="deck-card-header" style="border-left: 5px solid ${deckColor};">
+            <h3>${escapeHtml(deck.title)}</h3>
+            <button class="deck-options-btn" data-deck-id="${deck.id}" aria-label="Opções do baralho">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+        </div>
+        <div class="deck-card-body">
+            <p>${deck.description ? escapeHtml(deck.description) : 'Sem descrição'}</p>
+        </div>
+        <div class="deck-card-footer">
+            <span>${deck.card_count || 0} cards</span>
+            <a href="deck.html?id=${deck.id}" class="btn btn-primary-static">Estudar</a>
         </div>
     `;
 
-    // O card inteiro agora é um link. Clicar em qualquer lugar leva para a página do baralho.
-    card.addEventListener('click', () => {
-        window.location.href = `deck.html?id=${deck.id}`;
+    // Event listener para o botão de opções
+    const optionsBtn = card.querySelector('.deck-options-btn');
+    optionsBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Impede que o clique no botão propague para o card
+        openEditDeckModal(deck);
+    });
+    
+    // O card inteiro (exceto o botão de opções) é um link
+    card.addEventListener('click', (e) => {
+        if (!e.target.closest('.deck-options-btn')) {
+            window.location.href = `deck.html?id=${deck.id}`;
+        }
     });
 
     return card;

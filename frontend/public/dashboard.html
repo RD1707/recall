@@ -132,10 +132,86 @@
     </main>
 
     <div id="create-deck-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Criar Novo Baralho</h2>
+                <button class="close-modal-btn" data-modal-id="create-deck-modal" aria-label="Fechar modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="create-deck-form" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="deck-title">Título do Baralho</label>
+                        <input type="text" id="deck-title" placeholder="Ex: Biologia Celular" required minlength="3" maxlength="50">
+                        <p class="error-message" id="title-error"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="deck-description">Descrição (Opcional)</label>
+                        <textarea id="deck-description" rows="3" placeholder="Ex: Resumos do capítulo 3 para a prova"></textarea>
+                    </div>
+                     <div class="form-group">
+                        <label>Cor do Baralho</label>
+                        <div class="color-picker">
+                            <div class="color-option selected" data-color="#4f46e5" style="background-color: #4f46e5;"></div>
+                            <div class="color-option" data-color="#ef4444" style="background-color: #ef4444;"></div>
+                            <div class="color-option" data-color="#f59e0b" style="background-color: #f59e0b;"></div>
+                            <div class="color-option" data-color="#10b981" style="background-color: #10b981;"></div>
+                            <div class="color-option" data-color="#3b82f6" style="background-color: #3b82f6;"></div>
+                            <div class="color-option" data-color="#8b5cf6" style="background-color: #8b5cf6;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close-modal-btn" data-modal-id="create-deck-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar Baralho</button>
+                </div>
+            </form>
         </div>
+    </div>
 
     <div id="edit-deck-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Editar Baralho</h2>
+                 <button class="close-modal-btn" data-modal-id="edit-deck-modal" aria-label="Fechar modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="edit-deck-form" novalidate>
+                 <input type="hidden" id="edit-deck-id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit-deck-title">Título do Baralho</label>
+                        <input type="text" id="edit-deck-title" required minlength="3" maxlength="50">
+                         <p class="error-message" id="edit-title-error"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-deck-description">Descrição (Opcional)</label>
+                        <textarea id="edit-deck-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Cor do Baralho</label>
+                        <div class="color-picker">
+                            <div class="color-option" data-color="#4f46e5" style="background-color: #4f46e5;"></div>
+                            <div class="color-option" data-color="#ef4444" style="background-color: #ef4444;"></div>
+                            <div class="color-option" data-color="#f59e0b" style="background-color: #f59e0b;"></div>
+                            <div class="color-option" data-color="#10b981" style="background-color: #10b981;"></div>
+                            <div class="color-option" data-color="#3b82f6" style="background-color: #3b82f6;"></div>
+                            <div class="color-option" data-color="#8b5cf6" style="background-color: #8b5cf6;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="justify-content: space-between;">
+                    <button type="button" class="btn btn-danger" id="delete-deck-btn" style="background-color: #ef4444; color:white;">Excluir</button>
+                    <div>
+                        <button type="button" class="btn btn-secondary close-modal-btn" data-modal-id="edit-deck-modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                    </div>
+                </div>
+            </form>
         </div>
+    </div>
 
     <div id="profile-modal" class="modal-overlay">
         <div class="modal">
