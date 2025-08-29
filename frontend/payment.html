@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Recall</title>
+    <link rel="stylesheet" href="css/payment.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar</a>
+            <h2>Finalizar Assinatura</h2>
+        </div>
+
+        <div class="main-content">
+            <div class="plan-details">
+                <h3>Escolha seu Plano</h3>
+                <div class="plan-selection">
+                    <div class="plan-card" data-plan-price="19.00" data-plan-name="Plano Mensal">
+                        <div class="plan-header">
+                            <h3>Plano Mensal</h3>
+                            <p class="plan-price">R$ 19,00<span>/mês</span></p>
+                        </div>
+                        <ul class="plan-features">
+                             <li><i class="fas fa-check"></i> Flashcards ilimitados</li>
+                            <li><i class="fas fa-check"></i> Geração por IA</li>
+                            <li><i class="fas fa-check"></i> Repetição espaçada</li>
+                            <li><i class="fas fa-check"></i> Tutor com IA</li>
+                            <li><i class="fas fa-check"></i> Relatórios de progresso</li>
+                        </ul>
+                    </div>
+                    <div class="plan-card active" data-plan-price="39.00" data-plan-name="Plano Anual">
+                        <div class="plan-header">
+                            <h3>Plano Anual</h3>
+                            <p class="plan-price">R$ 39,00<span>/mês</span></p>
+                        </div>
+                        <ul class="plan-features">
+                           <li><i class="fas fa-check"></i> Tudo do plano Estudante</li>
+                            <li><i class="fas fa-check"></i> Criação de turmas</li>
+                            <li><i class="fas fa-check"></i> Compartilhamento de decks</li>
+                            <li><i class="fas fa-check"></i> Análise de desempenho da turma</li>
+                            <li><i class="fas fa-check"></i> Suporte prioritário</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="checkout-summary">
+                    <h3>Resumo do Pedido</h3>
+                    <div class="summary-item">
+                        <span id="summary-plan-name">Plano Anual</span>
+                        <strong id="summary-plan-price">R$ 39,00</strong>
+                    </div>
+                    <div class="summary-item total">
+                        <span>Total a Pagar</span>
+                        <strong id="summary-total-price">R$ 39,00</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-details">
+                <h3>Método de Pagamento</h3>
+                <div class="payment-methods">
+                    <button class="method-btn active" data-method="card">
+                        <i class="fas fa-credit-card"></i> Cartão de Crédito
+                    </button>
+                    <button class="method-btn" data-method="pix">
+                        <i class="fas fa-qrcode"></i> Pix
+                    </button>
+                </div>
+
+                <form id="payment-form-card" class="payment-form">
+                    <div class="form-group">
+                        <label for="card-number">Número do Cartão</label>
+                        <input type="text" id="card-number" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                        <div class="card-icons">
+                            <i class="fab fa-cc-visa"></i>
+                            <i class="fab fa-cc-mastercard"></i>
+                            <i class="fab fa-cc-amex"></i>
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="feedback invalid-feedback">Número de cartão inválido.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="card-name">Nome no Cartão</label>
+                        <input type="text" id="card-name" class="form-control" placeholder="Nome Completo" required>
+                        <div class="feedback invalid-feedback">Por favor, insira o nome completo.</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="card-expiry">Validade</label>
+                            <input type="text" id="card-expiry" class="form-control" placeholder="MM/AA" maxlength="5" required>
+                            <div class="feedback invalid-feedback">Data de validade inválida.</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="card-cvv">CVV</label>
+                            <input type="text" id="card-cvv" class="form-control" placeholder="123" maxlength="4" required>
+                            <div class="feedback invalid-feedback">CVV inválido.</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Pagar com Cartão</button>
+                </form>
+
+                <div id="payment-form-pix" class="payment-form hidden">
+                    <div class="pix-info">
+                        <p>Siga os passos abaixo para pagar com Pix:</p>
+                        <ol>
+                            <li>Abra o aplicativo do seu banco ou carteira digital.</li>
+                            <li>Escolha a opção "Pagar com Pix" ou "Pix QR Code".</li>
+                            <li>Escaneie o QR Code abaixo ou utilize o código Copia e Cola.</li>
+                        </ol>
+                        <div class="pix-code-container">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Link_pra_pagina_principal_da_Wikipedia-PT_em_codigo_QR_b.svg/330px-Link_pra_pagina_principal_da_Wikipedia-PT_em_codigo_QR_b.svg.png" alt="QR Code Pix" class="pix-qr-code">
+                            <div class="pix-copy-paste">
+                                <span>Código Pix Copia e Cola:</span>
+                                <div class="copy-container">
+                                    <span id="pix-code-value">00020126330014br.gov.bcb.pix01111234567891...</span>
+                                    <button id="copy-pix-btn" class="copy-btn"><i class="fas fa-copy"></i> Copiar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="pay-pix-btn" type="button" class="btn btn-primary btn-block">Já paguei com Pix</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/payment.js"></script>
+</body>
+
+</html>
