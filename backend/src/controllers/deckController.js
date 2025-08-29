@@ -151,27 +151,33 @@ const getReviewCardsForDeck = async (req, res) => {
     const { id: deckId } = req.params;
     const userId = req.user.id;
     const today = new Date().toISOString();
+
     try {
-         const { data: deck, error: deckError } = await supabase
+        const { data: deck, error: deckError } = await supabase
             .from('decks').select('id').eq('id', deckId).eq('user_id', userId).single();
 
         if (deckError || !deck) {
             return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
         }
 
+        // ✅ LÓGICA CORRIGIDA:
+        // Busca cards que estão vencidos (due_date <= today) OU que nunca foram estudados (due_date IS NULL).
         const { data, error } = await supabase
             .from('flashcards')
             .select('*')
             .eq('deck_id', deckId)
-            .lte('due_date', today);
+            .or(`due_date.lte.${today},due_date.is.null`)
+            .limit(20); // Limita a 20 cards por sessão para não sobrecarregar.
 
         if (error) throw error;
         res.status(200).json(data);
+
     } catch (error) {
         logger.error(`Error fetching review cards for deck ${deckId}: ${error.message}`);
         res.status(500).json({ message: 'Erro ao buscar os flashcards para revisão.', code: 'INTERNAL_SERVER_ERROR' });
     }
 };
+
 
 const generateCardsFromFile = async (req, res) => {
     const { id: deckId } = req.params;
