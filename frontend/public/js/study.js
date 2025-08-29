@@ -561,32 +561,29 @@ class StudySessionPro {
 
     async submitAnswer(quality) {
         if (this.state.isTransitioning) return;
-
+    
         const card = this.getCurrentCard();
         if (!card) return;
-
+    
         card.lastQuality = quality;
         card.attempts++;
         card.studied = true;
         card.timeSpent += Date.now() - card.startTime;
-
+    
         this.updateStatsForAnswer(quality);
-
+    
         await this.showFeedback(quality);
-
+    
         try {
             await submitReview(card.id, quality);
         } catch (error) {
             console.error('Erro ao enviar revisão:', error);
         }
-
+    
         this.checkAchievements();
-
-        if (this.state.userPreferences.autoFlip) {
-            setTimeout(() => {
-                this.autoAdvance();
-            }, CONFIG.AUTO_FLIP_DELAY);
-        }
+    
+        // Avança para o próximo card imediatamente após a avaliação.
+        this.autoAdvance();
     }
 
     updateStatsForAnswer(quality) {
@@ -1437,10 +1434,9 @@ class StudySessionPro {
     }
 
     handleSpacebar() {
+        // A tecla Espaço agora só tem uma função: virar o card se ele não estiver virado.
         if (!this.state.isFlipped) {
             this.flipCard();
-        } else if (this.state.currentIndex < this.state.cards.length - 1) {
-            this.navigateCard('next');
         }
     }
 
@@ -1544,4 +1540,4 @@ const animationStyles = `
 
 const styleSheet = document.createElement('style');
 styleSheet.textContent = animationStyles;
-document.head.appendChild(styleSheet);
+document.head.appendChild(styleSheet);  
