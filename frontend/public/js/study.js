@@ -393,23 +393,23 @@ class StudySessionPro {
 
 
     render() {
-        const card = this.getCurrentCard();
-        if (!card) return;
+    const card = this.getCurrentCard();
+    if (!card) return;
 
-        this.renderCard(card);
+    // Reset card state when rendering a new card
+    this.dom.flipCard.classList.remove('is-flipped');
+    this.state.isFlipped = false;
+    
+    this.renderCard(card);
+    this.updateProgress();
+    this.updateStats();
+    this.updateNavigation();
+    this.updateIndicators();
 
-        this.updateProgress();
-
-        this.updateStats();
-
-        this.updateNavigation();
-
-        this.updateIndicators();
-
-        if (this.state.userPreferences.showPreviews) {
-            this.renderPreviews();
-        }
+    if (this.state.userPreferences.showPreviews) {
+        this.renderPreviews();
     }
+}
 
     renderCard(card) {
         this.dom.flipCard.classList.remove('is-flipped');
@@ -535,56 +535,68 @@ class StudySessionPro {
     }
 
     navigateCard(direction) {
-        if (this.state.isTransitioning) return;
+    if (this.state.isTransitioning) return;
 
-        const newIndex = direction === 'prev' ?
-            this.state.currentIndex - 1 :
-            this.state.currentIndex + 1;
+    const newIndex = direction === 'prev' ?
+        this.state.currentIndex - 1 :
+        this.state.currentIndex + 1;
 
-        if (newIndex < 0 || newIndex >= this.state.cards.length) return;
+    if (newIndex < 0 || newIndex >= this.state.cards.length) return;
 
-        this.state.isTransitioning = true;
+    this.state.isTransitioning = true;
 
-        const currentCard = this.getCurrentCard();
-        if (currentCard) {
-            currentCard.timeSpent += Date.now() - currentCard.startTime;
-        }
-
-        this.animateCardExit(direction);
-
-        setTimeout(() => {
-            this.state.currentIndex = newIndex;
-            this.render();
-            this.state.isTransitioning = false;
-        }, CONFIG.ANIMATION_DURATION);
+    const currentCard = this.getCurrentCard();
+    if (currentCard) {
+        currentCard.timeSpent += Date.now() - currentCard.startTime;
     }
+
+    this.animateCardExit(direction);
+
+    setTimeout(() => {
+        this.state.currentIndex = newIndex;
+        // Reset flip state when navigating to a new card
+        this.state.isFlipped = false; // ← Adicione esta linha
+        this.render();
+        this.state.isTransitioning = false;
+    }, CONFIG.ANIMATION_DURATION);
+}
 
     async submitAnswer(quality) {
-        if (this.state.isTransitioning) return;
-    
-        const card = this.getCurrentCard();
-        if (!card) return;
-    
-        card.lastQuality = quality;
-        card.attempts++;
-        card.studied = true;
-        card.timeSpent += Date.now() - card.startTime;
-    
-        this.updateStatsForAnswer(quality);
-    
-        await this.showFeedback(quality);
-    
-        try {
-            await submitReview(card.id, quality);
-        } catch (error) {
-            console.error('Erro ao enviar revisão:', error);
-        }
-    
-        this.checkAchievements();
-    
-        // Avança para o próximo card imediatamente após a avaliação.
-        this.autoAdvance();
+    if (this.state.isTransitioning) return;
+
+    const card = this.getCurrentCard();
+    if (!card) return;
+
+    this.state.isTransitioning = true;
+
+    card.lastQuality = quality;
+    card.attempts++;
+    card.studied = true;
+    card.timeSpent += Date.now() - card.startTime;
+
+    this.updateStatsForAnswer(quality);
+
+    try {
+        submitReview(card.id, quality);
+    } catch (error) {
+        console.error('Erro ao enviar revisão:', error);
     }
+    this.checkAchievements();
+
+    await this.showFeedback(quality);
+
+    // Reset flip state for the next card
+    this.state.isFlipped = false; // ← Adicione esta linha
+
+    if (this.state.currentIndex < this.state.cards.length - 1) {
+        this.state.currentIndex++;
+        this.render();
+        this.state.isTransitioning = false;
+    } else {
+        this.completeSession();
+        this.state.isTransitioning = false;
+    }
+}
 
     updateStatsForAnswer(quality) {
         if (quality === 1) {
@@ -1434,9 +1446,12 @@ class StudySessionPro {
     }
 
     handleSpacebar() {
-        // A tecla Espaço agora só tem uma função: virar o card se ele não estiver virado.
         if (!this.state.isFlipped) {
             this.flipCard();
+        } else if (this.state.currentIndex < this.state.cards.length - 1) {
+            // This part is likely not needed if autoAdvance is working correctly
+            // but we can leave it as a fallback.
+            // this.navigateCard('next');
         }
     }
 
@@ -1540,4 +1555,4 @@ const animationStyles = `
 
 const styleSheet = document.createElement('style');
 styleSheet.textContent = animationStyles;
-document.head.appendChild(styleSheet);  
+document.head.appendChild(styleSheet);
