@@ -1,7 +1,8 @@
 /*
- * Arquivo: study.css (Versão Premium)
+ * Arquivo: study.css (Versão Premium - Polida e Deslumbrante)
  * Descrição: Estilos avançados e modernos para a página de sessão de estudos,
- * com foco em uma experiência imersiva, acessibilidade e usabilidade de ponta.
+ * com foco em uma experiência imersiva, acessibilidade e usabilidade de ponta,
+ * incluindo feedback visual espetacular e centralização perfeita do card.
  */
 
 /* --- Variáveis Globais da Página --- */
@@ -14,35 +15,99 @@
     --study-border: var(--color-border);
     --study-shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --study-card-width: min(95%, 650px);
+    /* Garante que o card seja responsivo mas tenha um max-width */
     --study-card-height: 420px;
     --study-radius: 16px;
+    --feedback-duration: 0.8s;
+    /* Duração da animação de feedback */
 }
 
-/* --- Layout Principal --- */
+/* --- Base e Layout Principal --- */
 body {
     background-color: var(--study-background);
+    color: var(--color-text-default);
+    /* Cor do texto padrão para toda a página */
 }
 
 .study-main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-height: calc(100vh - 70px);
+    /* Altura mínima para ocupar a tela */
     padding: var(--space-lg) var(--space-md);
+    box-sizing: border-box;
+    /* Garante que padding não cause overflow */
 }
 
+/* Centraliza os containers principais na tela */
 .study-container,
 .completion-container,
 .loading-state {
     width: 100%;
     max-width: 800px;
+    /* Mantém um tamanho legível */
+    margin-left: auto;
+    margin-right: auto;
     animation: fadeIn 0.5s ease-out;
+    /* Animação de entrada suave */
 }
 
 .hidden {
     display: none !important;
 }
 
-/* --- Cabeçalho da Sessão --- */
+/* --- Animações Gerais --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* --- Estado de Carregamento --- */
+.loading-state {
+    text-align: center;
+    padding-top: 5rem;
+    color: var(--color-text-muted);
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--color-primary-100);
+    border-top: 4px solid var(--study-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* --- Cabeçalho da Sessão (Mantido o design anterior por ser elegante) --- */
 .app-header .header-back-section a {
     max-width: 400px;
     overflow: hidden;
@@ -89,6 +154,9 @@ body {
 
 /* --- Seção de Progresso --- */
 .progress-section {
+    width: 100%;
+    max-width: var(--study-card-width);
+    /* Alinha com a largura do card */
     margin-bottom: var(--space-lg);
 }
 
@@ -144,43 +212,84 @@ body {
     transition: width 0.5s ease;
 }
 
-/* --- Seção do Card --- */
+/* --- Seção do Card (Melhorias de Centralização e Estilo) --- */
+.card-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Centraliza o card verticalmente */
+    width: 100%;
+    max-width: var(--study-card-width);
+    /* Restringe a largura para manter o card centralizado e legível */
+    margin: 0 auto;
+    /* Centraliza horizontalmente */
+}
+
 .card-navigation {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-md);
     margin-bottom: var(--space-md);
+    width: 100%;
+    /* Permite que os botões se espalhem mais */
 }
 
 .nav-btn {
     background-color: var(--study-surface);
+    border: 1px solid var(--study-border);
     box-shadow: var(--shadow-sm);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--color-text-default);
+    transition: all 0.2s ease;
+}
+
+.nav-btn:hover:not(:disabled) {
+    background: var(--color-primary-100);
+    color: var(--study-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .nav-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
-    background-color: var(--color-border);
+    background-color: var(--color-background);
+    color: var(--color-text-muted);
+    box-shadow: none;
+    transform: none;
 }
 
 .flip-card-container {
     perspective: 2000px;
-    width: var(--study-card-width);
+    width: 100%;
+    /* Ocupa a largura disponível do card-section */
+    height: var(--study-card-height);
+    margin-left: auto;
+    /* Garante centralização */
+    margin-right: auto;
+    /* Garante centralização */
 }
 
 .flip-card {
     position: relative;
     width: 100%;
-    height: var(--study-card-height);
+    height: 100%;
 }
 
 .flip-card-inner {
     position: relative;
     width: 100%;
     height: 100%;
-    transform-style: preserve-3d;
+    text-align: center;
     transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
 }
 
 .flip-card.is-flipped .flip-card-inner {
@@ -191,8 +300,9 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
-    backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    /* Oculta a parte de trás durante a virada */
+    backface-visibility: hidden;
     display: flex;
     flex-direction: column;
     border-radius: var(--study-radius);
@@ -200,6 +310,8 @@ body {
     border: 1px solid var(--study-border);
     background: var(--study-surface);
     overflow: hidden;
+    padding: 0;
+    /* Remover padding padrão para controlar com header/content */
 }
 
 .flip-card-back {
@@ -224,11 +336,21 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    /* Centraliza texto e conteúdo do card */
+    overflow: hidden;
+    /* Garante que o conteúdo não vaze */
 }
 
 .card-text-container {
     overflow-y: auto;
     max-height: 280px;
+    /* Limita a altura para que o texto role se for muito longo */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
 }
 
 .card-text {
@@ -237,6 +359,8 @@ body {
     line-height: 1.5;
     text-align: center;
     color: var(--color-dark-900);
+    margin: 0;
+    /* Remove margem padrão para melhor controle */
 }
 
 .card-hint {
@@ -245,7 +369,114 @@ body {
     padding-top: 1rem;
     font-size: var(--font-size-sm);
     color: var(--color-text-muted);
+    opacity: 0.8;
+    /* Suaviza a dica */
 }
+
+.card-position-indicator {
+    margin-top: var(--space-md);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+/* --- Overlay de Feedback Visual Deslumbrante (NOVO) --- */
+.card-feedback-overlay {
+    position: absolute;
+    inset: 0;
+    /* Ocupa todo o card */
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Fundo translúcido */
+    border-radius: var(--study-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--feedback-duration) ease-out, transform var(--feedback-duration) ease-out;
+    transform: scale(0.8);
+    z-index: 5;
+    /* Garante que fique acima do card flipado */
+}
+
+.card-feedback-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+.feedback-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--space-sm);
+}
+
+.feedback-text {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--color-dark-900);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-emoji {
+    font-size: clamp(3rem, 7vw, 5rem);
+    line-height: 1;
+    transform: scale(0);
+    animation: popIn 0.4s ease-out forwards;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Cores e estilos específicos para cada feedback */
+.card-feedback-overlay.errado {
+    background-color: rgba(255, 230, 230, 0.95);
+}
+
+.card-feedback-overlay.errado .feedback-text {
+    color: var(--color-danger);
+}
+
+.card-feedback-overlay.dificil {
+    background-color: rgba(255, 245, 220, 0.95);
+}
+
+.card-feedback-overlay.dificil .feedback-text {
+    color: var(--color-warning);
+}
+
+.card-feedback-overlay.bom {
+    background-color: rgba(230, 255, 230, 0.95);
+}
+
+.card-feedback-overlay.bom .feedback-text {
+    color: var(--color-success);
+}
+
+.card-feedback-overlay.facil {
+    background-color: rgba(220, 240, 255, 0.95);
+}
+
+.card-feedback-overlay.facil .feedback-text {
+    color: var(--study-primary);
+}
+
 
 /* --- Controles da Sessão --- */
 .study-controls {
@@ -253,100 +484,138 @@ body {
     margin-top: var(--space-lg);
     min-height: 100px;
     /* Garante espaço para os botões aparecerem */
+    width: 100%;
+    max-width: 700px;
+    /* Max-width para os botões de qualidade */
 }
 
 .flip-btn {
     padding: 0.8rem 1.75rem;
     font-size: var(--font-size-lg);
+    width: auto;
+    min-width: 250px;
+}
+
+.quality-buttons {
+    display: flex;
+    justify-content: center;
+    /* Centraliza o grupo de botões */
+    width: 100%;
 }
 
 .quality-btn-group {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: var(--space-md);
-    max-width: 600px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .quality-btn {
     padding: var(--space-sm);
     border: 2px solid var(--color-border);
     background-color: var(--color-surface);
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    color: var(--color-text-default);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
 }
 
-.quality-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
+.quality-btn i {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
 }
 
+/* Estilos de hover e foco específicos */
 .quality-errado {
     color: #b91c1c;
+    border-color: #fca5a5;
 }
 
+/* Vermelho mais suave */
 .quality-dificil {
     color: #c2410c;
+    border-color: #fed7aa;
 }
 
+/* Laranja mais suave */
 .quality-bom {
     color: #166534;
+    border-color: #a7f3d0;
 }
 
+/* Verde mais suave */
 .quality-facil {
     color: var(--study-primary);
+    border-color: #bfdbfe;
 }
+
+/* Azul mais suave */
 
 .quality-errado:hover {
     background-color: #f87171;
     border-color: #f87171;
     color: white;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
 }
 
 .quality-dificil:hover {
     background-color: #fb923c;
     border-color: #fb923c;
     color: white;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
 }
 
 .quality-bom:hover {
     background-color: #4ade80;
     border-color: #4ade80;
     color: white;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
 }
 
 .quality-facil:hover {
     background-color: var(--study-primary);
     border-color: var(--study-primary);
     color: white;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
 }
+
 
 /* --- Tela de Conclusão --- */
 .completion-card {
     padding: 2rem;
+    text-align: center;
 }
 
 .completion-icon {
-    font-size: 3.5rem;
+    font-size: 4.5rem;
+    /* Ícone maior para impacto */
     color: var(--study-primary);
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    50% {
-        transform: scale(1.1);
-    }
 }
 
 .completion-card h2 {
     font-size: var(--font-size-3xl);
     color: var(--color-dark-900);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .completion-card>p {
     font-size: var(--font-size-lg);
     color: var(--color-text-muted);
-    margin-bottom: 2rem;
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
 }
 
 .session-summary {
@@ -354,19 +623,33 @@ body {
     border-radius: var(--border-radius-md);
     padding: 1.5rem;
     margin-bottom: 2rem;
+    width: 100%;
+    max-width: 600px;
+    /* Limita largura do resumo */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .summary-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1rem;
+    gap: 1.5rem;
     text-align: center;
 }
 
+.stat-box {
+    background-color: var(--color-surface);
+    padding: 1rem;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--color-border);
+}
+
 .stat-value {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
+    /* Valores maiores */
     font-weight: 700;
     color: var(--study-primary);
+    line-height: 1.2;
 }
 
 .stat-label {
@@ -374,81 +657,152 @@ body {
     color: var(--color-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-top: 0.25rem;
 }
 
 .accuracy-meter {
-    margin-top: 1.5rem;
+    margin-top: 2rem;
 }
 
 .accuracy-label {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-md);
     color: var(--color-text-muted);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
 }
 
 .accuracy-bar {
-    height: 10px;
+    height: 12px;
     background-color: var(--color-border);
-    border-radius: 5px;
+    border-radius: 999px;
     overflow: hidden;
     margin-bottom: 0.5rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .accuracy-fill {
     height: 100%;
-    background-color: var(--color-success);
+    background-image: linear-gradient(to right, var(--color-danger), var(--color-warning), var(--color-success));
     transition: width 1s ease-out;
+    border-radius: 999px;
 }
 
 .accuracy-percentage {
+    font-size: var(--font-size-lg);
     font-weight: 600;
     color: var(--color-dark-800);
 }
 
+
 .completion-actions {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    gap: var(--space-lg);
     flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.completion-actions .btn {
+    min-width: 200px;
+    padding: 0.8rem 1.5rem;
+    font-size: var(--font-size-md);
+    border-radius: var(--border-radius-md);
 }
 
 /* --- Responsividade --- */
 @media (max-width: 768px) {
     .card-navigation {
+        flex-direction: column;
+        /* Botões de navegação empilhados */
         gap: var(--space-sm);
+    }
+
+    .nav-btn {
+        width: 100%;
+        /* Botões de navegação ocupam toda a largura */
+        border-radius: var(--border-radius-sm);
+        height: 44px;
+    }
+
+    .flip-card-container {
+        height: 400px;
+        /* Ajusta altura do card para telas menores */
+    }
+
+    .card-text {
+        font-size: clamp(1.25rem, 4vw, 1.75rem);
     }
 
     .quality-btn-group {
         grid-template-columns: 1fr 1fr;
+        /* 2 colunas para botões de qualidade */
+        gap: var(--space-md);
     }
 
-    .card-text {
-        font-size: 1.5rem;
+    .completion-icon {
+        font-size: 3.5rem;
     }
 
-    .flip-card-container {
-        height: 450px;
+    .completion-card h2 {
+        font-size: var(--font-size-2xl);
+    }
+
+    .stat-value {
+        font-size: 2rem;
     }
 }
 
 @media (max-width: 480px) {
     :root {
-        --study-card-height: 380px;
+        --study-card-height: 350px;
     }
 
+    /* Altura mínima em celulares */
     .study-main {
-        padding: var(--space-md);
+        padding: var(--space-md) var(--space-sm);
     }
+
+    .card-navigation {
+        gap: var(--space-xs);
+        flex-direction: row;
+        /* Volta a ser linha, mas com menos espaço */
+    }
+
+    .nav-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1rem;
+    }
+
+    /* Ícones menores */
 
     .quality-btn-group {
         grid-template-columns: 1fr;
+        /* Apenas 1 coluna para botões de qualidade */
+        gap: var(--space-sm);
     }
 
-    .card-text {
-        font-size: 1.25rem;
+    .quality-btn {
+        padding: 0.8rem;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .feedback-text {
+        font-size: 2rem;
+    }
+
+    .feedback-emoji {
+        font-size: 3.5rem;
     }
 
     .completion-actions {
         flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .completion-actions .btn {
+        min-width: unset;
+        width: 100%;
     }
 }
