@@ -1,7 +1,7 @@
 /*
  * Arquivo: header.css
- * Descrição: Estilos centralizados para o cabeçalho da aplicação.
- * Garante consistência visual e funcional em todas as páginas logadas.
+ * Descrição: Estilos centralizados para o cabeçalho da aplicação e seus componentes,
+ * como o menu dropdown e os modais de perfil e configurações.
 */
 
 :root {
@@ -55,15 +55,15 @@
 }
 
 .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-size: var(--font-size-base);
     font-weight: 500;
     color: var(--color-text-default);
     text-decoration: none;
     position: relative;
     padding: 0.25rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
 }
 
 .nav-link::after {
@@ -104,16 +104,10 @@
     font-weight: 500;
 }
 
-.user-stat .stat-icon {
-    color: var(--color-primary-500);
-}
+.user-stat .stat-icon { color: var(--color-primary-500); }
+.user-stat span { color: var(--color-dark-800); font-weight: 600; }
 
-.user-stat span {
-    color: var(--color-dark-800);
-    font-weight: 600;
-}
-
-/* --- User Menu --- */
+/* --- Menu do Usuário --- */
 .user-menu {
     position: relative;
 }
@@ -168,29 +162,10 @@
     padding: 1rem 1.25rem;
 }
 
-.dropdown-user-info .user-avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 0.9rem;
-    box-shadow: none;
-}
-
-.user-details span:first-child {
-    font-weight: 600;
-    color: var(--color-dark-900);
-    word-break: break-all;
-}
-
-.user-plan {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-}
-
-.dropdown-divider {
-    height: 1px;
-    background: var(--color-border);
-    margin: 0.5rem 0;
-}
+.dropdown-user-info .user-avatar { width: 36px; height: 36px; font-size: 0.9rem; box-shadow: none; }
+.user-details span:first-child { font-weight: 600; color: var(--color-dark-900); word-break: break-all; }
+.user-plan { font-size: var(--font-size-sm); color: var(--color-text-muted); }
+.dropdown-divider { height: 1px; background: var(--color-border); margin: 0.5rem 0; }
 
 .dropdown-item {
     display: flex;
@@ -207,25 +182,11 @@
     cursor: pointer;
     font-size: var(--font-size-sm);
 }
-
-.dropdown-item:hover {
-    background: var(--color-primary-100);
-    color: var(--color-primary-600);
-}
-
-.dropdown-item i {
-    width: 18px;
-    text-align: center;
-    margin-right: 0.25rem;
-}
+.dropdown-item:hover { background: var(--color-primary-100); color: var(--color-primary-600); }
+.dropdown-item i { width: 18px; text-align: center; margin-right: 0.25rem; }
 
 /* --- Responsividade --- */
 @media (max-width: 768px) {
-    .header-container {
-        padding: 0 1rem;
-    }
-
-    .user-stats, .nav-link {
-        display: none;
-    }
+    .header-container { padding: 0 1rem; }
+    .user-stats, .nav-link { display: none; }
 }
