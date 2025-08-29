@@ -1,2 +1,6 @@
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-08-29 14:49:33"}
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-08-29 14:50:00"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-08-29 15:19:44"}
+{"level":"info","message":"Modo síncrono: Gerando flashcards para o baralho d28b1df8-2095-4acc-abe6-96c6aad3cc03","service":"recall-api","timestamp":"2025-08-29 15:24:53"}
+{"level":"info","message":"Iniciando geração de IA para o baralho d28b1df8-2095-4acc-abe6-96c6aad3cc03","service":"recall-api","timestamp":"2025-08-29 15:24:53"}
+{"level":"info","message":"Geração para o baralho d28b1df8-2095-4acc-abe6-96c6aad3cc03 concluída. 10 flashcards guardados.","service":"recall-api","timestamp":"2025-08-29 15:25:00"}
