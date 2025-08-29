@@ -1,0 +1,5 @@
+{"level":"error","message":"Error fetching profile for user 466af838-df3e-40e0-9e63-a3be113e8b63: column profiles.full_name does not exist","service":"recall-api","timestamp":"2025-08-29 13:29:11"}
+{"level":"error","message":"Error fetching profile for user 466af838-df3e-40e0-9e63-a3be113e8b63: column profiles.full_name does not exist","service":"recall-api","timestamp":"2025-08-29 13:29:12"}
+{"level":"error","message":"Error creating deck for user 466af838-df3e-40e0-9e63-a3be113e8b63: Could not find the 'color' column of 'decks' in the schema cache","service":"recall-api","timestamp":"2025-08-29 13:29:31"}
+{"level":"error","message":"Error fetching profile for user 466af838-df3e-40e0-9e63-a3be113e8b63: column profiles.full_name does not exist","service":"recall-api","timestamp":"2025-08-29 13:32:02"}
+{"level":"error","message":"Error fetching profile for user 466af838-df3e-40e0-9e63-a3be113e8b63: column profiles.full_name does not exist","service":"recall-api","timestamp":"2025-08-29 13:32:03"}
