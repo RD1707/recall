@@ -1,19 +1,23 @@
-// --- CONFIGURAÇÃO INICIAL DO SUPABASE (MOVIMOS PARA CÁ) ---
+// frontend/public/js/api.js
+
+// --- CONFIGURAÇÃO INICIAL DO SUPABASE ---
 const SUPABASE_URL = 'https://khofqsjwyunicxdxapih.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtob2Zxc2p3eXVuaWN4ZHhhcGloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMjM2NDksImV4cCI6MjA3MTY5OTY0OX0.3Fr8b6u3b6dqoh84qx0ulcddb-vj4gGqlOQvAI2weGE';
 
 const { createClient } = supabase;
-// A variável _supabase agora é definida aqui e estará disponível para todos os scripts carregados depois deste.
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
-// --- FUNÇÕES DE API ---
+// --- FUNÇÃO CENTRAL DE CHAMADA À API ---
 const API_BASE_URL = '/api';
 
 async function apiCall(endpoint, method = 'GET', body = null) {
     const { data: { session } } = await _supabase.auth.getSession();
     if (!session) {
-        window.location.href = 'index.html';
+        // Se não houver sessão, redireciona para a página de login, exceto se já estiver nela.
+        if (!window.location.pathname.endsWith('login.html') && !window.location.pathname.endsWith('index.html')) {
+            window.location.href = 'login.html';
+        }
         return null;
     }
 
@@ -23,7 +27,7 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     
     const config = { method, headers };
 
-    // Para FormData, não definimos 'Content-Type', o browser faz isso.
+    // Para FormData, o browser define o 'Content-Type' automaticamente.
     if (body instanceof FormData) {
         config.body = body;
     } else if (body) {
@@ -39,6 +43,7 @@ async function apiCall(endpoint, method = 'GET', body = null) {
             }));
             throw new Error(errorData.message || `Falha na requisição para ${endpoint}`);
         }
+        // Retorna um objeto de sucesso para respostas sem conteúdo (ex: DELETE)
         return response.status !== 204 ? await response.json() : { success: true };
     } catch (error) {
         console.error(`Erro na chamada à API para ${endpoint}:`, error.message);
@@ -47,28 +52,31 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     }
 }
 
-// Funções de Baralhos (Decks)
-function fetchDecks() { return apiCall('/decks'); }
-function createDeck(title, description, color) { return apiCall('/decks', 'POST', { title, description, color }); }
-function updateDeck(deckId, title, description, color) { return apiCall(`/decks/${deckId}`, 'PUT', { title, description, color }); }
-function deleteDeck(deckId) { return apiCall(`/decks/${deckId}`, 'DELETE'); }
-function shareDeck(deckId) { return apiCall(`/decks/${deckId}/share`, 'POST'); }
+// --- FUNÇÕES EXPORTADAS POR CATEGORIA ---
 
-// Funções de Flashcards
-function fetchFlashcards(deckId) { return apiCall(`/decks/${deckId}/flashcards`); }
-function updateFlashcard(cardId, data) { return apiCall(`/flashcards/${cardId}`, 'PUT', data); }
-function deleteFlashcard(cardId) { return apiCall(`/flashcards/${cardId}`, 'DELETE'); }
-function fetchReviewCards(deckId) { return apiCall(`/decks/${deckId}/review`); }
-function submitReview(cardId, quality) { return apiCall(`/flashcards/${cardId}/review`, 'POST', { quality }); }
-function fetchExplanation(cardId) { return apiCall(`/flashcards/${cardId}/explain`, 'POST'); }
+// Baralhos (Decks)
+const fetchDecks = () => apiCall('/decks');
+const createDeck = (title, description, color) => apiCall('/decks', 'POST', { title, description, color });
+const updateDeck = (deckId, title, description, color) => apiCall(`/decks/${deckId}`, 'PUT', { title, description, color });
+const deleteDeck = (deckId) => apiCall(`/decks/${deckId}`, 'DELETE');
+const shareDeck = (deckId) => apiCall(`/decks/${deckId}/share`, 'POST');
 
-// Funções de Geração com IA
-function generateFlashcards(deckId, params) { return apiCall(`/decks/${deckId}/generate`, 'POST', params); }
-function generateFlashcardsFromFile(deckId, formData) { return apiCall(`/decks/${deckId}/generate-from-file`, 'POST', formData); }
-function generateFlashcardsFromYouTube(deckId, params) { return apiCall(`/decks/${deckId}/generate-from-youtube`, 'POST', params); }
+// Flashcards
+const fetchFlashcards = (deckId) => apiCall(`/decks/${deckId}/flashcards`);
+const updateFlashcard = (cardId, data) => apiCall(`/flashcards/${cardId}`, 'PUT', data);
+const deleteFlashcard = (cardId) => apiCall(`/flashcards/${cardId}`, 'DELETE');
+const fetchReviewCards = (deckId) => apiCall(`/decks/${deckId}/review`);
+const submitReview = (cardId, quality) => apiCall(`/flashcards/${cardId}/review`, 'POST', { quality });
+// A função getExplanation foi removida pois não é usada no frontend.
 
-// Funções de Perfil e Análise
-function fetchProfile() { return apiCall('/profile'); }
-function fetchLast7DaysReviews() { return apiCall('/analytics/reviews-over-time'); }
-function fetchPerformanceInsights() { return apiCall('/analytics/insights'); }
-function fetchAnalyticsSummary() { return apiCall('/analytics/summary'); }
+// Geração com IA
+const generateFlashcards = (deckId, params) => apiCall(`/decks/${deckId}/generate`, 'POST', params);
+const generateFlashcardsFromFile = (deckId, formData) => apiCall(`/decks/${deckId}/generate-from-file`, 'POST', formData);
+const generateFlashcardsFromYouTube = (deckId, params) => apiCall(`/decks/${deckId}/generate-from-youtube`, 'POST', params);
+
+// Perfil e Análise
+const fetchProfile = () => apiCall('/profile');
+const updateProfile = (data) => apiCall('/profile', 'PUT', data);
+const fetchReviewsOverTime = (range = 7) => apiCall(`/analytics/reviews-over-time?range=${range}`);
+const fetchPerformanceInsights = () => apiCall('/analytics/insights');
+const fetchAnalyticsSummary = () => apiCall('/analytics/summary');

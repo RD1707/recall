@@ -1,32 +1,28 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Sessão de estudo interativa com flashcards - Recall">
     <meta name="theme-color" content="#4f46e5">
     <title>Sessão de Estudo - Recall</title>
-    
-    <!-- Preconnect para otimização -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    
-    <!-- Estilos -->
+
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/study.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Preload de recursos críticos -->
+
     <link rel="preload" href="js/study.js" as="script">
 </head>
 
 <body class="study-page" data-theme="light" data-font-size="medium">
-    
-    <!-- Header Aprimorado -->
+
     <header class="study-header" role="banner">
         <div class="header-container">
-            <!-- Navegação Esquerda -->
             <div class="header-left">
                 <button id="back-btn" class="icon-btn ghost" aria-label="Voltar ao baralho">
                     <i class="fas fa-arrow-left"></i>
@@ -47,7 +43,6 @@
                 </div>
             </div>
 
-            <!-- Controles Centrais -->
             <div class="header-center">
                 <div class="study-timer">
                     <i class="fas fa-clock"></i>
@@ -55,10 +50,8 @@
                 </div>
             </div>
 
-            <!-- Ações da Direita -->
             <div class="header-right">
                 <div class="header-actions">
-                    <!-- Modo de Estudo -->
                     <div class="study-mode-toggle" role="radiogroup" aria-label="Modo de estudo">
                         <button class="mode-btn active" data-mode="normal" aria-checked="true">
                             <i class="fas fa-graduation-cap"></i>
@@ -74,7 +67,6 @@
                         </button>
                     </div>
 
-                    <!-- Ações Rápidas -->
                     <button id="shortcuts-btn" class="icon-btn" aria-label="Atalhos de teclado">
                         <i class="fas fa-keyboard"></i>
                     </button>
@@ -88,7 +80,6 @@
             </div>
         </div>
 
-        <!-- Barra de Progresso Global -->
         <div class="global-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
             <div class="progress-track">
                 <div id="global-progress-fill" class="progress-fill"></div>
@@ -115,10 +106,8 @@
         </div>
     </header>
 
-    <!-- Container Principal -->
     <main class="study-main" role="main">
-        
-        <!-- Estado de Carregamento -->
+
         <div id="loading-state" class="state-container loading-state" aria-live="polite">
             <div class="state-content">
                 <div class="loading-animation">
@@ -136,14 +125,11 @@
             </div>
         </div>
 
-        <!-- Container de Estudo -->
         <div id="study-container" class="study-container hidden">
-            
-            <!-- Área Superior: Indicadores e Ações -->
+
             <div class="study-top-bar">
                 <div class="card-indicators">
                     <button class="indicator-dot" data-card="0" aria-label="Card 1"></button>
-                    <!-- Mais indicadores serão adicionados dinamicamente -->
                 </div>
                 <div class="quick-actions">
                     <button id="bookmark-btn" class="action-btn" aria-label="Marcar card">
@@ -158,20 +144,16 @@
                 </div>
             </div>
 
-            <!-- Container Principal do Card -->
             <div class="card-stage">
-                <!-- Preview Cards (para navegação visual) -->
                 <div class="card-preview prev" id="prev-preview">
                     <div class="preview-content">
                         <p class="preview-text"></p>
                     </div>
                 </div>
 
-                <!-- Card Principal -->
                 <div class="main-card-container">
                     <div class="flip-card" id="flip-card" role="region" aria-live="polite">
                         <div class="flip-card-inner">
-                            <!-- Frente do Card -->
                             <article class="card-face card-front">
                                 <div class="card-header">
                                     <div class="card-type">
@@ -183,13 +165,12 @@
                                         <span class="difficulty-label">Médio</span>
                                     </div>
                                 </div>
-                                
+
                                 <div class="card-body">
                                     <div class="card-content-wrapper">
                                         <p id="card-question" class="card-content"></p>
                                     </div>
-                                    
-                                    <!-- Dicas e Contexto -->
+
                                     <div id="hint-section" class="hint-section hidden">
                                         <div class="hint-toggle">
                                             <button id="show-hint" class="hint-btn">
@@ -203,7 +184,6 @@
 
                                 <div class="card-footer">
                                     <div class="card-tags">
-                                        <!-- Tags serão adicionadas dinamicamente -->
                                     </div>
                                     <div class="card-prompt">
                                         <kbd>Espaço</kbd> para revelar resposta
@@ -211,7 +191,6 @@
                                 </div>
                             </article>
 
-                            <!-- Verso do Card -->
                             <article class="card-face card-back">
                                 <div class="card-header">
                                     <div class="card-type">
@@ -222,13 +201,12 @@
                                         <i class="fas fa-exclamation-triangle"></i>
                                     </button>
                                 </div>
-                                
+
                                 <div class="card-body">
                                     <div class="card-content-wrapper">
                                         <p id="card-answer" class="card-content"></p>
                                     </div>
-                                    
-                                    <!-- Explicação Adicional -->
+
                                     <div id="explanation-section" class="explanation-section hidden">
                                         <h3>
                                             <i class="fas fa-info-circle"></i>
@@ -237,7 +215,6 @@
                                         <div id="explanation-content"></div>
                                     </div>
 
-                                    <!-- Referências -->
                                     <div id="references-section" class="references-section hidden">
                                         <h4>Referências</h4>
                                         <ul id="references-list"></ul>
@@ -250,7 +227,6 @@
                             </article>
                         </div>
 
-                        <!-- Overlay de Feedback -->
                         <div id="feedback-overlay" class="feedback-overlay">
                             <div class="feedback-content">
                                 <div class="feedback-icon"></div>
@@ -260,7 +236,6 @@
                         </div>
                     </div>
 
-                    <!-- Navegação do Card -->
                     <nav class="card-navigation" aria-label="Navegação entre cards">
                         <button id="prev-card" class="nav-btn prev" disabled aria-label="Card anterior">
                             <i class="fas fa-chevron-left"></i>
@@ -271,7 +246,6 @@
                     </nav>
                 </div>
 
-                <!-- Preview Next Card -->
                 <div class="card-preview next" id="next-preview">
                     <div class="preview-content">
                         <p class="preview-text"></p>
@@ -279,16 +253,13 @@
                 </div>
             </div>
 
-            <!-- Controles de Resposta -->
             <div class="response-controls">
-                <!-- Botão Virar (antes de virar) -->
                 <button id="flip-btn" class="btn btn-primary btn-large flip-btn">
                     <i class="fas fa-sync-alt"></i>
                     <span>Revelar Resposta</span>
                     <kbd>Espaço</kbd>
                 </button>
 
-                <!-- Botões de Qualidade (após virar) -->
                 <div id="quality-buttons" class="quality-buttons hidden">
                     <div class="quality-grid">
                         <button class="quality-btn" data-quality="1" data-feedback="again">
@@ -301,7 +272,7 @@
                             </div>
                             <kbd>1</kbd>
                         </button>
-                        
+
                         <button class="quality-btn" data-quality="2" data-feedback="hard">
                             <div class="quality-icon">
                                 <i class="fas fa-brain"></i>
@@ -312,7 +283,7 @@
                             </div>
                             <kbd>2</kbd>
                         </button>
-                        
+
                         <button class="quality-btn" data-quality="3" data-feedback="good">
                             <div class="quality-icon">
                                 <i class="fas fa-check"></i>
@@ -323,7 +294,7 @@
                             </div>
                             <kbd>3</kbd>
                         </button>
-                        
+
                         <button class="quality-btn" data-quality="4" data-feedback="easy">
                             <div class="quality-icon">
                                 <i class="fas fa-star"></i>
@@ -338,7 +309,6 @@
                 </div>
             </div>
 
-            <!-- Estatísticas em Tempo Real -->
             <div class="live-stats">
                 <div class="stat-card">
                     <i class="fas fa-tachometer-alt"></i>
@@ -364,10 +334,8 @@
             </div>
         </div>
 
-        <!-- Tela de Conclusão -->
         <div id="completion-container" class="state-container completion-state hidden">
             <div class="completion-content">
-                <!-- Animação de Celebração -->
                 <div class="celebration-animation">
                     <div class="confetti-container"></div>
                     <div class="trophy-icon">
@@ -375,15 +343,12 @@
                     </div>
                 </div>
 
-                <!-- Mensagem Principal -->
                 <div class="completion-header">
                     <h1 id="completion-title">Sessão Concluída!</h1>
                     <p id="completion-subtitle">Você está no caminho certo para dominar este conteúdo</p>
                 </div>
 
-                <!-- Estatísticas Detalhadas -->
                 <div class="session-stats">
-                    <!-- Cards de Estatísticas -->
                     <div class="stats-grid">
                         <div class="stat-block">
                             <div class="stat-icon success">
@@ -426,7 +391,6 @@
                         </div>
                     </div>
 
-                    <!-- Gráfico de Desempenho -->
                     <div class="performance-chart">
                         <h3>Distribuição de Respostas</h3>
                         <div class="chart-container">
@@ -434,24 +398,19 @@
                         </div>
                     </div>
 
-                    <!-- Conquistas da Sessão -->
                     <div id="achievements" class="achievements-section hidden">
                         <h3>Conquistas Desbloqueadas</h3>
                         <div class="achievements-grid">
-                            <!-- Conquistas serão adicionadas dinamicamente -->
                         </div>
                     </div>
 
-                    <!-- Insights e Recomendações -->
                     <div class="insights-section">
                         <h3>Insights da Sessão</h3>
                         <div class="insights-list">
-                            <!-- Insights serão adicionados dinamicamente -->
                         </div>
                     </div>
                 </div>
 
-                <!-- Ações de Conclusão -->
                 <div class="completion-actions">
                     <button id="review-mistakes" class="btn btn-outline">
                         <i class="fas fa-redo"></i>
@@ -467,7 +426,6 @@
                     </a>
                 </div>
 
-                <!-- Próxima Sessão -->
                 <div class="next-session-info">
                     <p>Próxima revisão em: <strong id="next-review-time">2 horas</strong></p>
                     <button id="set-reminder" class="btn btn-text">
@@ -479,9 +437,6 @@
         </div>
     </main>
 
-    <!-- Modais -->
-    
-    <!-- Modal de Atalhos -->
     <dialog id="shortcuts-modal" class="modal" aria-labelledby="shortcuts-title">
         <div class="modal-content">
             <div class="modal-header">
@@ -529,7 +484,6 @@
         </div>
     </dialog>
 
-    <!-- Modal de Configurações -->
     <dialog id="settings-modal" class="modal" aria-labelledby="settings-title">
         <div class="modal-content">
             <div class="modal-header">
@@ -615,7 +569,6 @@
         </div>
     </dialog>
 
-    <!-- Modal de Notas -->
     <dialog id="notes-modal" class="modal" aria-labelledby="notes-title">
         <div class="modal-content">
             <div class="modal-header">
@@ -638,10 +591,8 @@
             </div>
         </div>
     </dialog>
-    <!-- Toast Container -->
     <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
@@ -649,4 +600,5 @@
     <script src="js/api.js"></script>
     <script src="js/study.js"></script>
 </body>
+
 </html>

@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Baralho - Recall</title>
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/header.css"> <link rel="stylesheet" href="css/deck.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/deck.css">
     <link rel="stylesheet" href="css/loading.css">
     <script src="js/loader.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/feather-icons"></script> </head>
+    <script src="https://unpkg.com/feather-icons"></script>
+</head>
+
 <body>
     <header class="app-header">
         <div class="header-container">
@@ -67,7 +71,7 @@
     </header>
 
     <main class="deck-main">
-         <section class="deck-hero">
+        <section class="deck-hero">
             <div class="hero-content">
                 <a href="dashboard.html" class="back-btn">
                     <i data-feather="arrow-left"></i>
@@ -175,13 +179,15 @@
 
                         <div id="text-input-area" class="input-area">
                             <label for="text-content" class="input-label">Cole seu texto abaixo</label>
-                            <textarea id="text-content" placeholder="Ex: Resumo do capítulo 3 sobre biologia celular..." rows="5"></textarea>
+                            <textarea id="text-content" placeholder="Ex: Resumo do capítulo 3 sobre biologia celular..."
+                                rows="5"></textarea>
                         </div>
                         <div id="file-input-area" class="input-area hidden">
                             <label for="file-content" class="file-drop-zone">
                                 <div class="drop-zone-content">
                                     <i data-feather="upload-cloud" class="drop-zone-icon"></i>
-                                    <p class="drop-zone-text">Arraste e solte um arquivo aqui ou clique para selecionar</p>
+                                    <p class="drop-zone-text">Arraste e solte um arquivo aqui ou clique para selecionar
+                                    </p>
                                     <p class="drop-zone-subtext">Formatos suportados: PDF, TXT, MD</p>
                                 </div>
                                 <input type="file" id="file-content" accept=".txt,.md,.pdf">
@@ -230,7 +236,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="js/notifications.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/header.js"></script> <script src="js/deck.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/deck.js"></script>
     <script>
         feather.replace();
     </script>
@@ -248,15 +255,18 @@
                     <input type="hidden" id="edit-card-id">
                     <div class="form-group">
                         <label for="edit-question" class="form-label">Pergunta</label>
-                        <textarea id="edit-question" name="question" rows="4" placeholder="Digite a pergunta..." required></textarea>
+                        <textarea id="edit-question" name="question" rows="4" placeholder="Digite a pergunta..."
+                            required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="edit-answer" class="form-label">Resposta</label>
-                        <textarea id="edit-answer" name="answer" rows="4" placeholder="Digite a resposta..." required></textarea>
+                        <textarea id="edit-answer" name="answer" rows="4" placeholder="Digite a resposta..."
+                            required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-close-modal="edit-flashcard-modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary"
+                        data-close-modal="edit-flashcard-modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                 </div>
             </form>
@@ -284,4 +294,5 @@
         </div>
     </div>
 </body>
+
 </html>
