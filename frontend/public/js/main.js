@@ -1,318 +1,412 @@
-let allDecks = [];
-let selectedDeckColor = '#4f46e5'; 
--
-document.addEventListener('DOMContentLoaded', initDashboard);
+/**
+ * Módulo DashboardApp
+ * Gerencia toda a interatividade e o estado da página do dashboard.
+ */
+const DashboardApp = {
+    // 1. STATE: Centraliza os dados dinâmicos da aplicação.
+    state: {
+        allDecks: [],
+        selectedDeckColor: '#4f46e5',
+        searchTimeout: null,
+    },
 
-async function initDashboard() {
-    await loadDecks();
-    setupEventListeners();
-    setupSearchAndFilter();
-}
+    // 2. ELEMENTS: Armazena referências aos elementos do DOM para acesso rápido.
+    elements: {
+        decksGrid: null,
+        emptyState: null,
+        totalDecks: null,
+        totalCards: null,
+        dueCards: null,
+        searchInput: null,
+        filterMenu: null,
+        createDeckModal: null,
+        editDeckModal: null,
+        createDeckForm: null,
+        editDeckForm: null,
+        deleteDeckBtn: null,
+        scrollToTopBtn: null,
+    },
 
-function setupEventListeners() {
-    document.getElementById('create-deck-btn').addEventListener('click', () => {
-        showModal(document.getElementById('create-deck-modal'));
-    });
+    /**
+     * Ponto de entrada da aplicação.
+     * É chamado quando o DOM está totalmente carregado.
+     */
+    init() {
+        // Aguarda o carregamento do DOM antes de inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            this.cacheElements();
+            this.registerEventListeners();
+            this.loadInitialData();
+        });
+    },
 
-    document.getElementById('create-deck-form').addEventListener('submit', handleCreateDeck);
-    document.getElementById('edit-deck-form').addEventListener('submit', handleEditDeck);
-    document.getElementById('delete-deck-btn').addEventListener('click', () => handleDeleteDeck());
+    /**
+     * Mapeia as referências dos elementos do DOM para o objeto 'elements'.
+     */
+    cacheElements() {
+        this.elements.decksGrid = document.getElementById('decks-grid');
+        this.elements.emptyState = document.getElementById('empty-state');
+        this.elements.totalDecks = document.getElementById('total-decks');
+        this.elements.totalCards = document.getElementById('total-cards');
+        this.elements.dueCards = document.getElementById('due-cards');
+        this.elements.searchInput = document.getElementById('deck-search');
+        this.elements.filterMenu = document.getElementById('filter-menu');
+        this.elements.createDeckModal = document.getElementById('create-deck-modal');
+        this.elements.editDeckModal = document.getElementById('edit-deck-modal');
+        this.elements.createDeckForm = document.getElementById('create-deck-form');
+        this.elements.editDeckForm = document.getElementById('edit-deck-form');
+        this.elements.deleteDeckBtn = document.getElementById('delete-deck-btn');
+        this.elements.scrollToTopBtn = document.getElementById('scroll-to-top');
+    },
 
-    const scrollToTopBtn = document.getElementById('scroll-to-top');
-    scrollToTopBtn.addEventListener('click', scrollToTop);
-    window.addEventListener('scroll', toggleScrollToTopButton);
+    /**
+     * Configura todos os listeners de eventos da página.
+     */
+    registerEventListeners() {
+        // Botões de ação principal
+        document.getElementById('create-deck-btn').addEventListener('click', () => this.utils.showModal(this.elements.createDeckModal));
+        this.elements.deleteDeckBtn.addEventListener('click', () => this.handlers.handleDeleteDeck());
 
-    document.querySelectorAll('.color-picker').forEach(picker => {
-        picker.addEventListener('click', (e) => {
-            const colorOption = e.target.closest('.color-option');
+        // Formulários
+        this.elements.createDeckForm.addEventListener('submit', (e) => this.handlers.handleCreateDeck(e));
+        this.elements.editDeckForm.addEventListener('submit', (e) => this.handlers.handleEditDeck(e));
+
+        // Busca e Filtro
+        this.elements.searchInput.addEventListener('input', () => this.handlers.handleSearch());
+        document.getElementById('filter-btn').addEventListener('click', this.handlers.toggleFilterMenu);
+        this.elements.filterMenu.addEventListener('click', (e) => this.handlers.handleFilterChange(e));
+        document.addEventListener('click', () => this.elements.filterMenu.classList.remove('visible'));
+
+        // Modais (fechar)
+        document.querySelectorAll('.close-modal-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const modal = e.target.closest('.modal-overlay');
+                if (modal) this.utils.hideModal(modal);
+            });
+        });
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) this.utils.hideModal(overlay);
+            });
+        });
+
+        // Seletores de cor
+        document.querySelectorAll('.color-picker').forEach(picker => {
+            picker.addEventListener('click', (e) => this.handlers.handleColorSelection(e));
+        });
+
+        // Botão de rolar para o topo
+        this.elements.scrollToTopBtn.addEventListener('click', this.utils.scrollToTop);
+        window.addEventListener('scroll', this.utils.toggleScrollToTopButton.bind(this));
+    },
+
+    /**
+     * Carrega os dados iniciais dos baralhos e renderiza na tela.
+     */
+    async loadInitialData() {
+        this.render.renderLoadingState();
+        try {
+            const decks = await fetchDecks(); // Função de 'api.js'
+            this.state.allDecks = decks || [];
+            this.render.filterAndRenderDecks();
+            this.render.updateDashboardStats();
+        } catch (error) {
+            console.error("Falha ao carregar os baralhos:", error);
+            showToast("Não foi possível carregar seus baralhos.", "error"); // Função de 'notifications.js'
+            this.render.renderErrorState();
+        }
+    },
+
+    // 3. HANDLERS: Funções que processam as interações do usuário.
+    handlers: {
+        async handleCreateDeck(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            const title = form.querySelector('#deck-title').value.trim();
+            const description = form.querySelector('#deck-description').value.trim();
+
+            if (!title) {
+                return showToast('O título é obrigatório.', 'error');
+            }
+
+            DashboardApp.utils.setButtonLoading(submitButton, 'Criando...');
+            try {
+                const newDeck = await createDeck(title, description, DashboardApp.state.selectedDeckColor);
+                if (newDeck) {
+                    showToast('Baralho criado com sucesso!', 'success');
+                    DashboardApp.utils.hideModal(DashboardApp.elements.createDeckModal);
+                    form.reset();
+                    await DashboardApp.loadInitialData();
+                }
+            } catch (error) {
+                console.error("Erro ao criar baralho:", error);
+                showToast("Falha ao criar o baralho.", "error");
+            } finally {
+                DashboardApp.utils.setButtonIdle(submitButton, 'Criar Baralho');
+            }
+        },
+
+        async handleEditDeck(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            const deckId = form.querySelector('#edit-deck-id').value;
+            const title = form.querySelector('#edit-deck-title').value.trim();
+            const description = form.querySelector('#edit-deck-description').value.trim();
+
+            if (!title) {
+                return showToast('O título é obrigatório.', 'error');
+            }
+
+            DashboardApp.utils.setButtonLoading(submitButton, 'Salvando...');
+            try {
+                const updatedDeck = await updateDeck(deckId, title, description, DashboardApp.state.selectedDeckColor);
+                if (updatedDeck) {
+                    showToast('Baralho atualizado!', 'success');
+                    DashboardApp.utils.hideModal(DashboardApp.elements.editDeckModal);
+                    await DashboardApp.loadInitialData();
+                }
+            } catch (error) {
+                console.error("Erro ao editar baralho:", error);
+                showToast("Falha ao atualizar o baralho.", "error");
+            } finally {
+                DashboardApp.utils.setButtonIdle(submitButton, 'Salvar Alterações');
+            }
+        },
+
+        async handleDeleteDeck() {
+            const deckId = DashboardApp.elements.editDeckForm.querySelector('#edit-deck-id').value;
+            if (confirm('Tem certeza que deseja excluir este baralho? Esta ação não pode ser desfeita.')) {
+                try {
+                    await deleteDeck(deckId);
+                    showToast('Baralho excluído.', 'success');
+                    DashboardApp.utils.hideModal(DashboardApp.elements.editDeckModal);
+                    await DashboardApp.loadInitialData();
+                } catch (error) {
+                    console.error("Erro ao excluir baralho:", error);
+                    showToast("Falha ao excluir o baralho.", "error");
+                }
+            }
+        },
+
+        handleSearch() {
+            clearTimeout(DashboardApp.state.searchTimeout);
+            DashboardApp.state.searchTimeout = setTimeout(() => {
+                DashboardApp.render.filterAndRenderDecks();
+            }, 300); // Debounce de 300ms
+        },
+
+        toggleFilterMenu(event) {
+            event.stopPropagation();
+            DashboardApp.elements.filterMenu.classList.toggle('visible');
+        },
+
+        handleFilterChange(event) {
+            event.preventDefault();
+            const filterType = event.target.dataset.filter;
+            if (filterType) {
+                DashboardApp.elements.filterMenu.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('active'));
+                event.target.classList.add('active');
+                DashboardApp.render.filterAndRenderDecks();
+                DashboardApp.elements.filterMenu.classList.remove('visible');
+            }
+        },
+
+        handleColorSelection(event) {
+            const colorOption = event.target.closest('.color-option');
             if (colorOption) {
+                const picker = colorOption.parentElement;
                 picker.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
                 colorOption.classList.add('selected');
-                selectedDeckColor = colorOption.dataset.color;
+                DashboardApp.state.selectedDeckColor = colorOption.dataset.color;
             }
-        });
-    });
+        },
+    },
 
-    document.querySelectorAll('.close-modal-btn, [data-close-modal]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const modal = e.target.closest('.modal-overlay');
-            if (modal) hideModal(modal);
-        });
-    });
+    // 4. RENDER: Funções responsáveis por manipular o DOM e exibir os dados.
+    render: {
+        filterAndRenderDecks() {
+            const searchTerm = DashboardApp.elements.searchInput.value.toLowerCase().trim();
+            const activeFilter = document.querySelector('#filter-menu .dropdown-item.active')?.dataset.filter || 'all';
 
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        overlay.addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) hideModal(overlay);
-        });
-    });
-}
+            let decksToRender = [...DashboardApp.state.allDecks];
 
-function setupSearchAndFilter() {
-    const searchInput = document.getElementById('deck-search');
-    let searchTimeout;
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(filterAndRenderDecks, 300);
-    });
+            if (searchTerm) {
+                decksToRender = decksToRender.filter(deck =>
+                    deck.title.toLowerCase().includes(searchTerm) ||
+                    (deck.description && deck.description.toLowerCase().includes(searchTerm))
+                );
+            }
 
-    const filterBtn = document.getElementById('filter-btn');
-    const filterMenu = document.getElementById('filter-menu');
-    filterBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        filterMenu.classList.toggle('visible');
-    });
+            if (activeFilter === 'recent') {
+                decksToRender.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            } else if (activeFilter === 'oldest') {
+                decksToRender.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            }
 
-    filterMenu.addEventListener('click', (e) => {
-        e.preventDefault();
-        const filterType = e.target.dataset.filter;
-        if (filterType) {
-            filterMenu.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('active'));
-            e.target.classList.add('active');
-            filterAndRenderDecks();
-            filterMenu.classList.remove('visible');
+            this.renderDecks(decksToRender);
+        },
+
+        renderDecks(decks) {
+            this.clearDecksGrid();
+            if (!decks || decks.length === 0) {
+                DashboardApp.elements.emptyState.classList.remove('hidden');
+                DashboardApp.elements.emptyState.querySelector('button').onclick = () => DashboardApp.utils.showModal(DashboardApp.elements.createDeckModal);
+            } else {
+                DashboardApp.elements.emptyState.classList.add('hidden');
+                decks.forEach((deck, index) => {
+                    DashboardApp.elements.decksGrid.appendChild(this.createSingleDeckElement(deck, index));
+                });
+                DashboardApp.elements.decksGrid.appendChild(this.createAddNewDeckElement());
+            }
+        },
+        
+        createSingleDeckElement(deck, index) {
+            const card = document.createElement('div');
+            card.className = 'deck-card';
+            card.style.animationDelay = `${index * 50}ms`;
+
+            const deckColor = deck.color || '#4f46e5';
+            const safeTitle = DashboardApp.utils.escapeHtml(deck.title);
+            const safeDescription = deck.description ? DashboardApp.utils.escapeHtml(deck.description) : 'Sem descrição';
+
+            card.innerHTML = `
+                <div class="deck-card-header" style="border-left-color: ${deckColor};">
+                    <h3>${safeTitle}</h3>
+                    <button class="deck-options-btn" aria-label="Opções do baralho">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+                <div class="deck-card-body">
+                    <p>${safeDescription}</p>
+                </div>
+                <div class="deck-card-footer">
+                    <span>${deck.card_count || 0} cards</span>
+                    <a href="deck.html?id=${deck.id}" class="btn btn-primary-static">Estudar</a>
+                </div>
+            `;
+
+            card.querySelector('.deck-options-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                DashboardApp.utils.openEditDeckModal(deck);
+            });
+            
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('.deck-options-btn, a')) {
+                    window.location.href = `deck.html?id=${deck.id}`;
+                }
+            });
+
+            return card;
+        },
+
+        createAddNewDeckElement() {
+            const card = document.createElement('div');
+            card.className = 'deck-card create-new';
+            card.innerHTML = `
+                <div class="deck-card-inner">
+                    <div class="create-icon"><i class="fas fa-plus"></i></div>
+                    <h3>Criar Novo Baralho</h3>
+                </div>
+            `;
+            card.addEventListener('click', () => DashboardApp.utils.showModal(DashboardApp.elements.createDeckModal));
+            return card;
+        },
+
+        updateDashboardStats() {
+            const totalDecks = DashboardApp.state.allDecks.length;
+            const totalCards = DashboardApp.state.allDecks.reduce((sum, deck) => sum + (deck.card_count || 0), 0);
+            
+            DashboardApp.elements.totalDecks.textContent = totalDecks;
+            DashboardApp.elements.totalCards.textContent = totalCards;
+            DashboardApp.elements.dueCards.textContent = '0'; // Placeholder, ajustar se houver lógica para isso
+        },
+        
+        renderLoadingState() {
+            this.clearDecksGrid();
+            DashboardApp.elements.emptyState.classList.add('hidden');
+            const skeletonHTML = '<div class="skeleton-deck"></div>'.repeat(3);
+            DashboardApp.elements.decksGrid.innerHTML = skeletonHTML;
+        },
+        
+        renderErrorState() {
+            this.clearDecksGrid();
+            DashboardApp.elements.decksGrid.innerHTML = `
+                <div class="empty-state">
+                    <h3>Oops! Algo deu errado.</h3>
+                    <p>Não foi possível carregar seus baralhos. Por favor, tente recarregar a página.</p>
+                </div>
+            `;
+        },
+
+        clearDecksGrid() {
+            DashboardApp.elements.decksGrid.innerHTML = '';
         }
-    });
+    },
 
-    document.addEventListener('click', () => {
-        filterMenu.classList.remove('visible');
-    });
-}
+    // 5. UTILS: Funções de ajuda e utilitários.
+    utils: {
+        showModal(modal) {
+            if (!modal) return;
+            modal.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        },
 
+        hideModal(modal) {
+            if (!modal) return;
+            modal.classList.remove('visible');
+            document.body.style.overflow = '';
+        },
+        
+        openEditDeckModal(deck) {
+            const modal = DashboardApp.elements.editDeckModal;
+            modal.querySelector('#edit-deck-id').value = deck.id;
+            modal.querySelector('#edit-deck-title').value = deck.title;
+            modal.querySelector('#edit-deck-description').value = deck.description || '';
 
-function showModal(modal) {
-    if (!modal) return;
-    modal.classList.add('visible');
-    document.body.style.overflow = 'hidden';
-}
+            const colorToSelect = deck.color || '#4f46e5';
+            const picker = modal.querySelector('.color-picker');
+            picker.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+            picker.querySelector(`.color-option[data-color="${colorToSelect}"]`)?.classList.add('selected');
+            DashboardApp.state.selectedDeckColor = colorToSelect;
+            
+            this.showModal(modal);
+        },
 
-function hideModal(modal) {
-    if (!modal) return;
-    modal.classList.remove('visible');
-    document.body.style.overflow = '';
-}
+        setButtonLoading(button, text = 'Aguarde...') {
+            button.disabled = true;
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
+        },
 
-function filterAndRenderDecks() {
-    const searchTerm = document.getElementById('deck-search').value.toLowerCase().trim();
-    const activeFilter = document.querySelector('#filter-menu .dropdown-item.active')?.dataset.filter || 'all';
+        setButtonIdle(button, text) {
+            button.disabled = false;
+            button.innerHTML = text;
+        },
 
-    let decksToRender = [...allDecks];
+        escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        },
+        
+        toggleScrollToTopButton() {
+            const btn = DashboardApp.elements.scrollToTopBtn;
+            if (window.scrollY > 300) {
+                btn.style.opacity = '1';
+                btn.style.visibility = 'visible';
+            } else {
+                btn.style.opacity = '0';
+                btn.style.visibility = 'hidden';
+            }
+        },
 
-    if (searchTerm) {
-        decksToRender = decksToRender.filter(deck =>
-            deck.title.toLowerCase().includes(searchTerm) ||
-            (deck.description && deck.description.toLowerCase().includes(searchTerm))
-        );
-    }
-
-    if (activeFilter === 'recent') {
-        decksToRender.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    } else if (activeFilter === 'oldest') {
-        decksToRender.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-    }
-
-    renderDecks(decksToRender);
-}
-
-function toggleScrollToTopButton() {
-    const btn = document.getElementById('scroll-to-top');
-    if (window.scrollY > 300) {
-        btn.style.opacity = '1';
-        btn.style.visibility = 'visible';
-    } else {
-        btn.style.opacity = '0';
-        btn.style.visibility = 'hidden';
-    }
-}
-
-function scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-async function loadDecks() {
-    const decksContainer = document.getElementById('decks-grid');
-    const emptyStateContainer = document.getElementById('empty-state');
-    
-    emptyStateContainer.classList.add('hidden');
-    decksContainer.innerHTML = `
-        <div class="skeleton-deck"></div>
-        <div class="skeleton-deck"></div>
-        <div class="skeleton-deck"></div>
-    `;
-
-    const decks = await fetchDecks(); 
-    allDecks = decks || [];
-
-    renderDecks(allDecks);
-    updateDashboardStats();
-}
-
-function renderDecks(decks) {
-    const decksContainer = document.getElementById('decks-grid');
-    const emptyStateContainer = document.getElementById('empty-state');
-
-    decksContainer.innerHTML = '';
-
-    if (!decks || decks.length === 0) {
-        emptyStateContainer.classList.remove('hidden');
-        emptyStateContainer.querySelector('button').addEventListener('click', () => {
-            showModal(document.getElementById('create-deck-modal'));
-        });
-    } else {
-        emptyStateContainer.classList.add('hidden');
-        decks.forEach((deck, index) => {
-            decksContainer.appendChild(renderSingleDeck(deck, index));
-        });
-        decksContainer.appendChild(createNewDeckCard());
-    }
-}
-
-function renderSingleDeck(deck, index) {
-    const card = document.createElement('div');
-    card.className = 'deck-card';
-    card.style.animationDelay = `${index * 50}ms`;
-
-    const deckColor = deck.color || '#4f46e5';
-
-    card.innerHTML = `
-        <div class="deck-card-header" style="border-left-color: ${deckColor};">
-            <h3>${escapeHtml(deck.title)}</h3>
-            <button class="deck-options-btn" aria-label="Opções do baralho">
-                <i class="fas fa-ellipsis-v"></i>
-            </button>
-        </div>
-        <div class="deck-card-body">
-            <p>${deck.description ? escapeHtml(deck.description) : 'Sem descrição'}</p>
-        </div>
-        <div class="deck-card-footer">
-            <span>${deck.card_count || 0} cards</span>
-            <a href="deck.html?id=${deck.id}" class="btn btn-primary-static">Estudar</a>
-        </div>
-    `;
-
-    card.querySelector('.deck-options-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        openEditDeckModal(deck);
-    });
-    
-    card.addEventListener('click', (e) => {
-        if (!e.target.closest('.deck-options-btn')) {
-            window.location.href = `deck.html?id=${deck.id}`;
-        }
-    });
-
-    return card;
-}
-
-function createNewDeckCard() {
-    const card = document.createElement('div');
-    card.className = 'deck-card create-new';
-    card.innerHTML = `
-        <div class="deck-card-inner">
-            <div class="create-icon"><i class="fas fa-plus"></i></div>
-            <h3>Criar Novo Baralho</h3>
-        </div>
-    `;
-    card.addEventListener('click', () => {
-        showModal(document.getElementById('create-deck-modal'));
-    });
-    return card;
-}
-
-function updateDashboardStats() {
-    const totalDecks = allDecks.length;
-    const totalCards = allDecks.reduce((sum, deck) => sum + (deck.card_count || 0), 0);
-    
-    document.getElementById('total-decks').textContent = totalDecks;
-    document.getElementById('total-cards').textContent = totalCards;
-    document.getElementById('due-cards').textContent = '0'; 
-}
-
-async function handleCreateDeck(e) {
-    e.preventDefault();
-    const form = e.target;
-    const submitButton = form.querySelector('button[type="submit"]');
-    const title = form.querySelector('#deck-title').value.trim();
-    const description = form.querySelector('#deck-description').value.trim();
-
-    if (!title) return showToast('O título é obrigatório.', 'error');
-
-    setButtonLoading(submitButton, 'Criando...');
-    try {
-        const result = await createDeck(title, description, selectedDeckColor);
-        if (result) {
-            showToast('Baralho criado com sucesso!', 'success');
-            hideModal(document.getElementById('create-deck-modal'));
-            form.reset();
-            await loadDecks();
-        }
-    } finally {
-        setButtonIdle(submitButton, 'Criar Baralho');
-    }
-}
-
-async function handleEditDeck(e) {
-    e.preventDefault();
-    const form = e.target;
-    const submitButton = form.querySelector('button[type="submit"]');
-    const deckId = form.querySelector('#edit-deck-id').value;
-    const title = form.querySelector('#edit-deck-title').value.trim();
-    const description = form.querySelector('#edit-deck-description').value.trim();
-
-    if (!title) return showToast('O título é obrigatório.', 'error');
-
-    setButtonLoading(submitButton, 'Salvando...');
-    try {
-        const result = await updateDeck(deckId, title, description, selectedDeckColor);
-        if (result) {
-            showToast('Baralho atualizado!', 'success');
-            hideModal(document.getElementById('edit-deck-modal'));
-            await loadDecks();
-        }
-    } finally {
-        setButtonIdle(submitButton, 'Salvar Alterações');
-    }
-}
-
-async function handleDeleteDeck() {
-    const deckId = document.getElementById('edit-deck-id').value;
-    if (confirm(`Tem certeza que deseja excluir este baralho?`)) {
-        const result = await deleteDeck(deckId);
-        if (result) {
-            showToast('Baralho excluído.', 'success');
-            hideModal(document.getElementById('edit-deck-modal'));
-            await loadDecks();
+        scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
-}
+};
 
-function openEditDeckModal(deck) {
-    const modal = document.getElementById('edit-deck-modal');
-    modal.querySelector('#edit-deck-id').value = deck.id;
-    modal.querySelector('#edit-deck-title').value = deck.title;
-    modal.querySelector('#edit-deck-description').value = deck.description || '';
-
-    const colorToSelect = deck.color || '#4f46e5';
-    const picker = modal.querySelector('.color-picker');
-    picker.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
-    picker.querySelector(`.color-option[data-color="${colorToSelect}"]`)?.classList.add('selected');
-    selectedDeckColor = colorToSelect;
-    
-    showModal(modal);
-}
-
-function setButtonLoading(button, text = 'Aguarde...') {
-    button.disabled = true;
-    button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
-}
-
-function setButtonIdle(button, text) {
-    button.disabled = false;
-    button.innerHTML = text;
-}
-
-function escapeHtml(str) {
-    if (str === null || str === undefined) return '';
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-}
+// Inicia a aplicação.
+DashboardApp.init();

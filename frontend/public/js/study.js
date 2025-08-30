@@ -391,30 +391,30 @@ class StudySessionPro {
         }
     }
 
-
     render() {
-    const card = this.getCurrentCard();
-    if (!card) return;
+        const card = this.getCurrentCard();
+        if (!card) return;
 
-    // Reset card state when rendering a new card
-    this.dom.flipCard.classList.remove('is-flipped');
-    this.state.isFlipped = false;
-    
-    this.renderCard(card);
-    this.updateProgress();
-    this.updateStats();
-    this.updateNavigation();
-    this.updateIndicators();
+        this.renderCard(card);
+        this.updateProgress();
+        this.updateStats();
+        this.updateNavigation();
+        this.updateIndicators();
 
-    if (this.state.userPreferences.showPreviews) {
-        this.renderPreviews();
+        if (this.state.userPreferences.showPreviews) {
+            this.renderPreviews();
+        }
     }
-}
 
     renderCard(card) {
-        this.dom.flipCard.classList.remove('is-flipped');
+        // Importante: Resetar o estado do card ANTES de fazer qualquer outra coisa
         this.state.isFlipped = false;
+        this.state.isTransitioning = false;
+        
+        // Remover classe de flip
+        this.dom.flipCard.classList.remove('is-flipped');
 
+        // Atualizar conteúdo
         this.dom.cardQuestion.textContent = card.question;
         this.dom.cardAnswer.textContent = card.answer;
 
@@ -424,6 +424,8 @@ class StudySessionPro {
         if (card.hint) {
             this.dom.hintSection.classList.remove('hidden');
             this.dom.hintContent.textContent = card.hint;
+            this.dom.hintContent.classList.add('hidden');
+            document.getElementById('show-hint').innerHTML = '<i class="fas fa-lightbulb"></i> Mostrar dica';
         } else {
             this.dom.hintSection.classList.add('hidden');
         }
@@ -437,6 +439,7 @@ class StudySessionPro {
 
         this.updateActionButtons(card);
 
+        // Resetar botões
         this.dom.flipBtn.classList.remove('hidden');
         this.dom.qualityButtons.classList.add('hidden');
 
@@ -512,6 +515,7 @@ class StudySessionPro {
     }
 
     flipCard() {
+        // Verificar se pode virar o card
         if (this.state.isTransitioning) return;
         if (this.state.isFlipped) return;
 
@@ -526,6 +530,7 @@ class StudySessionPro {
             navigator.vibrate(50);
         }
 
+        // Trocar os botões após a animação
         setTimeout(() => {
             this.dom.flipBtn.classList.add('hidden');
             this.dom.qualityButtons.classList.remove('hidden');
@@ -535,68 +540,65 @@ class StudySessionPro {
     }
 
     navigateCard(direction) {
-    if (this.state.isTransitioning) return;
+        if (this.state.isTransitioning) return;
 
-    const newIndex = direction === 'prev' ?
-        this.state.currentIndex - 1 :
-        this.state.currentIndex + 1;
+        const newIndex = direction === 'prev' ?
+            this.state.currentIndex - 1 :
+            this.state.currentIndex + 1;
 
-    if (newIndex < 0 || newIndex >= this.state.cards.length) return;
+        if (newIndex < 0 || newIndex >= this.state.cards.length) return;
 
-    this.state.isTransitioning = true;
+        this.state.isTransitioning = true;
 
-    const currentCard = this.getCurrentCard();
-    if (currentCard) {
-        currentCard.timeSpent += Date.now() - currentCard.startTime;
+        const currentCard = this.getCurrentCard();
+        if (currentCard) {
+            currentCard.timeSpent += Date.now() - currentCard.startTime;
+        }
+
+        this.animateCardExit(direction);
+
+        setTimeout(() => {
+            this.state.currentIndex = newIndex;
+            // Importante: resetar o estado antes de renderizar
+            this.state.isFlipped = false;
+            this.state.isTransitioning = false;
+            this.render();
+        }, CONFIG.ANIMATION_DURATION);
     }
-
-    this.animateCardExit(direction);
-
-    setTimeout(() => {
-        this.state.currentIndex = newIndex;
-        // Reset flip state when navigating to a new card
-        this.state.isFlipped = false; // ← Adicione esta linha
-        this.render();
-        this.state.isTransitioning = false;
-    }, CONFIG.ANIMATION_DURATION);
-}
 
     async submitAnswer(quality) {
-    if (this.state.isTransitioning) return;
-
-    const card = this.getCurrentCard();
-    if (!card) return;
-
-    this.state.isTransitioning = true;
-
-    card.lastQuality = quality;
-    card.attempts++;
-    card.studied = true;
-    card.timeSpent += Date.now() - card.startTime;
-
-    this.updateStatsForAnswer(quality);
-
-    try {
-        submitReview(card.id, quality);
-    } catch (error) {
-        console.error('Erro ao enviar revisão:', error);
+        if (this.state.isTransitioning) return;
+    
+        const card = this.getCurrentCard();
+        if (!card) return;
+    
+        // Marcar como em transição
+        this.state.isTransitioning = true;
+        
+        card.lastQuality = quality;
+        card.attempts++;
+        card.studied = true;
+        card.timeSpent += Date.now() - card.startTime;
+    
+        this.updateStatsForAnswer(quality);
+    
+        // Mostrar feedback
+        await this.showFeedback(quality);
+    
+        // Enviar revisão ao servidor
+        try {
+            await submitReview(card.id, quality);
+        } catch (error) {
+            console.error('Erro ao enviar revisão:', error);
+        }
+    
+        this.checkAchievements();
+    
+        // Aguardar um pouco para o feedback ser visto
+        setTimeout(() => {
+            this.autoAdvance();
+        }, 100);
     }
-    this.checkAchievements();
-
-    await this.showFeedback(quality);
-
-    // Reset flip state for the next card
-    this.state.isFlipped = false; // ← Adicione esta linha
-
-    if (this.state.currentIndex < this.state.cards.length - 1) {
-        this.state.currentIndex++;
-        this.render();
-        this.state.isTransitioning = false;
-    } else {
-        this.completeSession();
-        this.state.isTransitioning = false;
-    }
-}
 
     updateStatsForAnswer(quality) {
         if (quality === 1) {
@@ -683,12 +685,24 @@ class StudySessionPro {
 
     autoAdvance() {
         if (this.state.currentIndex < this.state.cards.length - 1) {
-            this.navigateCard('next');
+            // Avançar para o próximo card
+            this.state.currentIndex++;
+            
+            // Resetar estados
+            this.state.isFlipped = false;
+            this.state.isTransitioning = false;
+            
+            // Renderizar novo card
+            this.render();
+            
+            // Precarregar próximos cards
+            this.preloadNextCards();
         } else {
+            // Sessão completa
+            this.state.isTransitioning = false;
             this.completeSession();
         }
     }
-
 
     toggleBookmark() {
         const card = this.getCurrentCard();
@@ -698,7 +712,6 @@ class StudySessionPro {
         this.updateActionButtons(card);
 
         this.showQuickFeedback(card.bookmarked ? 'Marcado!' : 'Desmarcado');
-
     }
 
     toggleFlag() {
@@ -986,7 +999,6 @@ class StudySessionPro {
         }, 3000);
     }
 
-
     completeSession() {
         this.state.sessionActive = false;
         clearInterval(this.timerInterval);
@@ -1022,7 +1034,6 @@ class StudySessionPro {
 
     showCompletionScreen(data) {
         this.dom.studyContainer.classList.add('hidden');
-
         this.dom.completionContainer.classList.remove('hidden');
 
         document.getElementById('final-time').textContent = this.formatTime(data.duration);
@@ -1151,6 +1162,24 @@ class StudySessionPro {
         }
     }
 
+    celebrateSuccess() {
+        const confettiContainer = document.querySelector('.confetti-container');
+        if (!confettiContainer) return;
+
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#a855f7'][Math.floor(Math.random() * 5)];
+            confetti.style.animationDelay = Math.random() * 3 + 's';
+            confettiContainer.appendChild(confetti);
+        }
+
+        setTimeout(() => {
+            confettiContainer.innerHTML = '';
+        }, 5000);
+    }
+
     reviewMistakes() {
         const mistakes = this.state.cards.filter(card => card.lastQuality === 1);
 
@@ -1162,6 +1191,8 @@ class StudySessionPro {
         this.state.cards = mistakes;
         this.state.currentIndex = 0;
         this.state.sessionActive = true;
+        this.state.isFlipped = false;
+        this.state.isTransitioning = false;
         this.resetStats();
 
         this.dom.completionContainer.classList.add('hidden');
@@ -1182,6 +1213,8 @@ class StudySessionPro {
 
         this.resetStats();
         this.state.sessionActive = true;
+        this.state.isFlipped = false;
+        this.state.isTransitioning = false;
 
         this.dom.completionContainer.classList.add('hidden');
         this.dom.studyContainer.classList.remove('hidden');
@@ -1204,7 +1237,6 @@ class StudySessionPro {
         this.state.startTime = Date.now();
     }
 
-
     getCurrentCard() {
         return this.state.cards[this.state.currentIndex];
     }
@@ -1223,6 +1255,9 @@ class StudySessionPro {
         this.dom.wrongCount.textContent = this.state.stats.wrong;
     }
 
+    updateStats() {
+        this.dom.streakCount.textContent = this.state.stats.streak;
+    }
 
     updateNavigation() {
         this.dom.prevCard.disabled = this.state.currentIndex === 0;
@@ -1252,6 +1287,8 @@ class StudySessionPro {
 
             dot.addEventListener('click', () => {
                 this.state.currentIndex = i;
+                this.state.isFlipped = false;
+                this.state.isTransitioning = false;
                 this.render();
             });
 
@@ -1361,7 +1398,6 @@ class StudySessionPro {
         document.getElementById('review-order').value = prefs.reviewOrder;
     }
 
-
     analytics = {
         sessionStart: () => {
             console.log('Sessão iniciada');
@@ -1376,12 +1412,9 @@ class StudySessionPro {
         }
     };
 
-
     handleError(error) {
         console.error('Erro na sessão:', error);
-
         this.showError('Ocorreu um erro. Por favor, recarregue a página.');
-
     }
 
     showError(message) {
@@ -1425,7 +1458,6 @@ class StudySessionPro {
         this.dom.studyContainer.classList.remove('hidden');
     }
 
-
     truncateText(text, maxLength) {
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength) + '...';
@@ -1446,16 +1478,15 @@ class StudySessionPro {
     }
 
     handleSpacebar() {
-        if (!this.state.isFlipped) {
+        // Se o card não está virado, vira ele
+        // Se já está virado, não faz nada (os botões de qualidade devem ser usados)
+        if (!this.state.isFlipped && !this.state.isTransitioning) {
             this.flipCard();
-        } else if (this.state.currentIndex < this.state.cards.length - 1) {
-            // This part is likely not needed if autoAdvance is working correctly
-            // but we can leave it as a fallback.
-            // this.navigateCard('next');
         }
     }
 
     quickAnswer(quality) {
+        // Só permite resposta rápida se o card está virado e os botões estão visíveis
         if (this.state.isFlipped && !this.dom.qualityButtons.classList.contains('hidden')) {
             this.submitAnswer(quality);
         }
@@ -1500,6 +1531,7 @@ class StudySessionPro {
     }
 }
 
+// Inicialização
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const deckId = params.get('deckId');
@@ -1515,6 +1547,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.studySession = new StudySessionPro(deckId);
 });
 
+// Estilos de animação
 const animationStyles = `
 @keyframes cardEntry {
     from {
@@ -1550,6 +1583,41 @@ const animationStyles = `
         transform: translateY(100vh) rotateZ(720deg);
         opacity: 0;
     }
+}
+
+.achievement-popup {
+    position: fixed;
+    top: 20px;
+    right: -350px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 10000;
+    transition: right 0.3s ease-out;
+}
+
+.achievement-popup.show {
+    right: 20px;
+}
+
+.achievement-icon {
+    font-size: 2rem;
+}
+
+.achievement-content h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.1rem;
+}
+
+.achievement-content p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
 }
 `;
 
