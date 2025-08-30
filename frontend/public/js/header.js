@@ -120,8 +120,8 @@ class HeaderComponent {
         }
         
         .user-stat .tooltip-text {
-            visibility: hidden; width: 120px; background-color: var(--color-dark-900); color: #fff; text-align: center;
-            border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; bottom: 125%; left: 50%;
+            visibility: hidden; width: 120px; background-color: var(--color-dark-900); color: #fff !important; text-align: center; /* <--- LINHA CORRIGIDA */
+            border-radius: 6px; padding: 5px 0; position: absolute; z-index: 1; top: calc(100% + 8px); left: 50%;
             margin-left: -60px; opacity: 0; transition: opacity 0.3s;
         }
 
@@ -319,7 +319,7 @@ class HeaderComponent {
         </div>
         `;
     }
-    
+
     _setButtonLoading(button, text = 'Aguarde...') {
         if (!button) return;
         button.disabled = true;
@@ -342,20 +342,20 @@ class HeaderComponent {
         const style = document.createElement('style');
         style.textContent = this.getCSS();
         document.head.appendChild(style);
-        
+
         if (!document.querySelector('link[href*="font-awesome"]')) {
             const fontAwesome = document.createElement('link');
             fontAwesome.rel = 'stylesheet';
             fontAwesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
             document.head.appendChild(fontAwesome);
         }
-        
+
         document.body.insertAdjacentHTML('afterbegin', this.getHTML());
 
         // --- Lógica Geral ---
         const loadUserProfile = async () => {
             try {
-                const profile = await fetchProfile(); 
+                const profile = await fetchProfile();
                 const { data: { user } } = await _supabase.auth.getUser();
 
                 if (profile) {
@@ -373,7 +373,7 @@ class HeaderComponent {
                 }
             } catch (error) { console.error("Erro ao carregar perfil:", error); }
         };
-        
+
         // --- Lógica do Dropdown do Usuário ---
         const userMenuButton = document.getElementById('user-menu-button');
         const userDropdown = document.getElementById('user-dropdown');
@@ -406,7 +406,7 @@ class HeaderComponent {
         document.querySelectorAll('.close-modal-btn').forEach(btn => {
             btn.addEventListener('click', () => hideModal(document.getElementById(btn.dataset.modalId)));
         });
-        
+
         // --- Lógica do Formulário de Perfil ---
         const profileForm = document.getElementById('profile-form');
         profileForm?.addEventListener('submit', async (e) => {
@@ -420,7 +420,7 @@ class HeaderComponent {
                 if (password.length < 6) { return showToast('A nova senha deve ter no mínimo 6 caracteres.', 'error'); }
                 dataToUpdate.password = password;
             }
-            
+
             this._setButtonLoading(submitButton, 'Salvando...');
             const result = await updateProfile(dataToUpdate);
             this._setButtonIdle(submitButton, 'Salvar Alterações');
@@ -432,7 +432,7 @@ class HeaderComponent {
                 await loadUserProfile();
             }
         });
-        
+
         // --- Lógica do Toggle de Senha ---
         document.querySelector('.password-toggle-icon')?.addEventListener('click', e => {
             const icon = e.currentTarget.querySelector('i');
@@ -447,7 +447,7 @@ class HeaderComponent {
                 icon.classList.add('fa-eye');
             }
         });
-        
+
         // --- Lógica de Configurações ---
         document.querySelectorAll('.theme-option').forEach(button => {
             button.addEventListener('click', () => {
@@ -464,7 +464,7 @@ class HeaderComponent {
         if (window.location.pathname.endsWith('progress.html')) {
             document.querySelector('.nav-link[href="progress.html"]')?.classList.add('active');
         }
-        
+
         loadUserProfile();
     }
 
