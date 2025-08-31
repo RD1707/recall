@@ -6,12 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const authForm = document.getElementById('auth-form');
     const resetPasswordForm = document.getElementById('reset-password-form');
     const updatePasswordForm = document.getElementById('update-password-form');
+    const googleLoginButton = document.getElementById('google-login-button');
 
     const toggleFormLink = document.getElementById('toggle-form-link');
     const forgotPasswordLink = document.getElementById('forgot-password-link');
     const backToLoginLinks = document.querySelectorAll('.back-to-login');
     const logoutButton = document.getElementById('logout-button');
-
+    
     // Elementos da UI
     const formTitle = document.getElementById('form-title');
     const formSubtitle = document.getElementById('form-subtitle');
@@ -181,6 +182,24 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
                 updateButton.disabled = false;
                 updateButton.textContent = 'Salvar Nova Senha';
+            }
+        });
+    }
+
+     if (googleLoginButton) {
+        googleLoginButton.addEventListener('click', async () => {
+            try {
+                const { error } = await _supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                });
+
+                if (error) {
+                    showToast(error.message, 'error');
+                }
+                // O redirecionamento para o dashboard será tratado pelo routeGuard
+                // na página seguinte após o login bem-sucedido.
+            } catch (error) {
+                showToast('Ocorreu um erro inesperado ao tentar logar com o Google.', 'error');
             }
         });
     }
