@@ -28,14 +28,19 @@
                     <p id="deck-description-paragraph" class="deck-description"></p>
                 </div>
                 <div class="deck-actions">
+                    <!-- Botão principal maior e mais proeminente -->
+                    <a href="#" id="study-deck-button" class="btn btn-primary btn-large btn-icon">
+                        <i data-feather="play-circle"></i>
+                        <span>
+                            <strong>Estudar Agora</strong>
+                            <small class="btn-subtitle">Começar sessão de estudo</small>
+                        </span>
+                    </a>
+                    <!-- Botão secundário menor -->
                     <button id="share-deck-button" class="btn btn-secondary btn-icon">
                         <i data-feather="share-2"></i>
                         Compartilhar
                     </button>
-                    <a href="#" id="study-deck-button" class="btn btn-primary btn-icon">
-                        <i data-feather="play"></i>
-                        Estudar Agora
-                    </a>
                 </div>
             </div>
         </section>
@@ -105,81 +110,147 @@
                             <i data-feather="cpu" class="generator-icon"></i>
                             <h2>Gerar com IA</h2>
                         </div>
-                        <p class="generator-subtitle">Crie flashcards automaticamente a partir de conteúdo</p>
+                        <p class="generator-subtitle">Crie flashcards automaticamente</p>
                     </div>
+                    
                     <form id="generate-cards-form" class="generator-form">
-                        <div class="input-mode-selector">
-                            <button type="button" class="input-mode-btn active" data-mode="text" title="Colar Texto">
+                        <!-- Sistema de abas simplificado -->
+                        <div class="input-tabs">
+                            <button type="button" class="input-tab active" data-tab="text">
                                 <i data-feather="type"></i>
-                                <span>Texto</span>
+                                Texto
                             </button>
-                            <button type="button" class="input-mode-btn" data-mode="file" title="Carregar Ficheiro">
-                                <i data-feather="upload"></i>
-                                <span>Arquivo</span>
+                            <button type="button" class="input-tab" data-tab="file">
+                                <i data-feather="file-text"></i>
+                                Arquivo
                             </button>
-                            <button type="button" class="input-mode-btn" data-mode="youtube" title="Link do YouTube">
+                            <button type="button" class="input-tab" data-tab="youtube">
                                 <i data-feather="youtube"></i>
-                                <span>YouTube</span>
+                                YouTube
                             </button>
                         </div>
 
-                        <div id="text-input-area" class="input-area">
-                            <label for="text-content" class="input-label">Cole seu texto abaixo</label>
-                            <textarea id="text-content" placeholder="Ex: Resumo do capítulo 3 sobre biologia celular..."
-                                rows="5"></textarea>
-                        </div>
-                        <div id="file-input-area" class="input-area hidden">
-                            <label for="file-content" class="file-drop-zone">
-                                <div class="drop-zone-content">
-                                    <i data-feather="upload-cloud" class="drop-zone-icon"></i>
-                                    <p class="drop-zone-text">Arraste e solte um arquivo aqui ou clique para selecionar
-                                    </p>
-                                    <p class="drop-zone-subtext">Formatos suportados: PDF, TXT, MD</p>
+                        <!-- Conteúdo das abas -->
+                        <div class="tab-content">
+                            <!-- Aba Texto -->
+                            <div id="text-tab" class="tab-pane active">
+                                <label for="text-content" class="input-label">Cole ou digite seu texto</label>
+                                <textarea id="text-content" 
+                                    placeholder="Ex: O sistema solar é composto por oito planetas..."
+                                    rows="6"></textarea>
+                            </div>
+
+                            <!-- Aba Arquivo -->
+                            <div id="file-tab" class="tab-pane">
+                                <label for="file-content" class="file-drop-zone" id="file-drop-zone">
+                                    <div class="drop-zone-content">
+                                        <i data-feather="upload-cloud" class="drop-zone-icon"></i>
+                                        <p class="drop-zone-text">Arraste um arquivo ou clique para selecionar</p>
+                                        <p class="drop-zone-subtext">PDF, TXT ou MD • Máx 10MB</p>
+                                    </div>
+                                    <input type="file" id="file-content" accept=".txt,.md,.pdf" hidden>
+                                </label>
+                                <!-- Área para mostrar arquivo selecionado -->
+                                <div id="selected-file" class="selected-file hidden">
+                                    <div class="file-info">
+                                        <i data-feather="file" class="file-icon"></i>
+                                        <div class="file-details">
+                                            <span class="file-name"></span>
+                                            <span class="file-size"></span>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="remove-file-btn" title="Remover arquivo">
+                                        <i data-feather="x"></i>
+                                    </button>
                                 </div>
-                                <input type="file" id="file-content" accept=".txt,.md,.pdf">
-                            </label>
-                        </div>
-                        <div id="youtube-input-area" class="input-area hidden">
-                            <label for="youtube-url" class="input-label">URL do vídeo do YouTube</label>
-                            <input type="url" id="youtube-url" placeholder="https://www.youtube.com/watch?v=...">
+                            </div>
+
+                            <!-- Aba YouTube -->
+                            <div id="youtube-tab" class="tab-pane">
+                                <label for="youtube-url" class="input-label">URL do vídeo</label>
+                                <div class="url-input-wrapper">
+                                    <i data-feather="link" class="url-icon"></i>
+                                    <input type="url" id="youtube-url" 
+                                        placeholder="https://www.youtube.com/watch?v=...">
+                                </div>
+                                <p class="input-hint">Funciona com vídeos que possuem legendas</p>
+                            </div>
                         </div>
 
+                        <!-- Opções de geração -->
                         <div class="generation-options">
                             <div class="option-group">
-                                <label for="card-count" class="option-label">Número de Cards</label>
+                                <label class="option-label">Quantidade</label>
                                 <div class="number-input">
-                                    <button type="button" class="number-btn" data-action="decrease">-</button>
-                                    <input type="number" id="card-count" value="5" min="1" max="15">
-                                    <button type="button" class="number-btn" data-action="increase">+</button>
+                                    <button type="button" class="number-btn" data-action="decrease">
+                                        <i data-feather="minus"></i>
+                                    </button>
+                                    <input type="number" id="card-count" value="5" min="1" max="15" readonly>
+                                    <button type="button" class="number-btn" data-action="increase">
+                                        <i data-feather="plus"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div class="option-group">
-                                <label for="card-type" class="option-label">Tipo de Card</label>
-                                <select id="card-type" class="custom-select">
-                                    <option value="Pergunta e Resposta">Pergunta e Resposta</option>
-                                    <option value="Múltipla Escolha">Múltipla Escolha</option>
+                                <label class="option-label">Dificuldade</label>
+                                <select id="card-difficulty" class="custom-select">
+                                    <option value="facil">Fácil</option>
+                                    <option value="medio" selected>Médio</option>
+                                    <option value="dificil">Difícil</option>
                                 </select>
                             </div>
                         </div>
+
                         <button type="submit" id="generate-button" class="btn btn-primary btn-full">
-                            <i data-feather="zap" class="btn-icon"></i>
+                            <i data-feather="zap"></i>
                             Gerar Flashcards
                         </button>
                     </form>
+
+                    <!-- Estado de processamento melhorado -->
                     <div id="processing-feedback" class="processing-feedback hidden">
-                        <div class="processing-spinner"></div>
+                        <div class="processing-animation">
+                            <div class="processing-spinner"></div>
+                            <div class="processing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
                         <div class="processing-text">
-                            <h3>A IA está trabalhando</h3>
-                            <p>Seus novos cards aparecerão em breve. Isso pode levar alguns segundos.</p>
+                            <h3 id="processing-title">Preparando...</h3>
+                            <p id="processing-message" class="processing-message">
+                                Enviando conteúdo para análise
+                            </p>
+                            <div class="processing-steps">
+                                <div class="step" data-step="1">
+                                    <i data-feather="file-text"></i>
+                                    <span>Analisando conteúdo</span>
+                                </div>
+                                <div class="step" data-step="2">
+                                    <i data-feather="cpu"></i>
+                                    <span>Criando perguntas</span>
+                                </div>
+                                <div class="step" data-step="3">
+                                    <i data-feather="check-circle"></i>
+                                    <span>Finalizando cards</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </aside>
         </div>
     </main>
+
+    <!-- Loading global -->
     <script src="js/loader.js"></script>
+    
+    <!-- Dependências -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    
+    <!-- Scripts da aplicação -->
     <script src="js/notifications.js"></script>
     <script src="js/api.js"></script>
     <script src="js/header.js"></script>
@@ -188,6 +259,7 @@
         feather.replace();
     </script>
 
+    <!-- Modal de edição de flashcard -->
     <div id="edit-flashcard-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -201,17 +273,17 @@
                     <input type="hidden" id="edit-card-id">
                     <div class="form-group">
                         <label for="edit-question" class="form-label">Pergunta</label>
-                        <textarea id="edit-question" name="question" rows="4" placeholder="Digite a pergunta..."
-                            required></textarea>
+                        <textarea id="edit-question" name="question" rows="4" 
+                            placeholder="Digite a pergunta..." required></textarea>
                     </div>
                     <div class="form-group">
                         <label for="edit-answer" class="form-label">Resposta</label>
-                        <textarea id="edit-answer" name="answer" rows="4" placeholder="Digite a resposta..."
-                            required></textarea>
+                        <textarea id="edit-answer" name="answer" rows="4" 
+                            placeholder="Digite a resposta..." required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary"
+                    <button type="button" class="btn btn-secondary" 
                         data-close-modal="edit-flashcard-modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                 </div>
@@ -219,6 +291,7 @@
         </div>
     </div>
 
+    <!-- Modal de compartilhamento -->
     <div id="share-deck-modal" class="modal-overlay">
         <div class="modal">
             <div class="modal-header">
@@ -229,14 +302,58 @@
             </div>
             <div class="modal-body">
                 <p class="modal-description">Qualquer pessoa com este link poderá ver o seu baralho.</p>
-                <div class="share-link-container">
-                    <input type="text" id="shareable-link-input" readonly>
-                    <button id="copy-link-button" class="btn btn-secondary">
-                        <i data-feather="copy" class="btn-icon"></i>
-                        Copiar
-                    </button>
+                <div class="share-options">
+                    <div class="share-link-container">
+                        <input type="text" id="shareable-link-input" readonly>
+                        <button id="copy-link-button" class="btn btn-secondary">
+                            <i data-feather="copy"></i>
+                            Copiar
+                        </button>
+                    </div>
+                    <div class="share-social">
+                        <button class="social-btn" data-share="whatsapp" title="Compartilhar no WhatsApp">
+                            <i data-feather="message-circle"></i>
+                        </button>
+                        <button class="social-btn" data-share="telegram" title="Compartilhar no Telegram">
+                            <i data-feather="send"></i>
+                        </button>
+                        <button class="social-btn" data-share="email" title="Compartilhar por Email">
+                            <i data-feather="mail"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar card manualmente -->
+    <div id="add-flashcard-modal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Adicionar Flashcard</h2>
+                <button class="close-btn" data-close-modal="add-flashcard-modal">
+                    <i data-feather="x"></i>
+                </button>
+            </div>
+            <form id="add-flashcard-form" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="add-question" class="form-label">Pergunta</label>
+                        <textarea id="add-question" name="question" rows="4" 
+                            placeholder="Digite a pergunta..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="add-answer" class="form-label">Resposta</label>
+                        <textarea id="add-answer" name="answer" rows="4" 
+                            placeholder="Digite a resposta..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" 
+                        data-close-modal="add-flashcard-modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar Card</button>
+                </div>
+            </form>
         </div>
     </div>
 </body>
