@@ -1,3 +1,5 @@
+// frontend/public/js/loader.js
+
 /**
  * Sistema Global de Loading para Recall
  * Gerencia o estado de carregamento em todas as páginas
