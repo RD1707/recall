@@ -10,13 +10,15 @@
     --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
 
+/* Animação de entrada para a página */
 @keyframes fadeIn {
     from {
         opacity: 0;
+        transform: translateY(10px);
     }
-
     to {
         opacity: 1;
+        transform: translateY(0);
     }
 }
 
@@ -31,61 +33,10 @@ body {
     background-color: var(--color-background);
 }
 
-.dashboard-hero {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-lg);
-    padding: 2.5rem;
-    margin-bottom: 2.5rem;
-    box-shadow: var(--shadow-soft);
-}
-
-.hero-content h1 {
-    font-size: clamp(1.8rem, 4vw, 2.25rem);
-    color: var(--color-dark-900);
-    margin-bottom: 0.5rem;
-}
-
-.hero-content p {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-muted);
-    max-width: 550px;
-    margin-bottom: 1.5rem;
-}
-
-.hero-stats {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-}
-
-.hero-stat {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-.stat-value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--color-primary-600);
-    line-height: 1;
-}
-
-.stat-label {
-    font-size: var(--font-size-sm);
-    color: var(--color-text-muted);
-    font-weight: 500;
-}
-
-.hero-illustration {
-    font-size: 5rem;
-    color: var(--color-primary-100);
-    margin-left: 2rem;
-}
+/*
+  REMOÇÃO: Estilos da seção 'dashboard-hero' removidos para uma UI mais limpa.
+  A funcionalidade foi substituída por um cabeçalho mais direto e a grade de cartões.
+*/
 
 .dashboard-content {
     background: transparent;
@@ -195,17 +146,19 @@ body {
     word-break: break-word;
 }
 
+/* MELHORIA (UX): Botão de opções sempre visível para melhor descoberta. */
 .deck-options-btn {
     color: var(--color-text-muted);
-    opacity: 0.5;
+    opacity: 0.6; /* Inicia com opacidade menor */
     transition: var(--transition-fast);
     padding: 0.25rem;
     border-radius: 50%;
     flex-shrink: 0;
 }
 
-.deck-card:hover .deck-options-btn {
-    opacity: 1;
+.deck-card:hover .deck-options-btn,
+.deck-options-btn:focus-visible {
+    opacity: 1; /* Aumenta a opacidade no hover/focus */
 }
 
 .deck-options-btn:hover {
@@ -252,9 +205,10 @@ body {
     background-color: var(--color-primary-600);
 }
 
+/* MELHORIA (UI): Diferenciação visual aprimorada para o card de "Criar Novo". */
 .deck-card.create-new {
     border: 2px dashed var(--color-border);
-    background: var(--color-surface-2);
+    background-color: var(--color-surface-2); /* Fundo sutilmente diferente */
     align-items: center;
     justify-content: center;
 }
@@ -278,6 +232,40 @@ body {
 .deck-card.create-new h3 {
     color: var(--color-dark-800);
 }
+
+/* MELHORIA (UI/UX): Estilo para o novo "Card de Ação" que substitui o hero. */
+.action-card {
+    grid-column: 1 / -1; /* Ocupa a largura total da grade */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
+    color: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.action-card h2 {
+    font-size: 1.75rem;
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.action-card p {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1.5rem;
+    max-width: 450px;
+}
+
+.action-card .btn {
+    background-color: white;
+    color: var(--color-primary-600);
+    font-weight: 600;
+}
+
 
 .skeleton-deck {
     background: var(--color-surface);

@@ -1,6 +1,6 @@
 /**
- * Módulo DashboardApp
- * Gerencia toda a interatividade e o estado da página do dashboard.
+ * Módulo DashboardApp v2.0
+ * Gerencia a interatividade e o estado do dashboard com foco em performance e legibilidade.
  */
 const DashboardApp = {
     // 1. STATE: Centraliza os dados dinâmicos da aplicação.
@@ -14,9 +14,6 @@ const DashboardApp = {
     elements: {
         decksGrid: null,
         emptyState: null,
-        totalDecks: null,
-        totalCards: null,
-        dueCards: null,
         searchInput: null,
         filterMenu: null,
         createDeckModal: null,
@@ -29,10 +26,9 @@ const DashboardApp = {
 
     /**
      * Ponto de entrada da aplicação.
-     * É chamado quando o DOM está totalmente carregado.
      */
     init() {
-        // Aguarda o carregamento do DOM antes de inicializar
+        // Garante que o DOM está pronto antes de executar
         document.addEventListener('DOMContentLoaded', () => {
             this.cacheElements();
             this.registerEventListeners();
@@ -46,9 +42,6 @@ const DashboardApp = {
     cacheElements() {
         this.elements.decksGrid = document.getElementById('decks-grid');
         this.elements.emptyState = document.getElementById('empty-state');
-        this.elements.totalDecks = document.getElementById('total-decks');
-        this.elements.totalCards = document.getElementById('total-cards');
-        this.elements.dueCards = document.getElementById('due-cards');
         this.elements.searchInput = document.getElementById('deck-search');
         this.elements.filterMenu = document.getElementById('filter-menu');
         this.elements.createDeckModal = document.getElementById('create-deck-modal');
@@ -60,24 +53,19 @@ const DashboardApp = {
     },
 
     /**
-     * Configura todos os listeners de eventos da página.
+     * Configura todos os listeners de eventos da página de forma centralizada.
      */
     registerEventListeners() {
-        // Botões de ação principal
         document.getElementById('create-deck-btn').addEventListener('click', () => this.utils.showModal(this.elements.createDeckModal));
         this.elements.deleteDeckBtn.addEventListener('click', () => this.handlers.handleDeleteDeck());
 
-        // Formulários
         this.elements.createDeckForm.addEventListener('submit', (e) => this.handlers.handleCreateDeck(e));
         this.elements.editDeckForm.addEventListener('submit', (e) => this.handlers.handleEditDeck(e));
 
-        // Busca e Filtro
         this.elements.searchInput.addEventListener('input', () => this.handlers.handleSearch());
         document.getElementById('filter-btn').addEventListener('click', this.handlers.toggleFilterMenu);
         this.elements.filterMenu.addEventListener('click', (e) => this.handlers.handleFilterChange(e));
-        document.addEventListener('click', () => this.elements.filterMenu.classList.remove('visible'));
 
-        // Modais (fechar)
         document.querySelectorAll('.close-modal-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const modal = e.target.closest('.modal-overlay');
@@ -90,29 +78,26 @@ const DashboardApp = {
             });
         });
 
-        // Seletores de cor
         document.querySelectorAll('.color-picker').forEach(picker => {
             picker.addEventListener('click', (e) => this.handlers.handleColorSelection(e));
         });
 
-        // Botão de rolar para o topo
         this.elements.scrollToTopBtn.addEventListener('click', this.utils.scrollToTop);
-        window.addEventListener('scroll', this.utils.toggleScrollToTopButton.bind(this));
+        window.addEventListener('scroll', () => this.utils.toggleScrollToTopButton());
     },
 
     /**
-     * Carrega os dados iniciais dos baralhos e renderiza na tela.
+     * Carrega os dados iniciais dos baralhos e atualiza a UI.
      */
     async loadInitialData() {
         this.render.renderLoadingState();
         try {
-            const decks = await fetchDecks(); // Função de 'api.js'
+            const decks = await fetchDecks();
             this.state.allDecks = decks || [];
             this.render.filterAndRenderDecks();
-            this.render.updateDashboardStats();
         } catch (error) {
             console.error("Falha ao carregar os baralhos:", error);
-            showToast("Não foi possível carregar seus baralhos.", "error"); // Função de 'notifications.js'
+            showToast("Não foi possível carregar seus baralhos.", "error");
             this.render.renderErrorState();
         }
     },
@@ -137,10 +122,10 @@ const DashboardApp = {
                     showToast('Baralho criado com sucesso!', 'success');
                     DashboardApp.utils.hideModal(DashboardApp.elements.createDeckModal);
                     form.reset();
+                    // Recarrega os dados para mostrar o novo baralho
                     await DashboardApp.loadInitialData();
                 }
             } catch (error) {
-                console.error("Erro ao criar baralho:", error);
                 showToast("Falha ao criar o baralho.", "error");
             } finally {
                 DashboardApp.utils.setButtonIdle(submitButton, 'Criar Baralho');
@@ -168,7 +153,6 @@ const DashboardApp = {
                     await DashboardApp.loadInitialData();
                 }
             } catch (error) {
-                console.error("Erro ao editar baralho:", error);
                 showToast("Falha ao atualizar o baralho.", "error");
             } finally {
                 DashboardApp.utils.setButtonIdle(submitButton, 'Salvar Alterações');
@@ -184,7 +168,6 @@ const DashboardApp = {
                     DashboardApp.utils.hideModal(DashboardApp.elements.editDeckModal);
                     await DashboardApp.loadInitialData();
                 } catch (error) {
-                    console.error("Erro ao excluir baralho:", error);
                     showToast("Falha ao excluir o baralho.", "error");
                 }
             }
@@ -194,7 +177,7 @@ const DashboardApp = {
             clearTimeout(DashboardApp.state.searchTimeout);
             DashboardApp.state.searchTimeout = setTimeout(() => {
                 DashboardApp.render.filterAndRenderDecks();
-            }, 300); // Debounce de 300ms
+            }, 300); // Debounce de 300ms para performance
         },
 
         toggleFilterMenu(event) {
@@ -224,7 +207,7 @@ const DashboardApp = {
         },
     },
 
-    // 4. RENDER: Funções responsáveis por manipular o DOM e exibir os dados.
+    // 4. RENDER: Funções responsáveis por manipular o DOM.
     render: {
         filterAndRenderDecks() {
             const searchTerm = DashboardApp.elements.searchInput.value.toLowerCase().trim();
@@ -255,11 +238,29 @@ const DashboardApp = {
                 DashboardApp.elements.emptyState.querySelector('button').onclick = () => DashboardApp.utils.showModal(DashboardApp.elements.createDeckModal);
             } else {
                 DashboardApp.elements.emptyState.classList.add('hidden');
+                
+                // MELHORIA: Adiciona o card de ação no topo da grade
+                DashboardApp.elements.decksGrid.appendChild(this.createActionCardElement());
+                
                 decks.forEach((deck, index) => {
                     DashboardApp.elements.decksGrid.appendChild(this.createSingleDeckElement(deck, index));
                 });
                 DashboardApp.elements.decksGrid.appendChild(this.createAddNewDeckElement());
             }
+        },
+
+        createActionCardElement() {
+            const card = document.createElement('div');
+            card.className = 'action-card';
+            card.innerHTML = `
+                <h2>O que você quer estudar hoje?</h2>
+                <p>Crie um novo baralho com IA ou comece a revisar para fortalecer sua memória.</p>
+                <button class="btn"><i class="fas fa-plus"></i> Criar Novo Baralho</button>
+            `;
+            card.querySelector('button').addEventListener('click', () => {
+                DashboardApp.utils.showModal(DashboardApp.elements.createDeckModal);
+            });
+            return card;
         },
         
         createSingleDeckElement(deck, index) {
@@ -313,28 +314,19 @@ const DashboardApp = {
             card.addEventListener('click', () => DashboardApp.utils.showModal(DashboardApp.elements.createDeckModal));
             return card;
         },
-
-        updateDashboardStats() {
-            const totalDecks = DashboardApp.state.allDecks.length;
-            const totalCards = DashboardApp.state.allDecks.reduce((sum, deck) => sum + (deck.card_count || 0), 0);
-            
-            DashboardApp.elements.totalDecks.textContent = totalDecks;
-            DashboardApp.elements.totalCards.textContent = totalCards;
-            DashboardApp.elements.dueCards.textContent = '0'; // Placeholder, ajustar se houver lógica para isso
-        },
         
         renderLoadingState() {
             this.clearDecksGrid();
             DashboardApp.elements.emptyState.classList.add('hidden');
-            const skeletonHTML = '<div class="skeleton-deck"></div>'.repeat(3);
+            const skeletonHTML = '<div class="skeleton-deck"></div>'.repeat(6);
             DashboardApp.elements.decksGrid.innerHTML = skeletonHTML;
         },
         
         renderErrorState() {
             this.clearDecksGrid();
             DashboardApp.elements.decksGrid.innerHTML = `
-                <div class="empty-state">
-                    <h3>Oops! Algo deu errado.</h3>
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Oops! Algo deu errado.</h3>
                     <p>Não foi possível carregar seus baralhos. Por favor, tente recarregar a página.</p>
                 </div>
             `;
@@ -386,9 +378,9 @@ const DashboardApp = {
 
         escapeHtml(str) {
             if (str === null || str === undefined) return '';
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
+            const p = document.createElement('p');
+            p.textContent = str;
+            return p.innerHTML;
         },
         
         toggleScrollToTopButton() {
