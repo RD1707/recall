@@ -77,42 +77,141 @@
                     <div class="separator"><span>OU</span></div>
 
                     <form id="auth-form" novalidate>
-                        <div class="form-group">
-                            <label for="email">E-mail</label>
-                            <div class="input-group">
-                                <svg class="icon" aria-hidden="true" focusable="false"
-                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path
-                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
-                                    </path>
-                                    <polyline points="22,6 12,13 2,6"></polyline>
-                                </svg>
-                                <input class="form-control" type="email" id="email" placeholder="seu@email.com"
-                                    required>
+                        <!-- Campos para Login (visíveis por padrão) -->
+                        <div class="login-fields">
+                            <div class="form-group">
+                                <label for="email">E-mail</label>
+                                <div class="input-group">
+                                    <svg class="icon" aria-hidden="true" focusable="false"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                        </path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <input class="form-control" type="email" id="email" placeholder="seu@email.com"
+                                        required>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Senha</label>
-                            <div class="input-group">
-                                <svg class="icon" aria-hidden="true" focusable="false"
-                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                </svg>
-                                <input class="form-control" type="password" id="password" placeholder="Sua senha"
-                                    required>
-                                <button type="button" id="toggle-password" class="password-toggle"
-                                    aria-label="Mostrar senha">
-                                </button>
+                            <div class="form-group">
+                                <label for="password">Senha</label>
+                                <div class="input-group">
+                                    <svg class="icon" aria-hidden="true" focusable="false"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <input class="form-control" type="password" id="password" placeholder="Sua senha"
+                                        required>
+                                    <button type="button" id="toggle-password" class="password-toggle"
+                                        aria-label="Mostrar senha">
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-options login-fields">
+                                <a href="#" id="forgot-password-link" class="forgot-password">Esqueceu a senha?</a>
                             </div>
                         </div>
 
-                        <div class="form-options">
-                            <a href="#" id="forgot-password-link" class="forgot-password">Esqueceu a senha?</a>
+                        <!-- Campos extras para Registro (ocultos por padrão) -->
+                        <div class="register-fields hidden">
+                            <div class="form-group">
+                                <label for="register-email">E-mail</label>
+                                <div class="input-group">
+                                    <svg class="icon" aria-hidden="true" focusable="false"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                        </path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <input class="form-control" type="email" id="register-email" placeholder="seu@email.com"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="fullname">Nome Completo</label>
+                                <div class="input-group">
+                                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                    <input class="form-control" type="text" id="fullname" placeholder="João da Silva"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="username">Nome de Usuário</label>
+                                <div class="input-group">
+                                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                        <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                        <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                    </svg>
+                                    <input class="form-control" type="text" id="username" placeholder="Nome de exibição"
+                                        pattern="^[a-zA-Z0-9_]+$" title="Use apenas letras, números e underscore"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="register-password">Senha</label>
+                                <div class="input-group">
+                                    <svg class="icon" aria-hidden="true" focusable="false"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <input class="form-control" type="password" id="register-password" 
+                                        placeholder="Mínimo 6 caracteres" minlength="6" required>
+                                    <button type="button" id="toggle-register-password" class="password-toggle"
+                                        aria-label="Mostrar senha">
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="confirm-password">Confirmar Senha</label>
+                                <div class="input-group">
+                                    <svg class="icon" aria-hidden="true" focusable="false"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <input class="form-control" type="password" id="confirm-password" 
+                                        placeholder="Repita a senha" required>
+                                    <button type="button" id="toggle-confirm-password" class="password-toggle"
+                                        aria-label="Mostrar senha">
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group terms-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="accept-terms" required>
+                                    <span>Li e aceito os <a href="termos.html" target="_blank">Termos de Uso</a> e a <a href="privacidade.html" target="_blank">Política de Privacidade</a></span>
+                                </label>
+                            </div>
+
+                            <div class="form-group terms-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="accept-marketing">
+                                    <span>Aceito receber e-mails com novidades e promoções</span>
+                                </label>
+                            </div>
                         </div>
 
                         <p id="error-message" class="error-message"></p>

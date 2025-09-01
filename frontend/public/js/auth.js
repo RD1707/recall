@@ -19,8 +19,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleText = document.getElementById('toggle-text');
     const authButton = document.getElementById('auth-button');
     const errorMessage = document.getElementById('error-message');
+    
+    // Campos de login
+    const loginFields = document.querySelector('.login-fields');
+    const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const passwordToggle = document.getElementById('toggle-password');
+    
+    // Campos de registro
+    const registerFields = document.querySelector('.register-fields');
+    const registerEmailInput = document.getElementById('register-email');
+    const fullnameInput = document.getElementById('fullname');
+    const usernameInput = document.getElementById('username');
+    const registerPasswordInput = document.getElementById('register-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const acceptTermsInput = document.getElementById('accept-terms');
+    const acceptMarketingInput = document.getElementById('accept-marketing');
+    
+    // Toggles de senha
+    const toggleRegisterPassword = document.getElementById('toggle-register-password');
+    const toggleConfirmPassword = document.getElementById('toggle-confirm-password');
 
     let isLogin = true;
 
@@ -39,34 +57,42 @@ document.addEventListener('DOMContentLoaded', () => {
             authButton.textContent = 'Entrar';
             toggleText.textContent = 'Não tem uma conta?';
             toggleFormLink.textContent = 'Registre-se agora';
-            forgotPasswordLink.style.display = 'block';
+            
+            // Mostrar campos de login, esconder campos de registro
+            loginFields.classList.remove('hidden');
+            registerFields.classList.remove('show');
+            registerFields.classList.add('hidden');
         } else {
             formTitle.textContent = 'Crie sua conta';
             formSubtitle.textContent = 'É rápido e fácil. Comece a usar o Recall hoje mesmo!';
-            authButton.textContent = 'Registrar';
+            authButton.textContent = 'Criar Conta';
             toggleText.textContent = 'Já tem uma conta?';
             toggleFormLink.textContent = 'Entre agora';
-            forgotPasswordLink.style.display = 'none';
+            
+            // Esconder campos de login, mostrar campos de registro
+            loginFields.classList.add('hidden');
+            registerFields.classList.remove('hidden');
+            registerFields.classList.add('show');
         }
     }
 
-    function setupPasswordToggle() {
-        if (!passwordToggle || !passwordInput) return;
+    function setupPasswordToggle(toggleButton, passwordField) {
+        if (!toggleButton || !passwordField) return;
 
         const eyeIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
         const eyeOffIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
 
-        passwordToggle.innerHTML = eyeIcon;
+        toggleButton.innerHTML = eyeIcon;
 
-        passwordToggle.addEventListener('click', () => {
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                passwordToggle.innerHTML = eyeOffIcon;
-                passwordToggle.setAttribute('aria-label', 'Esconder senha');
+        toggleButton.addEventListener('click', () => {
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleButton.innerHTML = eyeOffIcon;
+                toggleButton.setAttribute('aria-label', 'Esconder senha');
             } else {
-                passwordInput.type = 'password';
-                passwordToggle.innerHTML = eyeIcon;
-                passwordToggle.setAttribute('aria-label', 'Mostrar senha');
+                passwordField.type = 'password';
+                toggleButton.innerHTML = eyeIcon;
+                toggleButton.setAttribute('aria-label', 'Mostrar senha');
             }
         });
     }
@@ -82,6 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             isLogin = !isLogin;
             updateAuthFormUI();
+            errorMessage.textContent = '';
+            authForm.reset();
         });
     }
 
@@ -104,26 +132,85 @@ document.addEventListener('DOMContentLoaded', () => {
     if (authForm) {
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = passwordInput.value;
             errorMessage.textContent = '';
             authButton.disabled = true;
 
             try {
-                const { error } = isLogin 
-                    ? await _supabase.auth.signInWithPassword({ email, password })
-                    : await _supabase.auth.signUp({ email, password });
+                if (isLogin) {
+                    // Login
+                    const email = emailInput.value;
+                    const password = passwordInput.value;
+                    
+                    const { error } = await _supabase.auth.signInWithPassword({ 
+                        email, 
+                        password 
+                    });
 
-                if (error) {
-                    errorMessage.textContent = error.message;
-                } else {
-                    if (!isLogin) {
-                        showToast('Registro realizado! Verifique seu e-mail para confirmar a conta.', 'success');
-                        authForm.reset();
+                    if (error) {
+                        errorMessage.textContent = error.message;
                     } else {
                         window.location.href = 'dashboard.html';
                     }
+                } else {
+                    // Registro
+                    const email = registerEmailInput.value;
+                    const password = registerPasswordInput.value;
+                    const confirmPassword = confirmPasswordInput.value;
+                    const fullname = fullnameInput.value;
+                    const username = usernameInput.value;
+                    const acceptTerms = acceptTermsInput.checked;
+                    const acceptMarketing = acceptMarketingInput.checked;
+
+                    // Validações
+                    if (!acceptTerms) {
+                        errorMessage.textContent = 'Você deve aceitar os termos de uso para continuar.';
+                        authButton.disabled = false;
+                        return;
+                    }
+
+                    if (password !== confirmPassword) {
+                        errorMessage.textContent = 'As senhas não coincidem.';
+                        authButton.disabled = false;
+                        return;
+                    }
+
+                    if (password.length < 6) {
+                        errorMessage.textContent = 'A senha deve ter no mínimo 6 caracteres.';
+                        authButton.disabled = false;
+                        return;
+                    }
+
+                    // Validar username (apenas letras, números e underscore)
+                    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+                    if (!usernameRegex.test(username)) {
+                        errorMessage.textContent = 'Nome de usuário inválido. Use apenas letras, números e underscore.';
+                        authButton.disabled = false;
+                        return;
+                    }
+
+                    const { error } = await _supabase.auth.signUp({ 
+                        email, 
+                        password,
+                        options: {
+                            data: {
+                                full_name: fullname,
+                                username: username,
+                                accept_marketing: acceptMarketing
+                            }
+                        }
+                    });
+
+                    if (error) {
+                        errorMessage.textContent = error.message;
+                    } else {
+                        showToast('Conta criada com sucesso! Verifique seu e-mail para confirmar.', 'success');
+                        authForm.reset();
+                        isLogin = true;
+                        updateAuthFormUI();
+                    }
                 }
+            } catch (error) {
+                errorMessage.textContent = 'Ocorreu um erro. Tente novamente.';
             } finally {
                 authButton.disabled = false;
             }
@@ -136,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('reset-email').value;
             const resetButton = document.getElementById('reset-button');
             resetButton.disabled = true;
-            resetButton.textContent = 'A Enviar...';
+            resetButton.textContent = 'Enviando...';
 
             try {
                 const { error } = await _supabase.auth.resetPasswordForEmail(email, {
@@ -146,6 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     showToast(error.message, 'error');
                 } else {
                     showToast('Se o e-mail existir, um link de recuperação foi enviado.', 'success');
+                    resetPasswordForm.reset();
                 }
             } finally {
                 resetButton.disabled = false;
@@ -166,14 +254,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             updateButton.disabled = true;
-            updateButton.textContent = 'A Salvar...';
+            updateButton.textContent = 'Salvando...';
 
             try {
                 const { error } = await _supabase.auth.updateUser({ password: newPassword });
                 if (error) {
                     showToast(error.message, 'error');
                 } else {
-                    showToast('Senha atualizada com sucesso! Pode fazer o login.', 'success');
+                    showToast('Senha atualizada com sucesso! Você pode fazer login.', 'success');
                     setTimeout(() => {
                         window.location.hash = ''; 
                         window.location.reload(); 
@@ -186,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-     if (googleLoginButton) {
+    if (googleLoginButton) {
         googleLoginButton.addEventListener('click', async () => {
             try {
                 const { error } = await _supabase.auth.signInWithOAuth({
@@ -196,8 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (error) {
                     showToast(error.message, 'error');
                 }
-                // O redirecionamento para o dashboard será tratado pelo routeGuard
-                // na página seguinte após o login bem-sucedido.
             } catch (error) {
                 showToast('Ocorreu um erro inesperado ao tentar logar com o Google.', 'error');
             }
@@ -212,11 +298,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    // Configurar toggles de senha
+    setupPasswordToggle(passwordToggle, passwordInput);
+    setupPasswordToggle(toggleRegisterPassword, registerPasswordInput);
+    setupPasswordToggle(toggleConfirmPassword, confirmPasswordInput);
+    
+    // Verificar se está na página de recuperação de senha
     if (window.location.hash.includes('type=recovery')) {
-         showPanel(updatePasswordPanel);
+        showPanel(updatePasswordPanel);
     } else {
         showPanel(authPanel);
     }
+    
     updateAuthFormUI();
-    setupPasswordToggle();
 });

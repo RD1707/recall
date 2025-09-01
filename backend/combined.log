@@ -10,3 +10,4 @@
 {"level":"info","message":"Geração para o baralho 3fd5ecc7-c474-4b60-9991-bb18d506f952 concluída. 9 flashcards guardados.","service":"recall-api","timestamp":"2025-08-30 09:56:08"}
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-08-31 12:33:30"}
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-08-31 12:41:23"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 00:36:40"}
