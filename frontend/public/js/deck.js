@@ -1,3 +1,5 @@
+// frontend/public/js/deck.js
+
 // Estado Global da Aplicação
 const AppState = {
     deckId: null,
@@ -461,10 +463,15 @@ function shakeElement(element) {
     }, 500);
 }
 
+// ==================================================================
+// ==                         CORREÇÃO APLICADA AQUI               ==
+// ==================================================================
 async function processGeneration(mode) {
     const params = {
         count: parseInt(document.getElementById('card-count').value, 10),
         difficulty: document.getElementById('card-difficulty').value,
+        // ADICIONADO: O backend espera o campo 'type', não 'difficulty' para validação.
+        type: 'Pergunta e Resposta' // Por enquanto, o valor é fixo.
     };
     
     try {
@@ -480,6 +487,8 @@ async function processGeneration(mode) {
                 formData.append('file', AppState.selectedFile);
                 formData.append('count', params.count);
                 formData.append('difficulty', params.difficulty);
+                 // ADICIONADO: Também para o envio de arquivo
+                formData.append('type', params.type);
                 return await generateFlashcardsFromFile(AppState.deckId, formData);
                 
             case 'youtube':
@@ -493,6 +502,10 @@ async function processGeneration(mode) {
         throw error;
     }
 }
+// ==================================================================
+// ==                      FIM DA CORREÇÃO                         ==
+// ==================================================================
+
 
 // Polling Otimizado
 function startPollingForNewFlashcards() {
