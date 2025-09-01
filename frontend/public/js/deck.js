@@ -1120,16 +1120,16 @@ function restoreLocalState() {
 async function loadPageData() {
     try {
         updateLoadingState('Carregando Baralho', 'Buscando informações...');
-        updateLoadingProgress(25);
+        setLoadingProgress(25);
         
         await loadDeckDetails();
         
         updateLoadingState('Carregando Flashcards', 'Preparando seus cards...');
-        updateLoadingProgress(75);
+        setLoadingProgress(75);
         
         await loadFlashcards();
         
-        updateLoadingProgress(100);
+        setLoadingProgress(100);
         updateLoadingState('Pronto!', 'Tudo carregado com sucesso');
         
         setTimeout(() => {
@@ -1313,7 +1313,7 @@ function updateLoadingState(title, message) {
     }
 }
 
-function updateLoadingProgress(progress) {
+function setLoadingProgress(progress) {
     if (typeof window.updateLoadingProgress === 'function') {
         window.updateLoadingProgress(progress);
     }
