@@ -64,9 +64,6 @@ class CacheManager {
     }
 }
 
-// Sistema de Loading Global
-window.pageLoadingComplete = false;
-
 // Inicialização Principal
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -1120,20 +1117,16 @@ function restoreLocalState() {
 async function loadPageData() {
     try {
         updateLoadingState('Carregando Baralho', 'Buscando informações...');
-        setLoadingProgress(25);
         
         await loadDeckDetails();
         
         updateLoadingState('Carregando Flashcards', 'Preparando seus cards...');
-        setLoadingProgress(75);
         
         await loadFlashcards();
         
-        setLoadingProgress(100);
         updateLoadingState('Pronto!', 'Tudo carregado com sucesso');
         
         setTimeout(() => {
-            window.pageLoadingComplete = true;
             if (typeof hideLoading === 'function') {
                 hideLoading();
             }
@@ -1310,12 +1303,6 @@ async function showConfirmDialog(title, message, confirmText = 'Confirmar', type
 function updateLoadingState(title, message) {
     if (typeof updateLoadingMessage === 'function') {
         updateLoadingMessage(title, message);
-    }
-}
-
-function setLoadingProgress(progress) {
-    if (typeof window.updateLoadingProgress === 'function') {
-        window.updateLoadingProgress(progress);
     }
 }
 
