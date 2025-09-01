@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const formSubtitle = document.getElementById('form-subtitle');
     const toggleText = document.getElementById('toggle-text');
     const authButton = document.getElementById('auth-button');
-    const errorMessage = document.getElementById('error-message');
     
     // Campos de login
     const loginFields = document.querySelector('.login-fields');
@@ -50,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateAuthFormUI() {
-        errorMessage.textContent = '';
         if (isLogin) {
             formTitle.textContent = 'Acesse sua conta';
             formSubtitle.textContent = 'Bem-vindo de volta! Por favor, insira seus dados.';
@@ -97,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    _supabase.auth.onAuthStateChange((event, session) => {
+    _supabase.auth.onAuthStateChange((event) => {
         if (event === 'PASSWORD_RECOVERY') {
             showPanel(updatePasswordPanel);
         }
@@ -108,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             isLogin = !isLogin;
             updateAuthFormUI();
-            errorMessage.textContent = '';
             authForm.reset();
         });
     }
@@ -132,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (authForm) {
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            errorMessage.textContent = '';
             authButton.disabled = true;
 
             try {
@@ -147,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     if (error) {
-                        errorMessage.textContent = error.message;
+                        showToast(error.message, 'error');
                     } else {
                         window.location.href = 'dashboard.html';
                     }
@@ -163,19 +159,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Validações
                     if (!acceptTerms) {
-                        errorMessage.textContent = 'Você deve aceitar os termos de uso para continuar.';
+                        showToast('Você deve aceitar os termos de uso para continuar.', 'error');
                         authButton.disabled = false;
                         return;
                     }
 
                     if (password !== confirmPassword) {
-                        errorMessage.textContent = 'As senhas não coincidem.';
+                        showToast('As senhas não coincidem.', 'error');
                         authButton.disabled = false;
                         return;
                     }
 
                     if (password.length < 6) {
-                        errorMessage.textContent = 'A senha deve ter no mínimo 6 caracteres.';
+                        showToast('A senha deve ter no mínimo 6 caracteres.', 'error');
                         authButton.disabled = false;
                         return;
                     }
@@ -183,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Validar username (apenas letras, números e underscore)
                     const usernameRegex = /^[a-zA-Z0-9_]+$/;
                     if (!usernameRegex.test(username)) {
-                        errorMessage.textContent = 'Nome de usuário inválido. Use apenas letras, números e underscore.';
+                        showToast('Nome de usuário inválido. Use apenas letras, números e underscore.', 'error');
                         authButton.disabled = false;
                         return;
                     }
@@ -201,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     if (error) {
-                        errorMessage.textContent = error.message;
+                        showToast(error.message, 'error');
                     } else {
                         showToast('Conta criada com sucesso! Verifique seu e-mail para confirmar.', 'success');
                         authForm.reset();
@@ -210,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             } catch (error) {
-                errorMessage.textContent = 'Ocorreu um erro. Tente novamente.';
+                showToast('Ocorreu um erro. Tente novamente.', 'error');
             } finally {
                 authButton.disabled = false;
             }

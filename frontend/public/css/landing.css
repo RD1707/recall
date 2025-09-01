@@ -572,7 +572,6 @@ section {
     padding: 2.5rem 2rem;
     border-radius: var(--border-radius-xl);
     border: 1px solid var(--border-light);
-    transition: var(--transition-bounce);
     box-shadow: var(--shadow-sm);
     position: relative;
     overflow: hidden;
@@ -586,7 +585,6 @@ section {
     width: 4px;
     height: 0;
     background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
-    transition: var(--transition-base);
 }
 
 .feature-icon {
@@ -1315,14 +1313,6 @@ input:checked + .slider:before {
 [data-aos] {
     opacity: 0;
     transition: all 0.6s ease;
-}
-
-[data-aos="fade-up"] {
-    transform: translateY(30px);
-}
-
-[data-aos="fade-down"] {
-    transform: translateY(-30px);
 }
 
 [data-aos="fade-left"] {

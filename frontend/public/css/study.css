@@ -805,7 +805,6 @@ body {
 .nav-btn:hover:not(:disabled) {
     background-color: var(--primary);
     color: white;
-    transform: translateY(-2px);
 }
 
 .nav-btn:disabled {
@@ -819,10 +818,6 @@ body {
 
 .nav-btn.next {
     transform: translateX(50%);
-}
-
-.nav-btn:hover:not(:disabled).prev {
-    transform: translateX(-50%) translateY(-2px);
 }
 
 .nav-btn:hover:not(:disabled).next {
@@ -853,7 +848,6 @@ body {
 
 .flip-btn:hover {
     background-color: var(--primary-hover);
-    transform: translateY(-2px);
     box-shadow: var(--elevation-2);
 }
 
@@ -886,7 +880,6 @@ body {
 }
 
 .quality-btn:hover {
-    transform: translateY(-4px);
     box-shadow: var(--elevation-2);
 }
 
@@ -1256,7 +1249,6 @@ body {
 
 .btn-primary:hover {
     background-color: var(--primary-hover);
-    transform: translateY(-2px);
     box-shadow: var(--elevation-2);
 }
 
@@ -1268,7 +1260,6 @@ body {
 
 .btn-secondary:hover {
     background-color: var(--bg-tertiary);
-    transform: translateY(-2px);
     box-shadow: var(--elevation-1);
 }
 
@@ -1281,7 +1272,6 @@ body {
 .btn-outline:hover {
     background-color: var(--primary);
     color: white;
-    transform: translateY(-2px);
     box-shadow: var(--elevation-1);
 }
 

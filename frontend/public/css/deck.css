@@ -102,7 +102,6 @@
 .back-btn:hover {
     color: var(--color-primary-600);
     background: var(--color-primary-50);
-    transform: translateX(-4px);
 }
 
 .deck-info {
@@ -190,7 +189,6 @@
 }
 
 .btn.btn-large:hover {
-    transform: translateY(-2px) scale(1.02);
     box-shadow: 
         var(--shadow-xl),
         var(--shadow-glow);
@@ -208,7 +206,6 @@
 .btn.btn-secondary:hover {
     background: var(--color-gray-200);
     border-color: var(--color-gray-300);
-    transform: translateY(-1px);
 }
 
 /* Stats Container Melhorado */
@@ -247,7 +244,6 @@
 
 .stat-card:hover {
     box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
 }
 
 .stat-card:hover::after {
@@ -336,7 +332,6 @@
 .flashcard-item:hover {
     border-color: var(--color-primary-300);
     box-shadow: var(--shadow-md), var(--shadow-glow);
-    transform: translateY(-2px);
 }
 
 .flashcard-question {
@@ -645,7 +640,6 @@ textarea {
 
 .file-drop-zone:hover .drop-zone-icon {
     color: var(--color-primary-500);
-    transform: translateY(-4px);
 }
 
 .drop-zone-text {
@@ -1109,7 +1103,6 @@ textarea {
     background: var(--color-primary-500);
     border-color: var(--color-primary-500);
     color: white;
-    transform: translateY(-2px);
 }
 
 /* Animations for new cards */
