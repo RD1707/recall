@@ -2,23 +2,103 @@ const pageState = {
     reviewsChart: null,
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadAllProgressData(7);
-    setupEventListeners();
+//  ADICIONADO - Sistema de loading
+window.pageLoadingComplete = false;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await initializeProgressPage();
+    } catch (error) {
+        console.error('Erro ao inicializar página de progresso:', error);
+        
+        //  ADICIONADO - Tratamento de erro
+        if (typeof updateLoadingMessage === 'function') {
+            updateLoadingMessage('Erro', 'Não foi possível carregar as estatísticas');
+        }
+        
+        setTimeout(() => {
+            if (typeof hideLoading === 'function') {
+                hideLoading();
+            }
+            showToast('Erro ao carregar progresso', 'error');
+        }, 1000);
+    }
 });
+
+async function initializeProgressPage() {
+    //  ADICIONADO - Loading messages
+    if (typeof updateLoadingMessage === 'function') {
+        updateLoadingMessage('Analisando Progresso', 'Configurando interface...');
+    }
+    
+    setupEventListeners();
+    
+    if (typeof updateLoadingMessage === 'function') {
+        updateLoadingMessage('Analisando Progresso', 'Buscando dados...');
+    }
+    
+    await loadAllProgressData(7);
+    
+    if (typeof updateLoadingMessage === 'function') {
+        updateLoadingMessage('Pronto!', 'Análise concluída');
+    }
+    
+    //  ADICIONADO - Finalizar loading
+    setTimeout(() => {
+        window.pageLoadingComplete = true;
+        if (typeof hideLoading === 'function') {
+            hideLoading();
+        }
+    }, 500);
+}
 
 async function loadAllProgressData(range = 7) {
     renderSkeletons();
 
-    const [chartData, insightsData, summaryData] = await Promise.all([
-        fetchReviewsOverTime(range), 
-        fetchPerformanceInsights(),  
-        fetchAnalyticsSummary()      
-    ]);
+    try {
+        //  MODIFICADO - Usar loading global se disponível para operações múltiplas
+        if (window.globalLoader && typeof window.globalLoader.wrapMultipleOperations === 'function') {
+            const operations = [
+                {
+                    operation: async () => {
+                        const summaryData = await fetchAnalyticsSummary();
+                        updateStatCards(summaryData);
+                    },
+                    message: { title: 'Analisando Progresso', subtitle: 'Carregando estatísticas gerais...' }
+                },
+                {
+                    operation: async () => {
+                        const chartData = await fetchReviewsOverTime(range);
+                        renderReviewsChart(chartData);
+                    },
+                    message: { title: 'Analisando Progresso', subtitle: 'Gerando gráficos de atividade...' }
+                },
+                {
+                    operation: async () => {
+                        const insightsData = await fetchPerformanceInsights();
+                        renderInsights(insightsData);
+                    },
+                    message: { title: 'Analisando Progresso', subtitle: 'Processando insights do tutor IA...' }
+                }
+            ];
 
-    updateStatCards(summaryData);
-    renderReviewsChart(chartData);
-    renderInsights(insightsData);
+            await window.globalLoader.wrapMultipleOperations(operations);
+        } else {
+            // Fallback para quando o loading global não está disponível
+            const [chartData, insightsData, summaryData] = await Promise.all([
+                fetchReviewsOverTime(range), 
+                fetchPerformanceInsights(),  
+                fetchAnalyticsSummary()      
+            ]);
+
+            updateStatCards(summaryData);
+            renderReviewsChart(chartData);
+            renderInsights(insightsData);
+        }
+    } catch (error) {
+        console.error('Erro ao carregar dados de progresso:', error);
+        showToast('Erro ao carregar algumas informações', 'error');
+    }
 }
 
 function setupEventListeners() {
@@ -39,12 +119,26 @@ function setupEventListeners() {
 }
 
 async function loadAndRenderChart(range) {
-    document.querySelector('.chart-container').style.opacity = '0.5';
-    
-    const chartData = await fetchReviewsOverTime(range);
-    renderReviewsChart(chartData);
-
-    document.querySelector('.chart-container').style.opacity = '1';
+    try {
+        //  MODIFICADO - Usar loading global se disponível
+        let chartData;
+        if (window.globalLoader && typeof window.globalLoader.wrapAsyncOperation === 'function') {
+            chartData = await window.globalLoader.wrapAsyncOperation(
+                fetchReviewsOverTime(range),
+                { title: 'Atualizando Gráfico', subtitle: `Carregando dados dos últimos ${range} dias...` }
+            );
+        } else {
+            // Fallback com loading visual simples
+            document.querySelector('.chart-container').style.opacity = '0.5';
+            chartData = await fetchReviewsOverTime(range);
+            document.querySelector('.chart-container').style.opacity = '1';
+        }
+        
+        renderReviewsChart(chartData);
+    } catch (error) {
+        console.error('Erro ao carregar gráfico:', error);
+        showToast('Erro ao atualizar gráfico', 'error');
+    }
 }
 
 function updateStatCards(summary) {
@@ -56,7 +150,9 @@ function updateStatCards(summary) {
 }
 
 function renderReviewsChart(chartData) {
-    const ctx = document.getElementById('reviewsChart').getContext('2d');
+    const ctx = document.getElementById('reviewsChart');
+    if (!ctx) return;
+    
     const chartContainer = document.querySelector('.chart-container');
 
     if (pageState.reviewsChart) {
@@ -72,7 +168,7 @@ function renderReviewsChart(chartData) {
         chartContainer.innerHTML = '<canvas id="reviewsChart"></canvas>';
     }
 
-    pageState.reviewsChart = new Chart(ctx, {
+    pageState.reviewsChart = new Chart(ctx.getContext('2d'), {
         type: 'bar',
         data: {
             labels: chartData.labels,
@@ -114,6 +210,8 @@ function renderInsights(insightsData) {
     const insightsContent = document.getElementById('insights-content');
     const difficultDecksList = document.getElementById('difficult-decks-list');
 
+    if (!insightsContent || !difficultDecksList) return;
+
     if (insightsData && insightsData.insight) {
         insightsContent.innerHTML = `<p>${insightsData.insight.replace(/\n/g, '<br>')}</p>`;
     } else {
@@ -126,7 +224,7 @@ function renderInsights(insightsData) {
             const listItem = document.createElement('li');
             listItem.innerHTML = `
                 <div class="deck-info">
-                    <span class="deck-name">${deck.deck_title}</span>
+                    <span class="deck-name">${escapeHtml(deck.deck_title)}</span>
                     <span class="error-rate">Taxa de erro: ${Math.round(deck.error_rate)}%</span>
                 </div>
                 <a href="study.html?deckId=${deck.deck_id}" class="btn btn-secondary">Revisar</a>
@@ -139,12 +237,26 @@ function renderInsights(insightsData) {
 }
 
 function renderSkeletons() {
-    document.getElementById('insights-content').innerHTML = `
-        <div class="skeleton skeleton-text"></div>
-        <div class="skeleton skeleton-text"></div>
-        <div class="skeleton skeleton-text"></div>`;
+    const insightsContent = document.getElementById('insights-content');
+    const difficultDecksList = document.getElementById('difficult-decks-list');
     
-    document.getElementById('difficult-decks-list').innerHTML = `
-        <li><div class="skeleton skeleton-text" style="height: 40px;"></div></li>
-        <li><div class="skeleton skeleton-text" style="height: 40px;"></div></li>`;
+    if (insightsContent) {
+        insightsContent.innerHTML = `
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text"></div>`;
+    }
+    
+    if (difficultDecksList) {
+        difficultDecksList.innerHTML = `
+            <li><div class="skeleton skeleton-text" style="height: 40px;"></div></li>
+            <li><div class="skeleton skeleton-text" style="height: 40px;"></div></li>`;
+    }
+}
+
+function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }

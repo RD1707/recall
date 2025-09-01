@@ -8,6 +8,9 @@ const AppState = {
     MAX_POLLING_ATTEMPTS: 12, 
 };
 
+//  ADICIONADO - Sistema de loading
+window.pageLoadingComplete = false;
+
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await initializeApplication();
@@ -15,17 +18,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         await loadPageData();
     } catch (error) {
         console.error('Falha na inicialização da aplicação:', error);
-        showToast('Erro ao carregar a página. Por favor, recarregue.', 'error');
+        
+        //  ADICIONADO - Tratamento de erro
+        if (typeof updateLoadingMessage === 'function') {
+            updateLoadingMessage('Erro', 'Não foi possível carregar o baralho');
+        }
+        
+        setTimeout(() => {
+            if (typeof hideLoading === 'function') {
+                hideLoading();
+            }
+            showToast('Erro ao carregar a página. Por favor, recarregue.', 'error');
+        }, 1000);
     }
 });
 
 async function initializeApplication() {
+    //  ADICIONADO - Loading message
+    if (typeof updateLoadingMessage === 'function') {
+        updateLoadingMessage('Inicializando', 'Verificando parâmetros...');
+    }
+    
     const params = new URLSearchParams(window.location.search);
     AppState.deckId = params.get('id');
 
     if (!AppState.deckId) {
-        showToast('ID do baralho não encontrado. Redirecionando...', 'error');
-        setTimeout(() => (window.location.href = 'dashboard.html'), 2000);
+        if (typeof updateLoadingMessage === 'function') {
+            updateLoadingMessage('Erro', 'Baralho não encontrado');
+        }
+        
+        setTimeout(() => {
+            if (typeof hideLoading === 'function') {
+                hideLoading();
+            }
+            showToast('ID do baralho não encontrado. Redirecionando...', 'error');
+            setTimeout(() => (window.location.href = 'dashboard.html'), 2000);
+        }, 1000);
         throw new Error('Deck ID não encontrado na URL');
     }
 }
@@ -48,10 +76,51 @@ function setupEventListeners() {
 
 async function loadPageData() {
     try {
-        await Promise.all([loadDeckDetails(), loadFlashcards()]);
+        //  ADICIONADO - Loading messages
+        if (typeof updateLoadingMessage === 'function') {
+            updateLoadingMessage('Carregando Baralho', 'Buscando informações...');
+            updateLoadingProgress(25);
+        }
+        
+        await loadDeckDetails();
+        
+        if (typeof updateLoadingMessage === 'function') {
+            updateLoadingMessage('Carregando Baralho', 'Carregando flashcards...');
+            updateLoadingProgress(75);
+        }
+        
+        await loadFlashcards();
+        
+        if (typeof updateLoadingProgress === 'function') {
+            updateLoadingProgress(100);
+        }
+        
+        if (typeof updateLoadingMessage === 'function') {
+            updateLoadingMessage('Pronto!', 'Baralho carregado com sucesso');
+        }
+        
+        //  ADICIONADO - Finalizar loading
+        setTimeout(() => {
+            window.pageLoadingComplete = true;
+            if (typeof hideLoading === 'function') {
+                hideLoading();
+            }
+        }, 500);
+        
     } catch (error) {
         console.error('Erro ao carregar dados da página:', error);
-        showToast('Erro ao carregar os dados do baralho', 'error');
+        
+        //  ADICIONADO - Tratamento de erro
+        if (typeof updateLoadingMessage === 'function') {
+            updateLoadingMessage('Erro', 'Não foi possível carregar os dados');
+        }
+        
+        setTimeout(() => {
+            if (typeof hideLoading === 'function') {
+                hideLoading();
+            }
+            showToast('Erro ao carregar os dados do baralho', 'error');
+        }, 1000);
     }
 }
 
@@ -71,7 +140,11 @@ async function loadDeckDetails() {
 
 async function loadFlashcards(previousCardCount = -1) {
     const container = document.getElementById('flashcards-container');
-    showLoadingState(container);
+    
+    // Se o loading global estiver ativo, não mostra loading local
+    if (window.pageLoadingComplete !== false) {
+        showLoadingState(container);
+    }
 
     try {
         AppState.currentFlashcards = await fetchFlashcards(AppState.deckId);
@@ -170,7 +243,17 @@ async function handleGenerateSubmit(e) {
     setButtonLoading(button, 'Gerando...');
 
     try {
-        const result = await processGeneration(currentMode);
+        // MODIFICADO - Usar loading global se disponível
+        let result;
+        if (window.globalLoader && typeof window.globalLoader.wrapAsyncOperation === 'function') {
+            result = await window.globalLoader.wrapAsyncOperation(
+                processGeneration(currentMode),
+                { title: 'Gerando Flashcards', subtitle: 'A IA está analisando o conteúdo...' }
+            );
+        } else {
+            result = await processGeneration(currentMode);
+        }
+        
         if (result) {
             showToast('Pedido de geração enviado! Seus cards aparecerão em breve.', 'info');
             form.style.display = 'none';
