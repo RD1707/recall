@@ -180,10 +180,6 @@ const generateCardsFromFile = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        // Log para debug (remova depois que funcionar)
-        console.log('DEBUG - req.body:', req.body);
-        console.log('DEBUG - req.file:', req.file ? req.file.originalname : 'No file');
-
         if (!req.file) {
             return res.status(400).json({ 
                 message: 'Nenhum arquivo foi enviado.', 
@@ -228,15 +224,12 @@ const generateCardsFromFile = async (req, res) => {
 
         const { text: textContent, originalLength, wasOptimized, processingInfo } = extractionResult;
 
-        // CORREÇÃO: Processar parâmetros manualmente (sem validação Zod problemática)
         const rawCount = req.body.count;
         const rawType = req.body.type;
 
-        // Converter e validar manualmente
         const count = rawCount ? parseInt(rawCount, 10) : 5;
         const type = rawType || 'Pergunta e Resposta';
 
-        // Validação básica
         if (count < 1 || count > 15) {
             return res.status(400).json({ 
                 message: 'Quantidade deve estar entre 1 e 15.', 
@@ -251,7 +244,6 @@ const generateCardsFromFile = async (req, res) => {
             });
         }
 
-        // Preparar dados para geração
         const jobData = {
             deckId,
             textContent,
@@ -264,15 +256,6 @@ const generateCardsFromFile = async (req, res) => {
                 category: SUPPORTED_MIME_TYPES[req.file.mimetype].category
             }
         };
-
-        // Log dos dados finais
-        console.log('DEBUG - jobData preparado:', {
-            deckId,
-            textLength: textContent.length,
-            count,
-            type,
-            filename: processingInfo.filename
-        });
 
         // Processar geração
         if (isRedisConnected) {
@@ -308,7 +291,6 @@ const generateCardsFromFile = async (req, res) => {
         }
 
     } catch (error) {
-        console.error('ERRO COMPLETO na generateCardsFromFile:', error);
         logger.error(`Erro na geração via arquivo: ${error.message}`);
         res.status(500).json({ 
             message: error.message || 'Erro ao gerar flashcards do arquivo.', 

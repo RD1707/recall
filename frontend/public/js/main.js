@@ -1,16 +1,10 @@
-/**
- * Módulo DashboardApp v2.0
- * Gerencia a interatividade e o estado do dashboard com foco em performance e legibilidade.
- */
 const DashboardApp = {
-    // 1. STATE: Centraliza os dados dinâmicos da aplicação.
     state: {
         allDecks: [],
         selectedDeckColor: '#4f46e5',
         searchTimeout: null,
     },
 
-    // 2. ELEMENTS: Armazena referências aos elementos do DOM para acesso rápido.
     elements: {
         decksGrid: null,
         emptyState: null,
@@ -24,11 +18,7 @@ const DashboardApp = {
         scrollToTopBtn: null,
     },
 
-    /**
-     * Ponto de entrada da aplicação.
-     */
     init() {
-        // Garante que o DOM está pronto antes de executar
         document.addEventListener('DOMContentLoaded', () => {
             this.cacheElements();
             this.registerEventListeners();
@@ -36,9 +26,6 @@ const DashboardApp = {
         });
     },
 
-    /**
-     * Mapeia as referências dos elementos do DOM para o objeto 'elements'.
-     */
     cacheElements() {
         this.elements.decksGrid = document.getElementById('decks-grid');
         this.elements.emptyState = document.getElementById('empty-state');
@@ -52,9 +39,6 @@ const DashboardApp = {
         this.elements.scrollToTopBtn = document.getElementById('scroll-to-top');
     },
 
-    /**
-     * Configura todos os listeners de eventos da página de forma centralizada.
-     */
     registerEventListeners() {
         document.getElementById('create-deck-btn').addEventListener('click', () => this.utils.showModal(this.elements.createDeckModal));
         this.elements.deleteDeckBtn.addEventListener('click', () => this.handlers.handleDeleteDeck());
@@ -86,9 +70,6 @@ const DashboardApp = {
         window.addEventListener('scroll', () => this.utils.toggleScrollToTopButton());
     },
 
-    /**
-     * Carrega os dados iniciais dos baralhos e atualiza a UI.
-     */
     async loadInitialData() {
         this.render.renderLoadingState();
         try {
@@ -96,13 +77,11 @@ const DashboardApp = {
             this.state.allDecks = decks || [];
             this.render.filterAndRenderDecks();
         } catch (error) {
-            console.error("Falha ao carregar os baralhos:", error);
             showToast("Não foi possível carregar seus baralhos.", "error");
             this.render.renderErrorState();
         }
     },
 
-    // 3. HANDLERS: Funções que processam as interações do usuário.
     handlers: {
         async handleCreateDeck(event) {
             event.preventDefault();
@@ -122,7 +101,6 @@ const DashboardApp = {
                     showToast('Baralho criado com sucesso!', 'success');
                     DashboardApp.utils.hideModal(DashboardApp.elements.createDeckModal);
                     form.reset();
-                    // Recarrega os dados para mostrar o novo baralho
                     await DashboardApp.loadInitialData();
                 }
             } catch (error) {
@@ -177,7 +155,7 @@ const DashboardApp = {
             clearTimeout(DashboardApp.state.searchTimeout);
             DashboardApp.state.searchTimeout = setTimeout(() => {
                 DashboardApp.render.filterAndRenderDecks();
-            }, 300); // Debounce de 300ms para performance
+            }, 300);
         },
 
         toggleFilterMenu(event) {
@@ -207,7 +185,6 @@ const DashboardApp = {
         },
     },
 
-    // 4. RENDER: Funções responsáveis por manipular o DOM.
     render: {
         filterAndRenderDecks() {
             const searchTerm = DashboardApp.elements.searchInput.value.toLowerCase().trim();
@@ -239,7 +216,6 @@ const DashboardApp = {
             } else {
                 DashboardApp.elements.emptyState.classList.add('hidden');
                 
-                // MELHORIA: Adiciona o card de ação no topo da grade
                 DashboardApp.elements.decksGrid.appendChild(this.createActionCardElement());
                 
                 decks.forEach((deck, index) => {
@@ -337,7 +313,6 @@ const DashboardApp = {
         }
     },
 
-    // 5. UTILS: Funções de ajuda e utilitários.
     utils: {
         showModal(modal) {
             if (!modal) return;
@@ -400,5 +375,4 @@ const DashboardApp = {
     }
 };
 
-// Inicia a aplicação.
 DashboardApp.init();

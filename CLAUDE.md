@@ -1,6 +1,3 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 Recall is an AI-powered flashcard platform that generates intelligent study materials from various content sources. The system uses spaced repetition with AI explanations to help users memorize information more effectively.
