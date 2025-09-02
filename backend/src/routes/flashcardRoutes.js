@@ -16,11 +16,11 @@ if (typeof controller.updateFlashcard !== 'function' || typeof controller.delete
 // ------ NOVA ESTRUTURA ------
 // Agrupa as rotas que compartilham o mesmo caminho '/:cardId'
 router.route('/:cardId')
-    .put(authMiddleware, controller.updateFlashcard)
-    .delete(authMiddleware, controller.deleteFlashcard);
+    .put(authMiddleware.authenticateToken, controller.updateFlashcard)
+    .delete(authMiddleware.authenticateToken, controller.deleteFlashcard);
 
 // A rota de review continua separada, pois o caminho é diferente
-router.post('/:cardId/review', authMiddleware, controller.reviewFlashcard);
+router.post('/:cardId/review', authMiddleware.authenticateToken, controller.reviewFlashcard);
 
 
 module.exports = router;
