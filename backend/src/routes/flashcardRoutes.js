@@ -1,26 +1,19 @@
-// backend/src/routes/flashcardRoutes.js
-
 const express = require('express');
 const router = express.Router();
-
-// Para evitar qualquer chance de conflito de nome, vamos renomear a variável
-const controller = require('../controllers/flashcardController');
+const flashcardController = require('../controllers/flashcardController');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// Verificação final para garantir que a função existe antes de criar a rota
-if (typeof controller.updateFlashcard !== 'function' || typeof controller.deleteFlashcard !== 'function') {
-    // Se isso acontecer, o problema está no arquivo do controller
-    throw new Error('As funções do flashcardController não foram exportadas corretamente.');
-}
+router.use(authMiddleware.authenticateToken);
 
-// ------ NOVA ESTRUTURA ------
-// Agrupa as rotas que compartilham o mesmo caminho '/:cardId'
-router.route('/:cardId')
-    .put(authMiddleware.authenticateToken, controller.updateFlashcard)
-    .delete(authMiddleware.authenticateToken, controller.deleteFlashcard);
+router.route('/decks/:deckId/flashcards')
+    .get(flashcardController.getFlashcardsInDeck)
+    .post(flashcardController.createFlashcard);
 
-// A rota de review continua separada, pois o caminho é diferente
-router.post('/:cardId/review', authMiddleware.authenticateToken, controller.reviewFlashcard);
+router.route('/flashcards/:cardId')
+    .put(flashcardController.updateFlashcard)
+    .delete(flashcardController.deleteFlashcard);
 
+router.post('/flashcards/:cardId/review', flashcardController.reviewFlashcard);
+router.post('/flashcards/:cardId/explain', flashcardController.getExplanation);
 
 module.exports = router;

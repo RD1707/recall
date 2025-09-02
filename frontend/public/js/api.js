@@ -8,10 +8,8 @@ const API_BASE_URL = '/api';
 
 async function apiCall(endpoint, method = 'GET', body = null) {
     const { data: { session } } = await _supabase.auth.getSession();
-
     if (!session) {
-        const publicPages = ['/', '/index.html', '/login.html'];
-        if (!publicPages.includes(window.location.pathname)) {
+        if (!window.location.pathname.endsWith('login.html') && !window.location.pathname.endsWith('index.html')) {
             window.location.href = 'login.html';
         }
         return null;
@@ -32,22 +30,17 @@ async function apiCall(endpoint, method = 'GET', body = null) {
 
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({
-                message: `Erro no servidor (Status: ${response.status})`
+                message: `O servidor respondeu com um erro (Status: ${response.status})`
             }));
             throw new Error(errorData.message || `Falha na requisição para ${endpoint}`);
         }
-
         return response.status !== 204 ? await response.json() : { success: true };
-
     } catch (error) {
-        console.error(`API Call Error for ${endpoint}:`, error.message);
-        if (typeof showToast === 'function') {
-            showToast(error.message, 'error');
-        }
-        return null; 
+        console.error(`Erro na chamada à API para ${endpoint}:`, error.message);
+        showToast(error.message || 'Ocorreu um erro desconhecido. Por favor, tente novamente.', 'error');
+        return null;
     }
 }
 
@@ -57,19 +50,15 @@ const updateDeck = (deckId, title, description, color) => apiCall(`/decks/${deck
 const deleteDeck = (deckId) => apiCall(`/decks/${deckId}`, 'DELETE');
 const shareDeck = (deckId) => apiCall(`/decks/${deckId}/share`, 'POST');
 
-
 const fetchFlashcards = (deckId) => apiCall(`/decks/${deckId}/flashcards`);
-const createFlashcard = (deckId, cardData) => apiCall(`/decks/${deckId}/flashcards`, 'POST', cardData); // <-- ADICIONADO AQUI
 const updateFlashcard = (cardId, data) => apiCall(`/flashcards/${cardId}`, 'PUT', data);
 const deleteFlashcard = (cardId) => apiCall(`/flashcards/${cardId}`, 'DELETE');
 const fetchReviewCards = (deckId) => apiCall(`/decks/${deckId}/review`);
 const submitReview = (cardId, quality) => apiCall(`/flashcards/${cardId}/review`, 'POST', { quality });
 
-
-const generateFlashcards = (deckId, params) => apiCall(`/decks/${deckId}/generate-text`, 'POST', params); // <-- CORRIGIDO
-const generateFlashcardsFromFile = (deckId, formData) => apiCall(`/decks/${deckId}/generate-file`, 'POST', formData); // <-- CORRIGIDO
-const generateFlashcardsFromYouTube = (deckId, params) => apiCall(`/decks/${deckId}/generate-youtube`, 'POST', params); // <-- CORRIGIDO
-
+const generateFlashcards = (deckId, params) => apiCall(`/decks/${deckId}/generate`, 'POST', params);
+const generateFlashcardsFromFile = (deckId, formData) => apiCall(`/decks/${deckId}/generate-from-file`, 'POST', formData);
+const generateFlashcardsFromYouTube = (deckId, params) => apiCall(`/decks/${deckId}/generate-from-youtube`, 'POST', params);
 
 const fetchProfile = () => apiCall('/profile');
 const updateProfile = (data) => apiCall('/profile', 'PUT', data);

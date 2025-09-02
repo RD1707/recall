@@ -1,3 +1,17 @@
+// ===================================================================================
+// ==                          RECALL HEADER COMPONENT                            ==
+// ==                          v2.0.0 - por Trapp                                 ==
+// ==                                                                               ==
+// ==  INSTRUÇÕES:                                                                ==
+// ==  1. Salve este arquivo como 'headerComponent.js' na sua pasta `js`.           ==
+// ==  2. Adicione as seguintes tags no <head> do seu HTML, ANTES de fechar a tag:==
+// ==     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> ==
+// ==     <script src="js/api.js"></script>                                         ==
+// ==     <script src="js/notifications.js"></script>                              ==
+// ==  3. Adicione a seguinte tag ANTES de fechar a tag </body> no seu HTML:       ==
+// ==     <script src="js/headerComponent.js"></script>                              ==
+// ===================================================================================
+
 class HeaderComponent {
     constructor() {
         this.render();
@@ -438,6 +452,8 @@ class HeaderComponent {
         document.querySelectorAll('.theme-option').forEach(button => {
             button.addEventListener('click', () => {
                 const theme = button.dataset.theme;
+                // Aqui você pode adicionar a lógica para alterar o tema (ex: adicionar uma classe ao body)
+                // document.body.className = `theme-${theme}`;
                 showToast(`Tema alterado para ${theme}`, 'info');
                 document.querySelectorAll('.theme-option').forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
