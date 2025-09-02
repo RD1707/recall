@@ -170,11 +170,15 @@ body {
     margin-bottom: 1.5rem;
 }
 
+/* MELHORIA (UI): Adicionando truncamento de texto para a descrição dos baralhos */
 .deck-card-body p {
     color: var(--color-text-muted);
     font-size: var(--font-size-base);
     line-height: 1.6;
     margin: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .deck-card-footer {
