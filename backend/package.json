@@ -18,15 +18,8 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "ioredis": "^5.4.1",
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
     "mammoth": "^1.7.2",
-=======
     "jsonwebtoken": "^9.0.2",
->>>>>>> Stashed changes
-=======
-    "jsonwebtoken": "^9.0.2",
->>>>>>> Stashed changes
     "multer": "^1.4.5-lts.1",
     "pdf-parse": "^1.1.1",
     "tesseract.js": "^5.0.5",
