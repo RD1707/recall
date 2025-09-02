@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recall - Estude de forma mais inteligente com Flashcards de IA</title>
     <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="cookies.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -198,5 +199,20 @@
 
     <script src="js/landing.js"></script>
 </body>
-
+<script src="js/landing.js"></script>
+<script src="cookies.js"></script>
+<div class="cookie-banner" id="cookieBanner">
+    <div class="cookie-content">
+        <div class="cookie-icon">🍪</div>
+        <div class="cookie-text">
+            <h3>Nós usamos cookies</h3>
+            <p>Utilizamos cookies para melhorar sua experiência. <a href="#" onclick="showPreferences()">Gerenciar</a></p>
+        </div>
+        <div class="cookie-actions">
+            <button class="btn btn-secondary" onclick="rejectCookies()">Rejeitar</button>
+            <button class="btn btn-primary" onclick="acceptAllCookies()">Aceitar</button>
+        </div>
+    </div>
+</div>
+</body>
 </html>
