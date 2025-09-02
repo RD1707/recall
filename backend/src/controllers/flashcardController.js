@@ -1,272 +1,252 @@
+// backend/src/controllers/flashcardController.js
+
 const supabase = require('../config/supabaseClient');
-const { calculateSm2 } = require('../services/srsService');
-const { z } = require('zod');
-const logger = require('../config/logger'); 
-const { getExplanationForFlashcard } = require('../services/cohereService');
+const logger = require('../config/logger');
 
-const flashcardSchema = z.object({
-    question: z.string().min(1, 'A pergunta é obrigatória.'),
-    answer: z.string().min(1, 'A resposta é obrigatória.'),
-    card_type: z.string().optional(),
-    options: z.any().optional()
-});
-
-const reviewSchema = z.object({
-    quality: z.number({ required_error: 'A qualidade da resposta é obrigatória.' }).int().min(0).max(5),
-});
-
-const checkDeckOwnership = async (deckId, userId) => {
-    const { data, error } = await supabase
-        .from('decks')
-        .select('id')
-        .eq('id', deckId)
-        .eq('user_id', userId)
-        .single();
-    return !error && data;
-};
-
-const getFlashcardsInDeck = async (req, res) => {
+/**
+ * Busca todos os flashcards de um baralho específico.
+ */
+const getFlashcardsByDeck = async (req, res) => {
     const { deckId } = req.params;
     const userId = req.user.id;
 
     try {
-        const isOwner = await checkDeckOwnership(deckId, userId);
-        if (!isOwner) {
-            return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
+        // Primeiro, verifica se o baralho pertence ao usuário
+        const { data: deck, error: deckError } = await supabase
+            .from('decks')
+            .select('id')
+            .eq('id', deckId)
+            .eq('user_id', userId)
+            .single();
+
+        if (deckError || !deck) {
+            logger.warn(`User ${userId} failed to access deck ${deckId}.`);
+            return res.status(404).json({ message: 'Baralho não encontrado ou não pertence ao usuário.' });
         }
 
+        // Se o baralho for do usuário, busca os flashcards
         const { data, error } = await supabase
             .from('flashcards')
             .select('*')
             .eq('deck_id', deckId)
             .order('created_at', { ascending: true });
 
-        if (error) throw error;
+        if (error) {
+            throw error;
+        }
+
         res.status(200).json(data);
     } catch (error) {
         logger.error(`Error fetching flashcards for deck ${deckId}: ${error.message}`);
-        res.status(500).json({ message: 'Erro ao buscar os flashcards.', code: 'INTERNAL_SERVER_ERROR' });
+        res.status(500).json({ message: 'Erro interno do servidor ao buscar os flashcards.' });
     }
 };
 
+/**
+ * Cria um novo flashcard em um baralho.
+ */
 const createFlashcard = async (req, res) => {
     const { deckId } = req.params;
+    const { question, answer } = req.body;
     const userId = req.user.id;
-    try {
-        const { question, answer, card_type, options } = flashcardSchema.parse(req.body);
 
-        const isOwner = await checkDeckOwnership(deckId, userId);
-        if (!isOwner) {
-            return res.status(404).json({ message: 'Baralho não encontrado ou acesso negado.', code: 'NOT_FOUND' });
+    if (!question || !answer) {
+        return res.status(400).json({ message: 'Pergunta e resposta são obrigatórias.' });
+    }
+
+    try {
+        // Verifica se o baralho pertence ao usuário antes de adicionar o card
+        const { data: deck, error: deckError } = await supabase
+            .from('decks')
+            .select('id')
+            .eq('id', deckId)
+            .eq('user_id', userId)
+            .single();
+
+        if (deckError || !deck) {
+            return res.status(404).json({ message: 'Não é possível adicionar card a um baralho que não é seu.' });
         }
 
         const { data, error } = await supabase
             .from('flashcards')
-            .insert([{ deck_id: deckId, question, answer, card_type, options }])
+            .insert([{
+                deck_id: deckId,
+                question,
+                answer,
+                card_type: 'Pergunta e Resposta', // <-- CORREÇÃO APLICADA AQUI
+            }])
             .select()
             .single();
 
-        if (error) throw error;
-        res.status(201).json({ message: 'Flashcard criado com sucesso!', flashcard: data });
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return res.status(400).json({ message: error.errors[0].message, code: 'VALIDATION_ERROR' });
+        if (error) {
+            logger.error(`Error creating flashcard in deck ${deckId}: ${error.message}`);
+            throw error;
         }
-        logger.error(`Error creating flashcard in deck ${deckId}: ${error.message}`);
-        res.status(500).json({ message: 'Erro interno do servidor ao criar o flashcard.', code: 'INTERNAL_SERVER_ERROR' });
+
+        res.status(201).json(data);
+    } catch (error) {
+        // O log de erro já ocorre na cláusula if(error) acima
+        res.status(500).json({ message: 'Erro interno do servidor ao criar o flashcard.' });
     }
 };
 
+/**
+ * Atualiza um flashcard existente.
+ */
 const updateFlashcard = async (req, res) => {
     const { cardId } = req.params;
+    const { question, answer } = req.body;
     const userId = req.user.id;
+
+    if (!question || !answer) {
+        return res.status(400).json({ message: 'Pergunta e resposta não podem ser vazias.' });
+    }
+
     try {
-        const { question, answer, options } = flashcardSchema.partial().parse(req.body);
+        // Verifica se o flashcard pertence a um baralho do usuário
+        const { data: ownerCheck, error: ownerError } = await supabase
+            .from('flashcards')
+            .select('decks(user_id)')
+            .eq('id', cardId)
+            .single();
 
-        const { data: cardData, error: cardError } = await supabase
-            .from('flashcards').select('*, decks(user_id)').eq('id', cardId).single();
-
-        if (cardError || !cardData) {
-            return res.status(404).json({ message: 'Flashcard não encontrado.', code: 'NOT_FOUND' });
-        }
-        if (cardData.decks.user_id !== userId) {
-            return res.status(403).json({ message: 'Acesso negado.', code: 'FORBIDDEN' });
+        if (ownerError || !ownerCheck || ownerCheck.decks.user_id !== userId) {
+            return res.status(404).json({ message: 'Flashcard não encontrado ou não pertence ao usuário.' });
         }
 
         const { data, error } = await supabase
             .from('flashcards')
-            .update({ question, answer, options })
+            .update({ question, answer })
             .eq('id', cardId)
             .select()
             .single();
 
-        if (error) throw error;
-        res.status(200).json({ message: 'Flashcard atualizado com sucesso!', flashcard: data });
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return res.status(400).json({ message: error.errors[0].message, code: 'VALIDATION_ERROR' });
+        if (error) {
+            throw error;
         }
+
+        res.status(200).json(data);
+    } catch (error) {
         logger.error(`Error updating flashcard ${cardId}: ${error.message}`);
-        res.status(500).json({ message: 'Erro interno do servidor ao atualizar o flashcard.', code: 'INTERNAL_SERVER_ERROR' });
+        res.status(500).json({ message: 'Erro interno do servidor ao atualizar o flashcard.' });
     }
 };
 
+/**
+ * Exclui um flashcard.
+ */
 const deleteFlashcard = async (req, res) => {
     const { cardId } = req.params;
     const userId = req.user.id;
 
     try {
-        const { data: cardData, error: cardError } = await supabase
-            .from('flashcards').select('*, decks(user_id)').eq('id', cardId).single();
+        // Verifica se o flashcard pertence a um baralho do usuário
+        const { data: ownerCheck, error: ownerError } = await supabase
+            .from('flashcards')
+            .select('id, decks(user_id)')
+            .eq('id', cardId)
+            .single();
 
-        if (cardError || !cardData) {
-            return res.status(404).json({ message: 'Flashcard não encontrado.', code: 'NOT_FOUND' });
+        if (ownerError || !ownerCheck || ownerCheck.decks.user_id !== userId) {
+            return res.status(404).json({ message: 'Flashcard não encontrado ou não pertence ao usuário.' });
         }
-        if (cardData.decks.user_id !== userId) {
-            return res.status(403).json({ message: 'Acesso negado.', code: 'FORBIDDEN' });
+
+        const { error } = await supabase
+            .from('flashcards')
+            .delete()
+            .eq('id', cardId);
+
+        if (error) {
+            throw error;
         }
 
-        const { error } = await supabase.from('flashcards').delete().eq('id', cardId);
-
-        if (error) throw error;
-        res.status(200).json({ message: 'Flashcard deletado com sucesso!' });
+        res.status(204).send(); // 204 No Content para sucesso na exclusão
     } catch (error) {
         logger.error(`Error deleting flashcard ${cardId}: ${error.message}`);
-        res.status(500).json({ message: 'Erro interno do servidor ao deletar o flashcard.', code: 'INTERNAL_SERVER_ERROR' });
+        res.status(500).json({ message: 'Erro interno do servidor ao excluir o flashcard.' });
     }
 };
 
+/**
+ * Processa a revisão de um flashcard.
+ */
 const reviewFlashcard = async (req, res) => {
     const { cardId } = req.params;
+    const { quality } = req.body;
     const userId = req.user.id;
+  
+    if (quality === undefined || quality < 0 || quality > 5) {
+      return res.status(400).json({ message: 'Qualidade da revisão inválida. Deve ser um número entre 0 e 5.' });
+    }
+  
     try {
-        const { quality } = reviewSchema.parse(req.body);
+        // Validação se o card pertence ao usuário pode ser adicionada aqui
+        const { data: card, error: cardError } = await supabase
+            .from('flashcards')
+            .select('*')
+            .eq('id', cardId)
+            .single();
 
-        const { data: currentCard, error: fetchError } = await supabase
-            .from('flashcards').select('*, decks(id, user_id)').eq('id', cardId).single();
-
-        if (fetchError || !currentCard) {
-            return res.status(404).json({ message: 'Flashcard não encontrado.', code: 'NOT_FOUND' });
-        }
-        if (currentCard.decks.user_id !== userId) {
-            return res.status(403).json({ message: 'Acesso negado.', code: 'FORBIDDEN' });
-        }
-
-        const newSrsData = calculateSm2(currentCard, quality);
-
-        const { data: updatedCard, error: updateError } = await supabase
-            .from('flashcards').update(newSrsData).eq('id', cardId).select().single();
-
-        if (updateError || !updatedCard) {
-            throw updateError || new Error('Falha ao atualizar o flashcard.');
+        if (cardError || !card) {
+            return res.status(404).json({ message: 'Flashcard não encontrado.' });
         }
 
-        const { error: historyError } = await supabase
-            .from('review_history')
-            .insert({
-                user_id: userId,
-                card_id: cardId,
-                deck_id: currentCard.deck_id, 
-                quality: quality
-            });
-
-        if (historyError) {
-            logger.error(`Falha ao guardar no histórico de revisões: ${historyError.message}`);
-        }
-
+        // Lógica de SRS (Spaced Repetition System)
+        // Esta é uma implementação SM-2 simplificada
+        let { repetitions, ease_factor, interval } = card;
 
         if (quality >= 3) {
-            try {
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('points, current_streak, last_studied_at')
-                    .eq('id', userId)
-                    .single();
-
-                if (profileError) throw profileError;
-
-                const pointsToAdd = 10;
-                const newPoints = profile.points + pointsToAdd;
-
-                let newStreak = profile.current_streak;
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                if (profile.last_studied_at) {
-                    const lastStudied = new Date(profile.last_studied_at);
-                    lastStudied.setHours(0, 0, 0, 0);
-
-                    const diffTime = today - lastStudied;
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                    if (diffDays === 1) {
-                        newStreak += 1; 
-                    } else if (diffDays > 1) {
-                        newStreak = 1; 
-                    }
-                } else {
-                    newStreak = 1;
-                }
-
-                await supabase
-                    .from('profiles')
-                    .update({
-                        points: newPoints,
-                        current_streak: newStreak,
-                        last_studied_at: new Date().toISOString()
-                    })
-                    .eq('id', userId);
-
-            } catch (gamificationError) {
-                console.error('Erro na lógica de gamificação:', gamificationError);
-                logger.error(`Gamification error for user ${userId} on card ${cardId}: ${gamificationError.message}`);
+            if (repetitions === 0) {
+                interval = 1;
+            } else if (repetitions === 1) {
+                interval = 6;
+            } else {
+                interval = Math.round(interval * ease_factor);
             }
+            repetitions += 1;
+        } else {
+            repetitions = 0;
+            interval = 1;
         }
 
-        res.status(200).json({ message: 'Flashcard revisado com sucesso!', flashcard: updatedCard });
+        ease_factor = ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+        if (ease_factor < 1.3) {
+            ease_factor = 1.3;
+        }
+
+        const next_review_date = new Date();
+        next_review_date.setDate(next_review_date.getDate() + interval);
+
+        const { data: updatedCard, error: updateError } = await supabase
+            .from('flashcards')
+            .update({
+                repetitions,
+                ease_factor,
+                interval,
+                next_review_date: next_review_date.toISOString(),
+                last_reviewed_at: new Date().toISOString()
+            })
+            .eq('id', cardId)
+            .select()
+            .single();
+
+        if (updateError) {
+            throw updateError;
+        }
+
+        res.status(200).json(updatedCard);
 
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return res.status(400).json({ message: error.errors[0].message, code: 'VALIDATION_ERROR' });
-        }
-        logger.error(`Error reviewing flashcard ${cardId} for user ${userId}: ${error.message}`);
-        res.status(500).json({ message: 'Erro interno do servidor ao revisar o flashcard.', code: 'INTERNAL_SERVER_ERROR' });
+      logger.error(`Error processing review for card ${cardId}: ${error.message}`);
+      res.status(500).json({ message: 'Erro ao processar a revisão do flashcard.' });
     }
 };
 
-const getExplanation = async (req, res) => {
-    const { cardId } = req.params;
-    const userId = req.user.id;
-    try {
-        const { data: card, error: fetchError } = await supabase
-            .from('flashcards').select('question, answer, decks(user_id)').eq('id', cardId).single();
-
-        if (fetchError || !card) {
-            return res.status(404).json({ message: 'Flashcard não encontrado.', code: 'NOT_FOUND' });
-        }
-        if (card.decks.user_id !== userId) {
-            return res.status(403).json({ message: 'Acesso negado.', code: 'FORBIDDEN' });
-        }
-
-        const explanation = await getExplanationForFlashcard(card.question, card.answer);
-
-        if (!explanation) {
-            return res.status(500).json({ message: 'Não foi possível gerar a explicação no momento.', code: 'IA_SERVICE_ERROR' });
-        }
-
-        res.status(200).json({ explanation });
-
-    } catch (error) {
-        logger.error(`Erro ao obter explicação para o card ${cardId}: ${error.message}`);
-        res.status(500).json({ message: 'Erro interno do servidor.', code: 'INTERNAL_SERVER_ERROR' });
-    }
-};
 
 module.exports = {
-    getFlashcardsInDeck,
+    getFlashcardsByDeck,
     createFlashcard,
     updateFlashcard,
     deleteFlashcard,
-    reviewFlashcard,
-    getExplanation
+    reviewFlashcard
 };
