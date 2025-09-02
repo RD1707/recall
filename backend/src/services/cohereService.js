@@ -9,6 +9,8 @@ const generateFlashcardsFromText = async (textContent, count = 5, type = 'Pergun
     let promptInstruction = '';
     if (type === 'Múltipla Escolha') {
         promptInstruction = `Cada flashcard deve ser um objeto com as chaves "question", "options" (um array de 4 strings), e "answer" (a string da resposta correta).`;
+    } else if (type === 'Preencher Lacunas') {
+        promptInstruction = `Gere flashcards no formato JSON para "preencher lacunas". Cada flashcard deve ser um objeto com as chaves "sentence" (a frase completa), "blank" (a palavra ou frase que deve ser ocultada) e "answer" (a palavra ou frase correta, que deve ser a mesma que a "blank").`;
     } else {
         promptInstruction = `Cada flashcard deve ser um objeto com as chaves "question" e "answer".`;
     }
