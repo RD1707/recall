@@ -39,3 +39,4 @@
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 10:14:54"}
