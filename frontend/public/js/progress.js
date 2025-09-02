@@ -2,12 +2,16 @@ const pageState = {
     reviewsChart: null,
 };
 
+//  ADICIONADO - Sistema de loading
 window.pageLoadingComplete = false;
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await initializeProgressPage();
     } catch (error) {
+        console.error('Erro ao inicializar página de progresso:', error);
+        
+        //  ADICIONADO - Tratamento de erro
         if (typeof updateLoadingMessage === 'function') {
             updateLoadingMessage('Erro', 'Não foi possível carregar as estatísticas');
         }
@@ -22,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function initializeProgressPage() {
+    //  ADICIONADO - Loading messages
     if (typeof updateLoadingMessage === 'function') {
         updateLoadingMessage('Analisando Progresso', 'Configurando interface...');
     }
@@ -38,6 +43,7 @@ async function initializeProgressPage() {
         updateLoadingMessage('Pronto!', 'Análise concluída');
     }
     
+    //  ADICIONADO - Finalizar loading
     setTimeout(() => {
         window.pageLoadingComplete = true;
         if (typeof hideLoading === 'function') {
@@ -50,6 +56,7 @@ async function loadAllProgressData(range = 7) {
     renderSkeletons();
 
     try {
+        //  MODIFICADO - Usar loading global se disponível para operações múltiplas
         if (window.globalLoader && typeof window.globalLoader.wrapMultipleOperations === 'function') {
             const operations = [
                 {
@@ -77,6 +84,7 @@ async function loadAllProgressData(range = 7) {
 
             await window.globalLoader.wrapMultipleOperations(operations);
         } else {
+            // Fallback para quando o loading global não está disponível
             const [chartData, insightsData, summaryData] = await Promise.all([
                 fetchReviewsOverTime(range), 
                 fetchPerformanceInsights(),  
@@ -88,6 +96,7 @@ async function loadAllProgressData(range = 7) {
             renderInsights(insightsData);
         }
     } catch (error) {
+        console.error('Erro ao carregar dados de progresso:', error);
         showToast('Erro ao carregar algumas informações', 'error');
     }
 }
@@ -111,6 +120,7 @@ function setupEventListeners() {
 
 async function loadAndRenderChart(range) {
     try {
+        //  MODIFICADO - Usar loading global se disponível
         let chartData;
         if (window.globalLoader && typeof window.globalLoader.wrapAsyncOperation === 'function') {
             chartData = await window.globalLoader.wrapAsyncOperation(
@@ -118,6 +128,7 @@ async function loadAndRenderChart(range) {
                 { title: 'Atualizando Gráfico', subtitle: `Carregando dados dos últimos ${range} dias...` }
             );
         } else {
+            // Fallback com loading visual simples
             document.querySelector('.chart-container').style.opacity = '0.5';
             chartData = await fetchReviewsOverTime(range);
             document.querySelector('.chart-container').style.opacity = '1';
@@ -125,6 +136,7 @@ async function loadAndRenderChart(range) {
         
         renderReviewsChart(chartData);
     } catch (error) {
+        console.error('Erro ao carregar gráfico:', error);
         showToast('Erro ao atualizar gráfico', 'error');
     }
 }

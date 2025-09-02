@@ -1,3 +1,9 @@
+// frontend/public/js/loader.js
+
+/**
+ * Sistema Global de Loading para Recall
+ * Gerencia o estado de carregamento em todas as páginas
+ */
 class GlobalLoader {
     constructor() {
         this.overlay = null;
@@ -46,8 +52,13 @@ class GlobalLoader {
     }
 
     init() {
+        // Remove preloader se existir
         this.removePreloader();
+        
+        // Cria o overlay de loading
         this.createOverlay();
+        
+        // Se houver função de loading personalizada na página, aguarda ela
         if (typeof window.pageLoadingComplete !== 'undefined') {
             this.waitForPageLoad();
         }
@@ -98,6 +109,7 @@ class GlobalLoader {
         document.body.appendChild(this.overlay);
         this.isVisible = true;
 
+        // Auto-hide após 10 segundos como fallback
         setTimeout(() => {
             if (this.isVisible) {
                 this.hide();
@@ -126,6 +138,7 @@ class GlobalLoader {
         this.isVisible = false;
         document.body.style.overflow = '';
 
+        // Remove o overlay após a animação
         setTimeout(() => {
             if (this.overlay && this.overlay.parentNode) {
                 this.overlay.parentNode.removeChild(this.overlay);
@@ -158,6 +171,7 @@ class GlobalLoader {
         }
     }
 
+    // Aguarda o carregamento da página através de eventos customizados
     waitForPageLoad() {
         const checkPageLoad = () => {
             if (window.pageLoadingComplete === true) {
@@ -169,6 +183,7 @@ class GlobalLoader {
         checkPageLoad();
     }
 
+    // Métodos de conveniência para diferentes tipos de loading
     showWithSteps(steps = [], currentStep = 0) {
         if (steps.length === 0) {
             this.show();
@@ -180,6 +195,7 @@ class GlobalLoader {
         this.updateProgress((currentStep + 1) / steps.length * 100);
     }
 
+    // Para uso com Promises
     async wrapAsyncOperation(promise, message = null) {
         this.show(message);
         try {
@@ -191,6 +207,8 @@ class GlobalLoader {
             throw error;
         }
     }
+
+    // Para uso com múltiplas operações
     async wrapMultipleOperations(operations = []) {
         this.show();
         
@@ -206,7 +224,7 @@ class GlobalLoader {
             try {
                 await operation();
             } catch (error) {
-                // Continue with other operations
+                console.error(`Erro na operação ${i + 1}:`, error);
             }
         }
         
@@ -215,14 +233,18 @@ class GlobalLoader {
     }
 }
 
+// Instância global
 window.globalLoader = new GlobalLoader();
 
+// Helpers globais para facilitar o uso
 window.showLoading = (message) => window.globalLoader.show(message);
 window.hideLoading = () => window.globalLoader.hide();
 window.updateLoadingMessage = (title, subtitle) => window.globalLoader.updateMessage(title, subtitle);
 window.updateLoadingProgress = (percentage) => window.globalLoader.updateProgress(percentage);
 
+// Auto-hide quando a página terminar de carregar completamente
 window.addEventListener('load', () => {
+    // Aguarda um pouco para garantir que todos os scripts carregaram
     setTimeout(() => {
         if (window.globalLoader.isVisible && typeof window.pageLoadingComplete === 'undefined') {
             window.globalLoader.hide();
@@ -230,6 +252,7 @@ window.addEventListener('load', () => {
     }, 1000);
 });
 
+// Hide loading quando há erro não tratado (fallback)
 window.addEventListener('error', () => {
     setTimeout(() => {
         if (window.globalLoader.isVisible) {
@@ -238,16 +261,19 @@ window.addEventListener('error', () => {
     }, 1000);
 });
 
+// Para páginas SPA ou com roteamento
 window.addEventListener('popstate', () => {
     window.globalLoader.currentPage = window.globalLoader.detectPage();
 });
 
+// Detecta mudanças de tema para ajustar o loading
 if (window.matchMedia) {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         document.body.dataset.theme = e.matches ? 'dark' : 'light';
     });
 }
 
+// Exporta para uso em modules
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = GlobalLoader;
 }

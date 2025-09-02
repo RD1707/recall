@@ -1,3 +1,6 @@
+// frontend/public/js/deck.js
+
+// Estado Global da Aplicação
 const AppState = {
     deckId: null,
     currentFlashcards: [],
@@ -16,6 +19,8 @@ const AppState = {
     cache: new Map(),
     observers: new Map()
 };
+
+// Mensagens de progresso para cada etapa
 const PROCESSING_MESSAGES = {
     1: [
         'Analisando a estrutura do conteúdo...',
@@ -33,8 +38,10 @@ const PROCESSING_MESSAGES = {
         'Preparando para estudo...'
     ]
 };
+
+// Sistema de Cache
 class CacheManager {
-    static set(key, data, ttl = 300000) {
+    static set(key, data, ttl = 300000) { // 5 minutos padrão
         AppState.cache.set(key, {
             data,
             timestamp: Date.now(),
@@ -58,6 +65,8 @@ class CacheManager {
         AppState.cache.clear();
     }
 }
+
+// Inicialização Principal
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await initializeApplication();
@@ -66,9 +75,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         setupAutoSave();
         await loadPageData();
     } catch (error) {
+        console.error('Falha na inicialização:', error);
         handleInitializationError(error);
     }
 });
+
+// Inicialização da Aplicação
 async function initializeApplication() {
     updateLoadingState('Inicializando', 'Verificando parâmetros...');
     
@@ -79,59 +91,80 @@ async function initializeApplication() {
         throw new Error('ID do baralho não encontrado');
     }
 
+    // Restaurar estado salvo localmente
     restoreLocalState();
 }
+
+// Setup de Event Listeners
 function setupEventListeners() {
+    // Sistema de abas
     document.querySelectorAll('.input-tab').forEach(tab => {
         tab.addEventListener('click', handleTabSwitch);
     });
 
+    // Formulário de geração
     const generateForm = document.getElementById('generate-cards-form');
     generateForm.addEventListener('submit', handleGenerateSubmit);
 
+    // Input de número
     document.querySelectorAll('.number-btn').forEach(btn => {
         btn.addEventListener('click', handleNumberInput);
     });
 
+    // Container de flashcards
     const flashcardsContainer = document.getElementById('flashcards-container');
     flashcardsContainer.addEventListener('click', handleFlashcardActions);
 
+    // File upload melhorado
     setupAdvancedFileUpload();
+
+    // Modais
     setupModalSystem();
 
+    // Botão de adicionar card manual
     document.getElementById('add-card-manual-btn').addEventListener('click', openAddCardModal);
 
+    // Compartilhamento
     document.getElementById('share-deck-button').addEventListener('click', handleShareDeck);
     document.getElementById('copy-link-button').addEventListener('click', copyShareLink);
 
+    // Compartilhamento social
     document.querySelectorAll('.social-btn').forEach(btn => {
         btn.addEventListener('click', handleSocialShare);
     });
 
+    // Auto-resize para textareas
     document.querySelectorAll('textarea').forEach(textarea => {
         textarea.addEventListener('input', autoResizeTextarea);
     });
 }
 
+// Sistema de Abas Melhorado
 function handleTabSwitch(e) {
     const tab = e.currentTarget;
     const tabName = tab.dataset.tab;
     
     if (tabName === AppState.currentTab) return;
     
+    // Animar transição
     animateTabTransition(AppState.currentTab, tabName);
+    
+    // Atualizar estado
     AppState.currentTab = tabName;
     
+    // Atualizar UI
     document.querySelectorAll('.input-tab').forEach(t => {
         t.classList.remove('active');
     });
     tab.classList.add('active');
     
+    // Trocar conteúdo
     document.querySelectorAll('.tab-pane').forEach(pane => {
         pane.classList.remove('active');
     });
     document.getElementById(`${tabName}-tab`).classList.add('active');
     
+    // Focar no input apropriado
     focusTabInput(tabName);
 }
 
