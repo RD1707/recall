@@ -40,3 +40,6 @@
 =======
 >>>>>>> Stashed changes
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 10:14:54"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 11:08:39"}
+{"level":"error","message":"Error creating flashcard in deck 3fd5ecc7-c474-4b60-9991-bb18d506f952: null value in column \"card_type\" of relation \"flashcards\" violates not-null constraint","service":"recall-api","timestamp":"2025-09-02 11:09:13"}
+{"level":"error","message":"Error creating flashcard in deck 3fd5ecc7-c474-4b60-9991-bb18d506f952: null value in column \"card_type\" of relation \"flashcards\" violates not-null constraint","service":"recall-api","timestamp":"2025-09-02 11:12:17"}
