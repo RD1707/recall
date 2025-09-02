@@ -13,8 +13,11 @@
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 00:36:40"}
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 08:40:47"}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 16:27:32"}
 =======
+=======
+>>>>>>> Stashed changes
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 14:01:50"}
 {"level":"error","message":"Falha ao criar perfil para o usuário e37ba942-55f9-4963-9adb-f1f6a24f8eea: new row for relation \"profiles\" violates check constraint \"full_name_not_empty\"","service":"recall-api","timestamp":"2025-09-01 14:38:43"}
 {"level":"error","message":"Falha ao criar perfil para o usuário e37ba942-55f9-4963-9adb-f1f6a24f8eea: new row for relation \"profiles\" violates check constraint \"full_name_not_empty\"","service":"recall-api","timestamp":"2025-09-01 14:40:07"}
@@ -32,4 +35,7 @@
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 02:40:49"}
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 02:45:10"}
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 02:59:12"}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
