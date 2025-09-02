@@ -3,7 +3,7 @@ const router = express.Router();
 const flashcardController = require('../controllers/flashcardController');
 const authMiddleware = require('../middleware/authMiddleware');
 
-router.use(authMiddleware);
+router.use(authMiddleware.authenticateToken);
 
 router.route('/decks/:deckId/flashcards')
     .get(flashcardController.getFlashcardsInDeck)

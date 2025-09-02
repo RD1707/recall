@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Campos de registro
     const registerFields = document.querySelector('.register-fields');
     const registerEmailInput = document.getElementById('register-email');
-    const fullnameInput = document.getElementById('fullname');
+    const fullnameInput = document.getElementById('full_name');
     const usernameInput = document.getElementById('username');
     const registerPasswordInput = document.getElementById('register-password');
     const confirmPasswordInput = document.getElementById('confirm-password');
@@ -95,6 +95,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Função para salvar dados do usuário no localStorage
+    function saveUserData(userData) {
+        if (userData.username) {
+            localStorage.setItem('username', userData.username);
+        }
+        if (userData.full_name) {
+            localStorage.setItem('full_name', userData.full_name);
+        }
+        if (userData.points !== undefined) {
+            localStorage.setItem('points', userData.points);
+        }
+        if (userData.current_streak !== undefined) {
+            localStorage.setItem('current_streak', userData.current_streak);
+        }
+    }
+
+    // Funções para mostrar erros de campo
+    function showFieldError(fieldName, errorMessage) {
+        const field = getFieldElement(fieldName);
+        if (field) {
+            // Adicionar classe de erro ao input
+            field.classList.add('error');
+            
+            // Criar ou atualizar mensagem de erro
+            let errorElement = field.parentNode.parentNode.querySelector('.field-error');
+            if (!errorElement) {
+                errorElement = document.createElement('div');
+                errorElement.className = 'field-error';
+                field.parentNode.parentNode.appendChild(errorElement);
+            }
+            errorElement.textContent = errorMessage;
+            errorElement.style.display = 'block';
+        }
+    }
+
+    function clearFieldErrors() {
+        // Remover classe de erro de todos os inputs
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.classList.remove('error');
+        });
+        
+        // Remover todas as mensagens de erro de campo
+        const errorElements = document.querySelectorAll('.field-error');
+        errorElements.forEach(element => {
+            element.remove();
+        });
+    }
+
+    function getFieldElement(fieldName) {
+        if (fieldName === 'email') {
+            return isLogin ? document.getElementById('email') : document.getElementById('register-email');
+        }
+        if (fieldName === 'username') {
+            return document.getElementById('username');
+        }
+        return null;
+    }
+
     _supabase.auth.onAuthStateChange((event) => {
         if (event === 'PASSWORD_RECOVERY') {
             showPanel(updatePasswordPanel);
@@ -107,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
             isLogin = !isLogin;
             updateAuthFormUI();
             authForm.reset();
+            clearFieldErrors(); // Limpar erros ao trocar de modo
         });
     }
 
@@ -129,54 +189,85 @@ document.addEventListener('DOMContentLoaded', () => {
     if (authForm) {
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Obter os valores dos campos
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const authButton = document.getElementById('auth-button');
+
             authButton.disabled = true;
 
             try {
                 if (isLogin) {
-                    // Login
-                    const email = emailInput.value;
-                    const password = passwordInput.value;
-                    
-                    const { error } = await _supabase.auth.signInWithPassword({ 
-                        email, 
-                        password 
+                    // Lógica de login
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
                     });
 
-                    if (error) {
-                        showToast(error.message, 'error');
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        showToast(data.error || 'Erro ao fazer login', 'error');
                     } else {
-                        window.location.href = 'dashboard.html';
+                        // Salvar tokens no localStorage (para compatibilidade)
+                        localStorage.setItem('access_token', data.session.access_token);
+                        localStorage.setItem('refresh_token', data.session.refresh_token);
+                        saveUserData(data.user);
+                        
+                        // IMPORTANTE: Definir a sessão no cliente Supabase
+                        await _supabase.auth.setSession({
+                            access_token: data.session.access_token,
+                            refresh_token: data.session.refresh_token
+                        });
+                        
+                        showToast('Login realizado com sucesso!', 'success');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 1000);
                     }
                 } else {
-                    // Registro
-                    const email = registerEmailInput.value;
-                    const password = registerPasswordInput.value;
-                    const confirmPassword = confirmPasswordInput.value;
-                    const fullname = fullnameInput.value;
-                    const username = usernameInput.value;
-                    const acceptTerms = acceptTermsInput.checked;
-                    const acceptMarketing = acceptMarketingInput.checked;
+                    // Lógica de registro
+                    const registerEmailInput = document.getElementById('register-email');
+                    const registerPasswordInput = document.getElementById('register-password');
+                    const confirmPasswordInput = document.getElementById('confirm-password');
+                    const fullnameInput = document.getElementById('full_name');
+                    const usernameInput = document.getElementById('username');
+                    const acceptTermsInput = document.getElementById('accept-terms');
 
-                    // Validações
+                    const registerEmail = registerEmailInput.value.trim();
+                    const registerPassword = registerPasswordInput.value;
+                    const confirmPassword = confirmPasswordInput.value;
+                    const fullName = fullnameInput.value.trim();
+                    const username = usernameInput.value.trim();
+                    const acceptTerms = acceptTermsInput.checked;
+
+                    // Validações no frontend
                     if (!acceptTerms) {
                         showToast('Você deve aceitar os termos de uso para continuar.', 'error');
                         authButton.disabled = false;
                         return;
                     }
 
-                    if (password !== confirmPassword) {
+                    if (registerPassword !== confirmPassword) {
                         showToast('As senhas não coincidem.', 'error');
                         authButton.disabled = false;
                         return;
                     }
 
-                    if (password.length < 6) {
+                    if (registerPassword.length < 6) {
                         showToast('A senha deve ter no mínimo 6 caracteres.', 'error');
                         authButton.disabled = false;
                         return;
                     }
+                    
+                    if (username.length < 3 || username.length > 20) {
+                        showToast('Nome de usuário deve ter entre 3 e 20 caracteres.', 'error');
+                        authButton.disabled = false;
+                        return;
+                    }
 
-                    // Validar username (apenas letras, números e underscore)
                     const usernameRegex = /^[a-zA-Z0-9_]+$/;
                     if (!usernameRegex.test(username)) {
                         showToast('Nome de usuário inválido. Use apenas letras, números e underscore.', 'error');
@@ -184,60 +275,73 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
 
-                    const { error } = await _supabase.auth.signUp({ 
-                        email, 
-                        password,
-                        options: {
-                            data: {
-                                full_name: fullname,
-                                username: username,
-                                accept_marketing: acceptMarketing
-                            }
-                        }
-                    });
+                    if (fullName.length < 3) {
+                        showToast('O nome completo deve ter no mínimo 3 caracteres.', 'error');
+                        authButton.disabled = false;
+                        return;
+                    }
 
-                    if (error) {
-                        showToast(error.message, 'error');
-                    } else {
-                        showToast('Conta criada com sucesso! Verifique seu e-mail para confirmar.', 'success');
-                        authForm.reset();
-                        isLogin = true;
-                        updateAuthFormUI();
+                    // Log detalhado para debug
+                    const payload = {
+                        email: registerEmail, 
+                        password: registerPassword,
+                        full_name: fullName,
+                        username: username
+                    };
+                    
+                    console.log("Enviando dados para o servidor:", payload);
+                    
+                    try {
+                        const response = await fetch('/api/auth/signup', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const data = await response.json();
+                        
+                        // Log da resposta completa
+                        console.log("Resposta do servidor:", {
+                            status: response.status,
+                            ok: response.ok,
+                            data: data
+                        });
+
+                        if (!response.ok) {
+                            // Limpar erros anteriores
+                            clearFieldErrors();
+                            
+                            // Se for erro de campo específico
+                            if (data.type === 'FIELD_ERROR' && data.field) {
+                                showFieldError(data.field, data.error);
+                            } else {
+                                // Se tiver detalhes do erro, mostrar
+                                if (data.details) {
+                                    console.error("Detalhes do erro:", data.details);
+                                    showToast(`Erro: ${data.error}. Detalhes: ${data.details}`, 'error');
+                                } else {
+                                    showToast(data.error || 'Erro ao criar conta', 'error');
+                                }
+                            }
+                        } else {
+                            showToast('Conta criada com sucesso! Verifique seu e-mail para confirmação.', 'success');
+                            authForm.reset();
+                            isLogin = true;
+                            updateAuthFormUI();
+                        }
+                    } catch (error) {
+                        console.error('Erro na requisição:', error);
+                        showToast('Erro de conexão com o servidor. Verifique se o backend está rodando.', 'error');
                     }
                 }
             } catch (error) {
-                showToast('Ocorreu um erro. Tente novamente.', 'error');
+                console.error('Erro:', error);
+                showToast('Ocorreu um erro inesperado. Tente novamente.', 'error');
             } finally {
                 authButton.disabled = false;
             }
         });
     }
-
-    if (resetPasswordForm) {
-        resetPasswordForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('reset-email').value;
-            const resetButton = document.getElementById('reset-button');
-            resetButton.disabled = true;
-            resetButton.textContent = 'Enviando...';
-
-            try {
-                const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + window.location.pathname,
-                });
-                if (error) {
-                    showToast(error.message, 'error');
-                } else {
-                    showToast('Se o e-mail existir, um link de recuperação foi enviado.', 'success');
-                    resetPasswordForm.reset();
-                }
-            } finally {
-                resetButton.disabled = false;
-                resetButton.textContent = 'Enviar Link de Recuperação';
-            }
-        });
-    }
-
     if (updatePasswordForm) {
         updatePasswordForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -275,6 +379,9 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const { error } = await _supabase.auth.signInWithOAuth({
                     provider: 'google',
+                    options: {
+                        redirectTo: `${window.location.origin}/google-callback.html`
+                    }
                 });
 
                 if (error) {
@@ -289,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Logout
     if (logoutButton) {
         logoutButton.addEventListener('click', async () => {
+            localStorage.clear(); // Limpar todos os dados salvos
             await _supabase.auth.signOut();
             window.location.href = 'index.html';
         });

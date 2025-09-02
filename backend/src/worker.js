@@ -3,9 +3,15 @@ const { Worker } = require('bullmq');
 const supabase = require('./config/supabaseClient');
 const { generateFlashcardsFromText } = require('./services/cohereService');
 const logger = require('./config/logger'); 
-const { connection } = require('./config/queue');
+const { connection, isRedisConnected } = require('./config/queue');
 
 const queueName = 'flashcardGeneration';
+
+// Só inicializar o worker se houver conexão Redis
+if (!connection) {
+  logger.warn('⚠️  Redis não está disponível. Worker não será iniciado.');
+  process.exit(0);
+}
 
 logger.info(`🚀 Worker para a fila "${queueName}" a iniciar...`);
 

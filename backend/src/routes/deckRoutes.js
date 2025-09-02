@@ -9,7 +9,7 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 }, 
 });
 
-router.use(authMiddleware);
+router.use(authMiddleware.authenticateToken);
 
 router.get('/', deckController.getDecks);          
 router.post('/', deckController.createDeck);        

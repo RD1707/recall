@@ -197,6 +197,20 @@
     text-decoration: underline;
 }
 
+/* Estilos para campos com erro */
+.form-control.error {
+    border-color: var(--color-error, #ef4444);
+    box-shadow: 0 0 0 1px var(--color-error, #ef4444);
+}
+
+.field-error {
+    color: var(--color-error, #ef4444);
+    font-size: var(--font-size-sm, 0.875rem);
+    margin-top: var(--space-xs, 0.25rem);
+    display: block;
+    font-weight: 500;
+}
+
 @media (max-width: 992px) {
     .auth-layout {
         grid-template-columns: 1fr;

@@ -12,4 +12,24 @@
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-08-31 12:41:23"}
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 00:36:40"}
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 08:40:47"}
+<<<<<<< Updated upstream
 {"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 16:27:32"}
+=======
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 14:01:50"}
+{"level":"error","message":"Falha ao criar perfil para o usuário e37ba942-55f9-4963-9adb-f1f6a24f8eea: new row for relation \"profiles\" violates check constraint \"full_name_not_empty\"","service":"recall-api","timestamp":"2025-09-01 14:38:43"}
+{"level":"error","message":"Falha ao criar perfil para o usuário e37ba942-55f9-4963-9adb-f1f6a24f8eea: new row for relation \"profiles\" violates check constraint \"full_name_not_empty\"","service":"recall-api","timestamp":"2025-09-01 14:40:07"}
+{"level":"error","message":"Falha ao criar perfil para o usuário d435d4a3-41b3-44c1-adf3-91d2995c116a: new row for relation \"profiles\" violates check constraint \"full_name_not_empty\"","service":"recall-api","timestamp":"2025-09-01 14:40:43"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 15:00:28"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 15:00:59"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 16:14:55"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 16:29:18"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 17:03:41"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 17:08:04"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-01 17:11:43"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 01:56:49"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 02:04:31"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 02:18:05"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 02:40:49"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 02:45:10"}
+{"level":"warn","message":"⚠️  Redis está desabilitado ou a conexão falhou. A geração de IA será síncrona.","service":"recall-api","timestamp":"2025-09-02 02:59:12"}
+>>>>>>> Stashed changes
