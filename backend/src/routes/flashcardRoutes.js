@@ -3,19 +3,24 @@
 const express = require('express');
 const router = express.Router();
 
-// Correction Part 1: Import the entire controller object instead of destructuring.
-// This matches the pattern used in other files (e.g., deckRoutes.js) and is more robust.
-const flashcardController = require('../controllers/flashcardController');
+// Para evitar qualquer chance de conflito de nome, vamos renomear a variável
+const controller = require('../controllers/flashcardController');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// The GET route for a single flashcard remains commented out because the function
-// 'getFlashcardById' is not exported from the controller, which would cause a different crash.
-// router.get('/:cardId', authMiddleware, flashcardController.getFlashcardById);
+// Verificação final para garantir que a função existe antes de criar a rota
+if (typeof controller.updateFlashcard !== 'function' || typeof controller.deleteFlashcard !== 'function') {
+    // Se isso acontecer, o problema está no arquivo do controller
+    throw new Error('As funções do flashcardController não foram exportadas corretamente.');
+}
 
-// Correction Part 2: Access the controller functions as properties of the imported object.
-// This ensures that Express receives the actual function it needs to handle the route.
-router.put('/:cardId', authMiddleware, flashcardController.updateFlashcard);
-router.delete('/:cardId', authMiddleware, flashcardController.deleteFlashcard);
-router.post('/:cardId/review', authMiddleware, flashcardController.reviewFlashcard);
+// ------ NOVA ESTRUTURA ------
+// Agrupa as rotas que compartilham o mesmo caminho '/:cardId'
+router.route('/:cardId')
+    .put(authMiddleware, controller.updateFlashcard)
+    .delete(authMiddleware, controller.deleteFlashcard);
+
+// A rota de review continua separada, pois o caminho é diferente
+router.post('/:cardId/review', authMiddleware, controller.reviewFlashcard);
+
 
 module.exports = router;
