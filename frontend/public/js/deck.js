@@ -250,8 +250,8 @@ function processFile(file) {
     const validTypes = ['text/plain', 'text/markdown', 'application/pdf'];
     const maxSize = 10 * 1024 * 1024; // 10MB
     
-    if (!validTypes.includes(file.type) && !file.name.match(/\.(txt|md|pdf)$/i)) {
-        showToast('Formato de arquivo não suportado. Use PDF, TXT ou MD.', 'error');
+    if (!validTypes.includes(file.type) && !file.name.match(/\.(pdf|txt|md|docx|jpg|png|webp)$/i)) {
+        showToast('Formato de arquivo não suportado. Use PDF, TXT, MD, DOCX, JPG, PNG ou WEBP', 'error');
         return;
     }
     
